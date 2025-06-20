@@ -1,0 +1,14 @@
+Views:
+
+T+: akutni toxicita 1 a 2
+T:
+
+
+
+
+integritni omezeni:
+Acute toxicity: 1-4
+Skin corrosion: 1A, 1B, 1C, 2, 3
+Unit: kg, l, ml, g, ...
+Location: OKL, lékárna, interna A, interna B, ...
+Body entry type: oral, dermal, inhal
