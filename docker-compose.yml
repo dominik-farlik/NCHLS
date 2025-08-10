@@ -44,10 +44,15 @@ services:
 
   react:
     build: ./React
-    container_name: react
-    restart: always
     ports:
-      - "3000:80"
+      - "3000:5173"
+    volumes:
+      - ./React:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev -- --host 0.0.0.0
+
 
 volumes:
   mongo_data:

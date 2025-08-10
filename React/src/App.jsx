@@ -1,83 +1,25 @@
-import {useState} from 'react'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./Navbar.jsx";
+import RecordForm from "./RecordForm.jsx";
+import SubstanceForm from "./SubstanceForm.jsx";
+
+function Home() {
+    return <h1>Home content</h1>;
+}
 
 function App() {
-    const [formData, setFormData] = useState({
-        substance_name: '',
-        amount: 0,
-        location_name: '',
-        year: 2025,
-    });
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const response = await fetch('http://localhost:8000/add_record', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
-
-        const data = await response.json();
-        console.log('Response:', data);
-    };
-
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Látka:</label>
-                <input
-                    type="text"
-                    name="substance_name"
-                    value={formData.substance_name}
-                    onChange={handleChange}
-                    required
-                />
+        <Router>
+            <Navbar />
+            <div className="container mt-3">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/add-substance" element={<SubstanceForm />} />
+                    <Route path="/add-record" element={<RecordForm />} />
+                </Routes>
             </div>
-            <div>
-                <label>Množství:</label>
-                <input
-                    type="number"
-                    step="any"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div>
-                <label>Místo uložení:</label>
-                <input
-                    type="text"
-                    name="location_name"
-                    value={formData.location_name}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div>
-                <label>Rok:</label>
-                <input
-                    type="number"
-                    name="year"
-                    value={formData.year}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <button type="submit">Submit</button>
-        </form>
+        </Router>
     );
 }
 
-export default App
+export default App;

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
-from models import Record
-from db import insert_record
+from models import Record, Unit, Substance
+from db import insert_record, insert_substance
 import logging
 
 app = FastAPI()
@@ -19,6 +19,16 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "FastAPI is running!"}
+
+@app.get("/units")
+def read_root():
+    return [unit.value for unit in Unit]
+
+@app.post("/add_substance")
+def add_record(substance: Substance = Body(...)):
+    logger.info(f"Adding substance {substance}")
+    inserted_id = insert_substance(substance.model_dump())
+    return {"inserted_id": str(inserted_id)}
 
 @app.post("/add_record")
 def add_record(record: Record = Body(...)):
