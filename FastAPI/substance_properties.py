@@ -1,10 +1,24 @@
 from dataclasses import dataclass
-from enum import Enum, StrEnum, IntEnum, auto
+from enum import Enum, IntEnum
+
+class Unit(Enum):
+    G = "g"
+    KG = "kg"
+    ML = "ml"
+    L = "l"
+    KS = "ks"
+    NONE = ""
+
+
+class PhysicalForm(Enum):
+    SOLID = "Pevná"
+    LIQUID = "Kapalná"
+    GAS = "Plynná"
+    NONE = ""
 
 
 # ACUTE TOXICITY
-
-class ExposureRoute(StrEnum):
+class ExposureRoute(Enum):
     ORAL = "oral"
     DERMAL = "dermal"
     INHALATION = "inhalation"
@@ -20,10 +34,7 @@ class AcuteToxicity:
     level: ToxicityLevel
     route: ExposureRoute
 
-ACUTE_TOXICITY: AcuteToxicity
-
 # SKIN
-
 class SkinCorrosion(Enum):
     CATEGORY_1A = "1A"
     CATEGORY_1B = "1B"
@@ -33,11 +44,8 @@ class SkinIrritation(Enum):
     CATEGORY_2 = "2"
 
 # EYES
-
 class EyeDamage(IntEnum):
     CATEGORY_1 = 1
 
 class EyeIrritation(IntEnum):
     CATEGORY_2 = 2
-
-# DANGER CATEGORY

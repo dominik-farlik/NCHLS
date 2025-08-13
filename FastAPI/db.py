@@ -1,6 +1,10 @@
+from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
 from pymongo import MongoClient
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 MONGO_USER = os.getenv("MONGO_USER", "admin")
 MONGO_PASSWORD = os.getenv("MONGO_PASSWORD", "secret")
@@ -21,3 +25,18 @@ def insert_record(data: dict):
     """Insert a record into the collection and return inserted ID."""
     result = db.records.insert_one(data)
     return result.inserted_id
+
+def add_safety_sheet(substance_id: str):
+    """Set a safety sheet in the collection to true."""
+    try:
+        obj_id = ObjectId(substance_id)
+        result = db.substances.update_one(
+            {"_id": obj_id},
+            {"$set": {"safety_sheet": True}}
+        )
+        if result.matched_count == 0:
+            logger.warning(f"No substance found with id: {substance_id}")
+        else:
+            logger.info(f"Safety sheet set for substance id: {substance_id}")
+    except Exception as e:
+        logger.error(f"Failed to update safety sheet for id {substance_id}: {e}")

@@ -1,28 +1,15 @@
-from enum import Enum, StrEnum
+from typing import Optional
+
 from pydantic import BaseModel
 
-
-class Unit(Enum):
-    G = "g"
-    KG = "kg"
-    ML = "ml"
-    L = "l"
-    KS = "ks"
-
-
-class PhysicalForm(StrEnum):
-    SOLID = "solid"
-    LIQUID = "liquid"
-    GAS = "gas"
+from substance_properties import Unit, PhysicalForm
 
 
 class Substance(BaseModel):
     name: str
-    physical_form: str
-    #acute_toxicity: int auto add by properties
+    physical_form: PhysicalForm
     properties: list[dict[str, str]]
     unit: Unit
-    # bezpecnostni list
 
 
 class Record(BaseModel):
@@ -30,4 +17,3 @@ class Record(BaseModel):
     amount: int
     location_name: str
     year: int
-

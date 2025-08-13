@@ -16,7 +16,7 @@ function Navbar() {
                     className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
                     to="/add-substance"
                 >
-                    Add substance
+                    Přidat látku
                 </NavLink>
             </li>
             <li className="nav-item">
@@ -24,7 +24,7 @@ function Navbar() {
                     className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
                     to="/add-record"
                 >
-                    Add record
+                    Přidat záznam
                 </NavLink>
             </li>
         </ul>

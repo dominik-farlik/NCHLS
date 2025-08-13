@@ -1,37 +1,32 @@
 import { useEffect, useState } from 'react';
+import SelectCategory from "./SelectCategory.jsx";
+import SelectAny from "./SelectAny.jsx";
+import ImageUploadPreview from "./ImageUploadPreview.jsx";
 
 function SubstanceForm() {
     const [substance, setSubstance] = useState({
         name: '',
-        physical_form: '',
-        acute_toxicity: 0,
-        properties: [],
         unit: '',
+        physical_form: '',
+        properties: [{ name: '', category: '' }],
+        safety_sheet: undefined,
     });
 
-    const [units, setUnits] = useState([]);
-    const [loadingUnits, setLoadingUnits] = useState(true);
-    const [vlastnosti, setVlastnosti] = useState([{ nazev: '', kategorie: '' }]);
+    const [propertyList, setPropertyList] = useState([]);
 
     useEffect(() => {
-        async function fetchUnits() {
+        async function fetchPropertyList() {
             try {
-                const response = await fetch('http://localhost:8000/units');
-                if (!response.ok) throw new Error('Chyba při načítání jednotek');
+                const response = await fetch('http://localhost:8000/properties');
+                if (!response.ok) throw new Error('Chyba při načítání vlastností');
                 const data = await response.json();
-                setUnits(data);
-                setSubstance((prev) => ({
-                    ...prev,
-                    unit: data.length > 0 ? data[0] : '',
-                }));
+                setPropertyList(data);
             } catch (error) {
                 console.error(error);
-                setUnits([]);
-            } finally {
-                setLoadingUnits(false);
+                setPropertyList([]);
             }
         }
-        fetchUnits();
+        fetchPropertyList().catch(console.error);
     }, []);
 
     const handleChange = (e) => {
@@ -42,36 +37,47 @@ function SubstanceForm() {
         }));
     };
 
-    const handlePropertyChange = (index, field, value) => {
-        const newVlastnosti = [...vlastnosti];
-        newVlastnosti[index][field] = value;
-        setVlastnosti(newVlastnosti);
-
-        // aktualizace substance.properties
+    const handleFileChange = (e) => {
+        const { name, files } = e.target;
         setSubstance((prev) => ({
             ...prev,
-            properties: newVlastnosti.filter(v => v.nazev.trim() && v.kategorie.trim())
+            [name]: files[0],
+        }));
+    };
+
+    const handlePropertyChange = (index, field, value) => {
+        const newProperties = [...substance.properties];
+        newProperties[index] = {
+            ...newProperties[index],
+            [field]: value,
+        };
+
+        setSubstance((prev) => ({
+            ...prev,
+            properties: newProperties,
         }));
 
-        // pokud je to poslední řádek a je kompletně vyplněný → přidáme nový prázdný
         if (
-            index === vlastnosti.length - 1 &&
-            newVlastnosti[index].nazev.trim() !== '' &&
-            newVlastnosti[index].kategorie.trim() !== ''
+            index === newProperties.length - 1 &&
+            newProperties[index].name.trim() !== '' &&
+            newProperties[index].category.trim() !== ''
         ) {
-            setVlastnosti([...newVlastnosti, { nazev: '', kategorie: '' }]);
+            addPropertyRow();
         }
     };
 
-    const removePropertyRow = (index) => {
-        // mazání řádku
-        const updated = vlastnosti.filter((_, i) => i !== index);
-        setVlastnosti(updated.length > 0 ? updated : [{ nazev: '', kategorie: '' }]);
-
-        // aktualizace properties v substance
+    const addPropertyRow = () => {
         setSubstance((prev) => ({
             ...prev,
-            properties: updated.filter(v => v.nazev.trim() && v.kategorie.trim())
+            properties: [...prev.properties, { name: '', category: '' }],
+        }));
+    };
+
+    const removePropertyRow = (index) => {
+        const updated = substance.properties.filter((_, i) => i !== index);
+        setSubstance((prev) => ({
+            ...prev,
+            properties: updated.length > 0 ? updated : [{ name: '', category: '' }],
         }));
     };
 
@@ -84,6 +90,19 @@ function SubstanceForm() {
         });
         const data = await response.json();
         console.log('Response:', data);
+
+        if (substance.safety_sheet) {
+            const substanceId = data.id;
+            const fileFormData = new FormData();
+            fileFormData.append('safety_sheet', substance.safety_sheet);
+            const fileResponse = await fetch(`http://localhost:8000/${substanceId}/add_safety_sheet`, {
+                method: 'POST',
+                body: fileFormData,
+            });
+
+            const fileData = await fileResponse.json();
+            console.log('File Response:', fileData);
+        }
     };
 
     return (
@@ -111,7 +130,7 @@ function SubstanceForm() {
                         onChange={handleChange}
                         className="form-select"
                     >
-                        <option value="">Vyberte formu...</option>
+                        <option value="" disabled>-- Vyber formu --</option>
                         <option value="Pevná">Pevná</option>
                         <option value="Kapalná">Kapalná</option>
                         <option value="Plynná">Plynná</option>
@@ -119,75 +138,83 @@ function SubstanceForm() {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label fw-bold">Jednotka</label>
-                    {loadingUnits ? (
-                        <div className="form-text">Načítám jednotky...</div>
-                    ) : (
-                        <select
-                            name="unit"
-                            value={substance.unit}
-                            onChange={handleChange}
-                            className="form-select"
-                            required
-                        >
-                            {units.map((unit) => (
-                                <option key={unit} value={unit}>
-                                    {unit}
-                                </option>
-                            ))}
-                        </select>
-                    )}
+                    <SelectAny
+                        endpoint="units"
+                        value={substance.unit}
+                        label="Jednotka"
+                        onChange={(newValue) => handleChange(newValue)}
+                    />
                 </div>
-
+                <div className="row mb-3">
+                    <div className="col-md-5">
+                        <ImageUploadPreview/>
+                    </div>
+                    <div className="col-md-2"></div>
+                    <div className="col-md-5">
+                        <label className="form-label fw-bold">Bezpečnostní list</label>
+                        <input
+                            name="safety_sheet"
+                            type="file"
+                            onChange={handleFileChange}
+                            className="form-control"
+                        />
+                    </div>
+                </div>
                 <div className="mb-3">
                     <label className="form-label fw-bold">Vlastnosti</label>
-                    {vlastnosti.map((vlastnost, i) => (
+                    {substance.properties.map((property, i) => (
                         <div key={i} className="row g-2 mb-2 align-items-center">
                             <div className="col-md-5">
                                 <input
                                     type="text"
                                     placeholder="Název vlastnosti"
-                                    value={vlastnost.nazev}
-                                    onChange={(e) => handlePropertyChange(i, 'nazev', e.target.value)}
+                                    value={property.name}
+                                    onChange={(e) => handlePropertyChange(i, "name", e.target.value)}
                                     className="form-control"
                                     list="datalistOptions"
                                 />
-                                {loadingUnits ? (
-                                    <div className="form-text">Načítám vlastnosti...</div>
-                                ) : (
                                 <datalist id="datalistOptions">
-                                    {units.map((unit) => (
-                                        <option key={unit} value={unit}>
-                                            {unit}
+                                    {propertyList.map((property) => (
+                                        <option key={property} value={property}>
+                                            {property}
                                         </option>
                                     ))}
                                 </datalist>
-                                )}
                             </div>
                             <div className="col-md-5">
-                                <input
-                                    type="text"
-                                    placeholder="Kategorie"
-                                    value={vlastnost.kategorie}
-                                    onChange={(e) => handlePropertyChange(i, 'kategorie', e.target.value)}
-                                    className="form-control"
+                                <SelectCategory
+                                    endpoint={property.name}
+                                    value={property.category}
+                                    onChange={(newValue) => handlePropertyChange(i, "category", newValue)}
                                 />
                             </div>
                             <div className="col-md-2 text-end">
                                 <button
                                     type="button"
-                                    className="btn btn-danger"
+                                    className="btn btn-outline-danger"
                                     onClick={() => removePropertyRow(i)}
-                                    disabled={vlastnosti.length === 1 && !vlastnosti[0].nazev && !vlastnosti[0].kategorie}
+                                    disabled={
+                                        substance.properties.length === 1 &&
+                                        !substance.properties[0].name &&
+                                        !substance.properties[0].category
+                                    }
                                 >
-                                    Smazat
+                                    Odebrat
                                 </button>
                             </div>
                         </div>
                     ))}
                 </div>
-
-                <button type="submit" className="btn btn-primary w-100">Odeslat</button>
+                <div className="mb-3 d-flex justify-content-end">
+                    <button
+                        type="button"
+                        className="btn btn-outline-success"
+                        onClick={addPropertyRow}
+                    >
+                        Přidat
+                    </button>
+                </div>
+                <button type="submit" className="btn btn-primary w-100">Přidat</button>
             </form>
         </div>
     );
