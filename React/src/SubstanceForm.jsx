@@ -123,11 +123,11 @@ function SubstanceForm() {
 
                 if (!fileResponse.ok) {
                     const fileErrorText = await fileResponse.text();
-                    setErrorMessage(`Látka byla přidána, ale nepodařilo se nahrát bezpečnostní list: ${fileErrorText}`);
+                    setErrorMessage(`Nepodařilo se nahrát bezpečnostní list: ${fileErrorText}`);
                     return;
                 }
 
-                setSuccessMessage('Látka a bezpečnostní list byly úspěšně přidány.');
+                //setSuccessMessage('Látka a bezpečnostní list byly úspěšně přidány.');
             }
         } catch (err) {
             setErrorMessage(`Neočekávaná chyba: ${err.message}`);
@@ -136,7 +136,6 @@ function SubstanceForm() {
 
     return (
         <div className="container mt-5">
-            <h2 className="mb-4">Přidat látku</h2>
             {!successMessage && !errorMessage && <div className="alert">&nbsp;</div>}
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
             {successMessage && <div className="alert alert-success">{successMessage}</div>}
@@ -194,7 +193,8 @@ function SubstanceForm() {
                     </div>
                 </div>
                 <div className="mb-3">
-                    <label className="form-label fw-bold">Vlastnosti</label>
+                    <label className="form-label fw-bold col-md-5">Vlastnosti</label>
+                    <label className="form-label fw-bold">Kategorie</label>
                     {substance.properties.map((property, i) => (
                         <div key={i} className="row g-2 mb-2 align-items-center">
                             <div className="col-md-5">
@@ -237,15 +237,6 @@ function SubstanceForm() {
                             </div>
                         </div>
                     ))}
-                </div>
-                <div className="mb-3 d-flex justify-content-end">
-                    <button
-                        type="button"
-                        className="btn btn-outline-success"
-                        onClick={addPropertyRow}
-                    >
-                        Přidat
-                    </button>
                 </div>
                 <button type="submit" className="btn btn-primary w-100">Přidat</button>
             </form>

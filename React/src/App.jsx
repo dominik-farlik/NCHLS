@@ -2,10 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar.jsx";
 import RecordForm from "./RecordForm.jsx";
 import SubstanceForm from "./SubstanceForm.jsx";
+import Home from "./Home.jsx";
+import SubstancePage from "./SubstancePage.jsx";
 
-function Home() {
-    return <h1>Home content</h1>;
-}
+
 
 function App() {
     return (
@@ -16,6 +16,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/add-substance" element={<SubstanceForm />} />
                     <Route path="/add-record" element={<RecordForm />} />
+                    <Route path="/substances" element={<SubstancePage />} />
                 </Routes>
             </div>
         </Router>

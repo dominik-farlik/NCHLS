@@ -54,3 +54,8 @@ def add_safety_sheet(substance_id: str):
             logger.info(f"Safety sheet set for substance id: {substance_id}")
     except Exception as e:
         logger.error(f"Failed to update safety sheet for id {substance_id}: {e}")
+
+
+def fetch_substances():
+    """Fetch all substances from the collection."""
+    return db.substances.find({})

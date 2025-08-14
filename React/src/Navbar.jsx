@@ -27,6 +27,22 @@ function Navbar() {
                     Přidat záznam
                 </NavLink>
             </li>
+            <li className="nav-item">
+                <NavLink
+                    className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
+                    to="/substances"
+                >
+                    Seznam látek
+                </NavLink>
+            </li>
+            <li className="nav-item">
+                <NavLink
+                    className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
+                    to="/records"
+                >
+                    Seznam záznamů
+                </NavLink>
+            </li>
         </ul>
     );
 }

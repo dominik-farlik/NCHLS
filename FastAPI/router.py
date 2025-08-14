@@ -1,13 +1,15 @@
 from pathlib import Path
-
 from fastapi import FastAPI, Body, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, FileResponse
 import shutil
 import logging
+from bson.json_util import dumps
+import json
+import os
 
 from models import Record, Substance
-from db import insert_record, insert_substance, add_safety_sheet
+from db import insert_record, insert_substance, add_safety_sheet, fetch_substances
 from property_lists import UNITS, PROPERTIES, PHYSICAL_FORMS
 
 app = FastAPI()
@@ -22,8 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-UPLOAD_DIR = Path("uploads")
-UPLOAD_DIR.mkdir(exist_ok=True)
+UPLOAD_DIR = Path("/app/uploads")
 
 @app.get("/")
 async def read_root():
@@ -43,7 +44,12 @@ async def get_physical_forms():
 
 @app.get("/categories/{property}")
 async def get_categories(property: str):
-    return list(PROPERTIES[property]["categories"])
+    return sorted(list(PROPERTIES[property]["categories"]))
+
+@app.get("/substances")
+async def get_substances():
+    cursor = fetch_substances()
+    return JSONResponse(content=json.loads(dumps(cursor)))
 
 @app.post("/add_substance")
 async def add_record(substance: Substance = Body(...)):
@@ -51,20 +57,41 @@ async def add_record(substance: Substance = Body(...)):
     inserted_id = insert_substance(substance.model_dump())
     return {"id": str(inserted_id)}
 
+from pathlib import Path
+import shutil
+
 @app.post("/{substance_id}/add_safety_sheet")
 async def save_safety_sheet(substance_id: str, safety_sheet: UploadFile = File(...)):
     try:
-        file_path = UPLOAD_DIR / f"{substance_id}"
+        extension = Path(safety_sheet.filename).suffix
+        file_path = UPLOAD_DIR / f"{substance_id}{extension}"
+
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(safety_sheet.file, buffer)
+
         logger.info(f"Adding safety_sheet for {substance_id}")
         add_safety_sheet(substance_id)
         return JSONResponse(content={"message": "Safety sheet uploaded successfully", "file_path": str(file_path)})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {e}")
 
+
 @app.post("/add_record")
 async def add_record(record: Record = Body(...)):
     logger.info(f"Adding record {record}")
     inserted_id = insert_record(record.model_dump())
     return {"inserted_id": str(inserted_id)}
+
+@app.get("/safety_sheet/{substance_id}")
+async def get_safety_sheet(substance_id: str):
+    pdf_path = os.path.join(UPLOAD_DIR, f"{substance_id}.pdf")
+    if not os.path.exists(pdf_path):
+        return {"error": f"Soubor {pdf_path} nenalezen"}
+    headers = {
+        "Content-Disposition": f'inline; filename="{substance_id}.pdf"'
+    }
+    return FileResponse(
+        path=pdf_path,
+        media_type="application/pdf",
+        headers=headers
+    )

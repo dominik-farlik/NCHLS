@@ -33,7 +33,6 @@ function RecordForm() {
 
     return (
         <div className="container mt-5">
-            <h2 className="mb-4">Přidat záznam</h2>
             <form onSubmit={handleSubmit} className="p-4 border rounded bg-light shadow-sm">
                 <div className="mb-3">
                     <label className="form-label">Látka:</label>
