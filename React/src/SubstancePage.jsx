@@ -70,17 +70,26 @@ function SubstancePage() {
                     <thead className="table-dark">
                     <tr>
                         <th>Název</th>
+                        <th className="text-center">Látka/Směs</th>
                         <th className="text-center">Fyzikální forma</th>
+                        <th className="text-center">IPLP</th>
+                        <th className="text-center">Dezinfekce</th>
                         <th className="text-center">Vlastnosti</th>
                         <th className="text-center">Bezpečnostní list</th>
+                        <th className="text-center">Max. sklad. v tunách</th>
+                        <th className="text-center">Kategorie nebezpečnosti</th>
+                        <th className="text-center">EC50</th>
                         <th className="text-center">Jednotka</th>
                     </tr>
                     </thead>
                     <tbody>
                     {substances.map((substance, sIndex) => (
                         <tr key={substance._id.$oid || sIndex}>
-                            <td>{substance.name}</td>
+                            <td className="fw-bold">{substance.name}</td>
+                            <td className="text-center">{substance.substance_mixture}</td>
                             <td className="text-center">{substance.physical_form}</td>
+                            <td className="text-center">{substance.iplp ? "ano" : "ne"}</td>
+                            <td className="text-center">{substance.disinfection ? "ano" : "ne"}</td>
                             <td className="text-center">
                                 <div className="btn-group">
                                     <button
@@ -93,9 +102,9 @@ function SubstancePage() {
                                     </button>
                                     <ul className="dropdown-menu">
                                         {substance.properties.map((property, pIndex) => (
-                                            <li key={`${property.name}-${pIndex}`}>
+                                            <li key={pIndex}>
                                                 <a className="dropdown-item" href="#">
-                                                    {property.name} ({property.category})
+                                                    {Object.values(property).join(" ")}
                                                 </a>
                                             </li>
                                         ))}
@@ -136,6 +145,9 @@ function SubstancePage() {
                                     </label>
                                 )}
                             </td>
+                            <td className="text-center">{substance.max_tons}</td>
+                            <td className="text-center">{substance.danger_category}</td>
+                            <td className="text-center">{substance.water_toxicity_EC50}</td>
                             <td className="text-center">{substance.unit}</td>
                         </tr>
                     ))}

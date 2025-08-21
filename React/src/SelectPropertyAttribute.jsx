@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
-function SelectCategory({ endpoint, value, onChange }) {
+function SelectPropertyAttribute({ endpoint, value, onChange }) {
     const [options, setOptions] = useState([]);
-    const [loadingOptions, setLoadingOptions] = useState(false);
     const [internalValue, setInternalValue] = useState(value || "");
 
     useEffect(() => {
@@ -14,9 +13,8 @@ function SelectCategory({ endpoint, value, onChange }) {
         }
 
         async function fetchOptions() {
-            setLoadingOptions(true);
             try {
-                const response = await fetch(`http://localhost:8000/categories/${endpoint}`);
+                const response = await fetch(`http://localhost:8000/${endpoint}`);
                 if (!response.ok) throw new Error("Chyba při načítání");
                 const data = await response.json();
                 setOptions(data);
@@ -27,8 +25,6 @@ function SelectCategory({ endpoint, value, onChange }) {
             } catch (error) {
                 console.error(error);
                 setOptions([]);
-            } finally {
-                setLoadingOptions(false);
             }
         }
 
@@ -46,26 +42,22 @@ function SelectCategory({ endpoint, value, onChange }) {
 
     return (
         <div>
-            {loadingOptions ? (
-                <div className="form-text">Načítám...</div>
-            ) : (
                 <select
-                    name="unit"
+                    name="option"
                     value={internalValue}
                     onChange={handleChange}
                     className="form-select"
                     required
                     disabled={options.length === 0}
                 >
-                    {options.map((unit) => (
-                        <option key={unit} value={unit}>
-                            {unit}
+                    {options.map((option) => (
+                        <option key={option} value={option}>
+                            {option}
                         </option>
                     ))}
                 </select>
-            )}
         </div>
     );
 }
 
-export default SelectCategory;
+export default SelectPropertyAttribute;

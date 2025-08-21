@@ -59,3 +59,7 @@ def add_safety_sheet(substance_id: str):
 def fetch_substances():
     """Fetch all substances from the collection."""
     return db.substances.find({})
+
+def fetch_substances_names():
+    """Fetch substance names as a list."""
+    return [doc["name"] for doc in db.substances.find({}, {"name": 1, "_id": 0})]

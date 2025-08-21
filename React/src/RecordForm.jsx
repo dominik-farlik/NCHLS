@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 
 function RecordForm() {
     const [record, setRecord] = useState({
@@ -7,6 +7,23 @@ function RecordForm() {
         location_name: '',
         year: 2025,
     });
+
+    const [substanceList, setsubstanceList] = useState([]);
+
+    useEffect(() => {
+        async function fetchsubstanceList() {
+            try {
+                const response = await fetch('http://localhost:8000/substances/names');
+                if (!response.ok) throw new Error('Chyba při načítání vlastností');
+                const data = await response.json();
+                setsubstanceList(data);
+            } catch (error) {
+                console.error(error);
+                setsubstanceList([]);
+            }
+        }
+        fetchsubstanceList().catch(console.error);
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -42,8 +59,16 @@ function RecordForm() {
                         value={record.name}
                         onChange={handleChange}
                         className="form-control"
+                        list="datalistOptions"
                         required
                     />
+                    <datalist id="datalistOptions">
+                        {substanceList.map((property) => (
+                            <option key={property} value={property}>
+                                {property}
+                            </option>
+                        ))}
+                    </datalist>
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Množství:</label>

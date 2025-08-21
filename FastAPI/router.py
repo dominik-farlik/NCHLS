@@ -9,7 +9,7 @@ import json
 import os
 
 from models import Record, Substance
-from db import insert_record, insert_substance, add_safety_sheet, fetch_substances
+from db import insert_record, insert_substance, add_safety_sheet, fetch_substances, fetch_substances_names
 from property_lists import UNITS, PROPERTIES, PHYSICAL_FORMS
 
 app = FastAPI()
@@ -42,14 +42,29 @@ async def get_properties():
 async def get_physical_forms():
     return PHYSICAL_FORMS
 
+from fastapi import HTTPException
+
 @app.get("/categories/{property}")
 async def get_categories(property: str):
-    return sorted(list(PROPERTIES[property]["categories"]))
+    if property not in PROPERTIES:
+        raise HTTPException(status_code=404, detail=f"Property '{property}' not found")
+    return sorted(list(PROPERTIES[property].get("categories", [])))
+
+
+@app.get("/exposure_routes/{property}")
+async def get_exposure_routes(property: str):
+    if property not in PROPERTIES:
+        raise HTTPException(status_code=404, detail=f"Property '{property}' not found")
+    return sorted(list(PROPERTIES[property].get("exposure_routes", [])))
 
 @app.get("/substances")
 async def get_substances():
     cursor = fetch_substances()
     return JSONResponse(content=json.loads(dumps(cursor)))
+
+@app.get("/substances/names")
+async def get_substances():
+    return fetch_substances_names()
 
 @app.post("/add_substance")
 async def add_record(substance: Substance = Body(...)):

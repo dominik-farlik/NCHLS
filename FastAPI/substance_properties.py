@@ -34,7 +34,6 @@ class AcuteToxicity:
     level: ToxicityLevel
     route: ExposureRoute
 
-# SKIN
 class SkinCorrosion(Enum):
     CATEGORY_1A = "1A"
     CATEGORY_1B = "1B"
@@ -43,9 +42,9 @@ class SkinCorrosion(Enum):
 class SkinIrritation(Enum):
     CATEGORY_2 = "2"
 
-# EYES
 class EyeDamage(IntEnum):
     CATEGORY_1 = 1
 
 class EyeIrritation(IntEnum):
     CATEGORY_2 = 2
+
