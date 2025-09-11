@@ -93,7 +93,7 @@ async def save_safety_sheet(substance_id: str, safety_sheet: UploadFile = File(.
 
 @app.post("/add_record")
 async def add_record(record: Record = Body(...)):
-    logger.info(f"Adding record {record}")
+    logger.info(f"Adding record {record}") 
     inserted_id = insert_record(record.model_dump())
     return {"inserted_id": str(inserted_id)}
 

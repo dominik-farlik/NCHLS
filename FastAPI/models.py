@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from substance_properties import Unit, PhysicalForm
+from bson import ObjectId
 
 class Substance(BaseModel):
     name: str
@@ -10,7 +11,7 @@ class Substance(BaseModel):
     substance_mixture: str
 
 class Record(BaseModel):
-    substance: Substance
+    substance_id: str
     amount: int
     location_name: str
     year: int
