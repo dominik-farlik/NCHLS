@@ -4,7 +4,7 @@ import RecordForm from "./RecordForm.jsx";
 import SubstanceForm from "./SubstanceForm.jsx";
 import Home from "./Home.jsx";
 import SubstancePage from "./SubstancePage.jsx";
-
+import RecordPage from "./RecordPage.jsx";
 
 
 function App() {
@@ -17,6 +17,7 @@ function App() {
                     <Route path="/add-substance" element={<SubstanceForm />} />
                     <Route path="/add-record" element={<RecordForm />} />
                     <Route path="/substances" element={<SubstancePage />} />
+                    <Route path="/records" element={<RecordPage />} />
                 </Routes>
             </div>
         </Router>
