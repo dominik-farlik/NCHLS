@@ -132,10 +132,13 @@ function SubstanceForm() {
     };
 
     return (
-        <div className="container mt-5">
+        <div className="container mt-4">
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
             {successMessage && <div className="alert alert-success">{successMessage}</div>}
-            <form onSubmit={handleSubmit} className="p-4 border rounded bg-light shadow-sm">
+            <div className="card shadow-sm">
+                <div className="card-body">
+                    <h2 className="mb-4">Přidat látku</h2>
+                    <form onSubmit={handleSubmit}>
                 <div className="row mb-3">
                     <div className="col-md-4">
                         <label className="form-label fw-bold">Název</label>
@@ -297,9 +300,11 @@ function SubstanceForm() {
                             </div>
                         </div>
                     ))}
-                <button type="submit" className="btn btn-primary w-100">Přidat</button>
-            </form>
+                    <button type="submit" className="btn btn-primary w-100">Přidat</button>
+                </form>
+            </div>
         </div>
+    </div>
     );
 }
 
