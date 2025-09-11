@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
 function RecordForm() {
     const [record, setRecord] = useState({
@@ -29,7 +29,7 @@ function RecordForm() {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        if (name === "substance_id") {
+        if (name === 'substance_id') {
             const selected = substanceList.find(s => s.substance_id === value);
             setSelectedUnit(selected ? selected.unit : '');
         }
@@ -56,78 +56,82 @@ function RecordForm() {
     };
 
     return (
-        <div className="container mt-5">
-            <form onSubmit={handleSubmit} className="p-4 border rounded bg-light shadow-sm">
-                <div className="row mb-3">
-                    <div className="col mb-3">
-                        <label className="form-label fw-bold">Místo uložení</label>
-                        <input
-                            type="text"
-                            name="location_name"
-                            value={record.location_name}
-                            onChange={handleChange}
-                            className="form-control"
-                            required
-                        />
-                    </div>
-                    <div className="col mb-3">
-                        <label className="form-label fw-bold">Rok</label>
-                        <input
-                            type="number"
-                            name="year"
-                            value={record.year}
-                            onChange={handleChange}
-                            className="form-control"
-                            required
-                        />
-                    </div>
+        <div className="container mt-4">
+            <div className="card shadow-sm">
+                <div className="card-body">
+                    <h2 className="mb-4">Přidat záznam</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className="row mb-3">
+                            <div className="col mb-3">
+                                <label className="form-label fw-bold">Místo uložení</label>
+                                <input
+                                    type="text"
+                                    name="location_name"
+                                    value={record.location_name}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    required
+                                />
+                            </div>
+                            <div className="col mb-3">
+                                <label className="form-label fw-bold">Rok</label>
+                                <input
+                                    type="number"
+                                    name="year"
+                                    value={record.year}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Látka</label>
+                                <input
+                                    type="text"
+                                    name="substance_id"
+                                    value={
+                                        substanceList.find((s) => s._id.$oid === record.substance_id)?.name || ''
+                                    }
+                                    onChange={(e) => {
+                                        const name = e.target.value;
+                                        const found = substanceList.find((s) => s.name === name);
+                                        setRecord((prev) => ({
+                                            ...prev,
+                                            substance_id: found ? found._id.$oid : '',
+                                        }));
+                                    }}
+                                    className="form-control"
+                                    list="datalistOptions"
+                                    required
+                                />
+                                <datalist id="datalistOptions">
+                                    {substanceList.map((property) => (
+                                        <option key={property._id.$oid} value={property.name} />
+                                    ))}
+                                </datalist>
+                            </div>
+                            <div className="col-md-2">
+                                <label className="form-label fw-bold">Množství</label>
+                                <input
+                                    type="number"
+                                    step="any"
+                                    name="amount"
+                                    value={record.amount}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                    required
+                                />
+                            </div>
+                            <div className="col d-flex align-items-end fw-bold">
+                                {selectedUnit && <span className="form-label">{selectedUnit}</span>}
+                            </div>
+                        </div>
+                        <button type="submit" className="btn btn-primary w-100">Odeslat</button>
+                    </form>
                 </div>
-                <div className="row mb-3">
-                    <div className="col-md-6">
-                        <label className="form-label fw-bold">Látka</label>
-                        <input
-                            type="text"
-                            name="substance_id"
-                            value={
-                            substanceList.find((s) => s._id.$oid === record.substance_id)?.name || ""
-                        }
-                            onChange={(e) => {
-                                const name = e.target.value;
-                                const found = substanceList.find((s) => s.name === name);
-                                setRecord((prev) => ({
-                                    ...prev,
-                                    substance_id: found ? found._id.$oid : ""
-                                }));
-                            }}
-                            className="form-control"
-                            list="datalistOptions"
-                            required
-                        />
-                        <datalist id="datalistOptions">
-                            {substanceList.map((property) => (
-                                <option key={property._id.$oid} value={property.name} />
-                            ))}
-                        </datalist>
-                    </div>
-                    <div className="col-md-2">
-                        <label className="form-label fw-bold">Množství</label>
-                        <input
-                            type="number"
-                            step="any"
-                            name="amount"
-                            value={record.amount}
-                            onChange={handleChange}
-                            className="form-control"
-                            required
-                        />
-                    </div>
-
-                    <div className="col d-flex align-items-end fw-bold">
-                        {selectedUnit && <span className="form-label">{selectedUnit}</span>}
-                    </div>
-                </div>
-                <button type="submit" className="btn btn-primary">Odeslat</button>
-            </form>
+            </div>
         </div>
     );
 }
