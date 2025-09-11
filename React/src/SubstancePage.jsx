@@ -66,93 +66,106 @@ function SubstancePage() {
             ) : substances.length === 0 ? (
                 <div className="alert alert-warning text-center">Žádná data k zobrazení.</div>
             ) : (
-                <table className="table table-hover align-middle table-striped table-borderless">
-                    <thead className="table-dark">
-                    <tr>
-                        <th>Název</th>
-                        <th className="text-center">Látka/Směs</th>
-                        <th className="text-center">Fyzikální forma</th>
-                        <th className="text-center">IPLP</th>
-                        <th className="text-center">Dezinfekce</th>
-                        <th className="text-center">Vlastnosti</th>
-                        <th className="text-center">Bezpečnostní list</th>
-                        <th className="text-center">Max. sklad. v tunách</th>
-                        <th className="text-center">Kategorie nebezpečnosti</th>
-                        <th className="text-center">EC50</th>
-                        <th className="text-center">Jednotka</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div className="row row-cols-1 row-cols-md-2 g-4">
                     {substances.map((substance, sIndex) => (
-                        <tr key={substance._id.$oid || sIndex}>
-                            <td className="fw-bold">{substance.name}</td>
-                            <td className="text-center">{substance.substance_mixture}</td>
-                            <td className="text-center">{substance.physical_form}</td>
-                            <td className="text-center">{substance.iplp ? "ano" : "ne"}</td>
-                            <td className="text-center">{substance.disinfection ? "ano" : "ne"}</td>
-                            <td className="text-center">
-                                <div className="btn-group">
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    >
-                                        Vlastnosti
-                                    </button>
-                                    <ul className="dropdown-menu">
-                                        {substance.properties.map((property, pIndex) => (
-                                            <li key={pIndex}>
-                                                <a className="dropdown-item" href="#">
-                                                    {Object.values(property).join(" ")}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </td>
-                            <td className="text-center">
-                                {substance.safety_sheet ? (
-                                    <a
-                                        href={`http://localhost:8000/safety_sheet/${substance._id.$oid}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        title="Otevřít bezpečnostní list"
-                                        style={{
-                                            textDecoration: "none",
-                                            cursor: "pointer",
-                                            fontSize: "1.5rem",
-                                        }}
-                                    >
-                                        📄
-                                    </a>
-                                ) : (
-                                    <label className="btn"
-                                           style={{
+                        <div key={substance._id.$oid || sIndex} className="col">
+                            <div className="card h-100">
+                                <div className="card-header fw-bold d-flex justify-content-between align-items-center">
+                                    {substance.name}
+                                    {substance.safety_sheet ? (
+                                        <a
+                                            href={`http://localhost:8000/safety_sheet/${substance._id.$oid}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            title="Otevřít bezpečnostní list"
+                                            style={{
                                                 textDecoration: "none",
                                                 cursor: "pointer",
                                                 fontSize: "1.5rem",
-                                               padding: "0",
-                                           }}>
-                                        ➕
-                                        <input
-                                            type="file"
-                                            name="safety_sheet"
+                                            }}
+                                        >
+                                            📄
+                                        </a>
+                                    ) : (
+                                        <label
+                                            className="btn mb-0 p-0"
                                             title="Přidat bezpečnostní list"
-                                            onChange={(e) => handleFileChange(e, substance._id.$oid)}
-                                            style={{ display: 'none' }}
-                                        />
-                                    </label>
-                                )}
-                            </td>
-                            <td className="text-center">{substance.max_tons}</td>
-                            <td className="text-center">{substance.danger_category}</td>
-                            <td className="text-center">{substance.water_toxicity_EC50}</td>
-                            <td className="text-center">{substance.unit}</td>
-                        </tr>
+                                            style={{
+                                                textDecoration: "none",
+                                                cursor: "pointer",
+                                                fontSize: "1.5rem",
+                                            }}
+                                        >
+                                            ➕
+                                            <input
+                                                type="file"
+                                                name="safety_sheet"
+                                                onChange={(e) => handleFileChange(e, substance._id.$oid)}
+                                                style={{ display: "none" }}
+                                            />
+                                        </label>
+                                    )}
+                                </div>
+                                <ul className="list-group list-group-flush">
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>Látka/Směs</span>
+                                        <span>{substance.substance_mixture}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>Fyzikální forma</span>
+                                        <span>{substance.physical_form}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>IPLP</span>
+                                        <span>{substance.iplp ? "ano" : "ne"}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>Dezinfekce</span>
+                                        <span>{substance.disinfection ? "ano" : "ne"}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Vlastnosti</span>
+                                        <div className="btn-group">
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                            >
+                                                Vlastnosti
+                                            </button>
+                                            <ul className="dropdown-menu">
+                                                {substance.properties.map((property, pIndex) => (
+                                                    <li key={pIndex}>
+                                                        <a className="dropdown-item" href="#">
+                                                            {Object.values(property).join(" ")}
+                                                        </a>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>Max. sklad. v tunách</span>
+                                        <span>{substance.max_tons}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>Kategorie nebezpečnosti</span>
+                                        <span>{substance.danger_category}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>EC50</span>
+                                        <span>{substance.water_toxicity_EC50}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between">
+                                        <span>Jednotka</span>
+                                        <span>{substance.unit}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     ))}
-                    </tbody>
-                </table>
+                </div>
             )}
         </div>
     );
