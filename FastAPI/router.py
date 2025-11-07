@@ -14,7 +14,7 @@ import os
 from models import Record, Substance
 from db import insert_record, insert_substance, add_safety_sheet, fetch_substances, fetch_substances_names, get_db, \
     fetch_records, fetch_departments, db_update_substance
-from property_lists import Unit, PROPERTIES, PhysicalForm
+from property_dicts import Unit, PROPERTIES, PhysicalForm
 
 app = FastAPI()
 api = APIRouter(prefix="/api")

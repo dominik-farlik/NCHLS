@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
-from property_lists import Unit, PhysicalForm
+from property_dicts import Unit, PhysicalForm
 from bson import ObjectId
 
 class Substance(BaseModel):

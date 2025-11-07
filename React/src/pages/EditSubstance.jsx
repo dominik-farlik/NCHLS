@@ -9,7 +9,16 @@ function EditSubstance() {
 
     const navigate = useNavigate();
 
-    const [substance, setSubstance] = useState({});
+    const [substance, setSubstance] = useState({
+        name: '',
+        unit: '',
+        iplp: false,
+        disinfection: false,
+        substance_mixture: '',
+        physical_form: '',
+        properties: [{ name: '', category: '', exposure_route: ''}],
+        safety_sheet: undefined,
+    });
     const [propertyList, setPropertyList] = useState([]);
     const [unitList, setUnitList] = useState([]);
     const [physicalFormList, setPhysicalFormList] = useState([]);
@@ -77,6 +86,7 @@ function EditSubstance() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(substance);
         await axios.put(`/api/substances/${substance_id}`, substance)
         await navigate("/substances");
     };

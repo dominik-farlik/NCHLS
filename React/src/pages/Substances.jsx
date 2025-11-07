@@ -44,7 +44,7 @@ function Substances() {
                     {substances.map((substance) => {
                         return (
                             <tr key={substance._id.$oid} onClick={() => navigate(`/edit-substance/${substance._id.$oid}`)} style={{ cursor: "pointer" }}>
-                                <td>{substance.name ?? ""}</td>
+                                <td style={{ fontWeight: "700" }}>{substance.name}</td>
                                 <td>{substance.substance_mixture ?? ""}</td>
                                 <td>{substance.physical_form ?? ""}</td>
                                 <td>{asYesNo(substance.iplp)}</td>
