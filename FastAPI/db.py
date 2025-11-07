@@ -71,3 +71,7 @@ def get_db():
 def fetch_records():
     """Fetch all substances from the collection."""
     return db.records.find({})
+
+def fetch_departments():
+    """Fetch all departments from the collection."""
+    return db.departments.find({})

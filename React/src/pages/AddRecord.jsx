@@ -3,35 +3,44 @@ import axios from "axios";
 
 function AddRecord() {
     const [record, setRecord] = useState({
-        substance_id: '',
+        substance_name: '',
         amount: 0,
         location_name: '',
-        year: 2025,
+        year: new Date().getFullYear(),
     });
 
-    const [substanceList, setsubstanceList] = useState([]);
-    const [selectedUnit, setSelectedUnit] = useState('');
+    const [substanceList, setSubstanceList] = useState([]);
+    const [departmentList, setDepartmentList] = useState([]);
+    const [unit, setUnit] = useState('');
 
     useEffect(() => {
         axios.get("/api/substances")
             .then(res => {
-                setsubstanceList(res.data);
+                setSubstanceList(res.data);
+            })
+        axios.get("/api/departments")
+            .then(res => {
+                setDepartmentList(res.data);
             })
     }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        if (name === 'substance_id') {
-            const selected = substanceList.find(s => s.substance_id === value);
-            setSelectedUnit(selected ? selected.unit : '');
+        if (name === "substance_name") {
+            const selected = substanceList.find(substance => substance.name === value);
+            if (selected?.unit) {
+                setUnit(selected.unit);
+            } else {
+                setUnit("ks");
+            }
         }
-
         setRecord((prev) => ({
             ...prev,
             [name]: value,
         }));
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -63,8 +72,16 @@ function AddRecord() {
                                     value={record.location_name}
                                     onChange={handleChange}
                                     className="form-control"
+                                    list="departmentList"
                                     required
                                 />
+                                <datalist id="departmentList">
+                                    {departmentList.map((department) => (
+                                        <option key={department.name} value={department.name}>
+                                            {department.name}
+                                        </option>
+                                    ))}
+                                </datalist>
                             </div>
                             <div className="col mb-3">
                                 <label className="form-label fw-bold">Rok</label>
@@ -83,25 +100,16 @@ function AddRecord() {
                                 <label className="form-label fw-bold">Látka</label>
                                 <input
                                     type="text"
-                                    name="substance_id"
-                                    value={
-                                        substanceList.find((s) => s._id.$oid === record.substance_id)?.name || ''
-                                    }
-                                    onChange={(e) => {
-                                        const name = e.target.value;
-                                        const found = substanceList.find((s) => s.name === name);
-                                        setRecord((prev) => ({
-                                            ...prev,
-                                            substance_id: found ? found._id.$oid : '',
-                                        }));
-                                    }}
+                                    name="substance_name"
+                                    value={record.substance_name}
+                                    onChange={handleChange}
                                     className="form-control"
                                     list="datalistOptions"
                                     required
                                 />
                                 <datalist id="datalistOptions">
                                     {substanceList.map((property) => (
-                                        <option key={property._id.$oid} value={property.name} />
+                                        <option key={property.name} value={property.name} />
                                     ))}
                                 </datalist>
                             </div>
@@ -117,9 +125,14 @@ function AddRecord() {
                                     required
                                 />
                             </div>
-                            <div className="col d-flex align-items-end fw-bold">
-                                {selectedUnit && <span className="form-label">{selectedUnit}</span>}
-                            </div>
+                            { record.substance_name && <div className="col-md-1">
+                                <label className="form-label fw-bold">Jednotka</label>
+                                <input
+                                    value={unit}
+                                    className="form-control"
+                                    disabled
+                                />
+                            </div>}
                         </div>
                         <button type="submit" className="btn btn-primary w-100">Odeslat</button>
                     </form>

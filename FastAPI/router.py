@@ -12,7 +12,8 @@ import json
 import os
 
 from models import Record, Substance, SubstanceUpdate
-from db import insert_record, insert_substance, add_safety_sheet, fetch_substances, fetch_substances_names, get_db, fetch_records
+from db import insert_record, insert_substance, add_safety_sheet, fetch_substances, fetch_substances_names, get_db, \
+    fetch_records, fetch_departments
 from property_lists import UNITS, PROPERTIES, PHYSICAL_FORMS
 
 app = FastAPI()
@@ -32,12 +33,14 @@ app.add_middleware(
 UPLOAD_DIR = Path("/app/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+
 # --------------------------
 # Health
 # --------------------------
 @api.get("")
 async def read_root():
     return {"message": "FastAPI is running!"}
+
 
 # --------------------------
 # Dictionaries / lists
@@ -46,29 +49,36 @@ async def read_root():
 async def get_units():
     return UNITS
 
+
 @api.get("/properties")
 async def get_properties():
     return list(PROPERTIES.keys())
 
-@api.get("/physical_forms")
-async def get_physical_forms():
-    return PHYSICAL_FORMS
 
 @api.get("/physical_forms")
 async def get_physical_forms():
     return PHYSICAL_FORMS
 
-@api.get("/categories/{property}")
+
+@api.get("/departments")
+async def get_departments():
+    cursor = fetch_departments()
+    return JSONResponse(content=json.loads(dumps(cursor)))
+
+
+@api.get("/categories/{prop}")
 async def get_categories(prop: str):
     if prop not in PROPERTIES:
         raise HTTPException(status_code=404, detail=f"Property '{prop}' not found")
     return sorted(list(PROPERTIES[prop].get("categories", [])))
 
-@api.get("/exposure_routes/{property}")
+
+@api.get("/exposure_routes/{prop}")
 async def get_exposure_routes(prop: str):
     if prop not in PROPERTIES:
         raise HTTPException(status_code=404, detail=f"Property '{prop}' not found")
     return sorted(list(PROPERTIES[prop].get("exposure_routes", [])))
+
 
 # --------------------------
 # Substances
@@ -78,15 +88,18 @@ async def list_substances():
     cursor = fetch_substances()
     return JSONResponse(content=json.loads(dumps(cursor)))
 
+
 @api.get("/substances/names")
 async def list_substance_names():
     return fetch_substances_names()
+
 
 @api.post("/add_substance")
 async def add_substance(substance: Substance = Body(...)):
     logger.info(f"Adding substance {substance}")
     inserted_id = insert_substance(substance.model_dump())
     return {"id": str(inserted_id)}
+
 
 @api.put("/substances/{substance_id}")
 async def update_substance(substance_id: str, payload: SubstanceUpdate = Body(...)):
@@ -114,6 +127,7 @@ async def update_substance(substance_id: str, payload: SubstanceUpdate = Body(..
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="Látka s tímto názvem již existuje.")
 
+
 @api.get("/substances/{substance_id}")
 async def get_substance(substance_id: str):
     if not ObjectId.is_valid(substance_id):
@@ -123,6 +137,7 @@ async def get_substance(substance_id: str):
         raise HTTPException(status_code=404, detail="Látka nenalezena.")
     doc["id"] = str(doc.pop("_id"))
     return doc
+
 
 # --------------------------
 # Files
@@ -140,6 +155,7 @@ async def save_safety_sheet(substance_id: str, safety_sheet: UploadFile = File(.
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {e}")
 
+
 @api.get("/safety_sheet/{substance_id}")
 async def get_safety_sheet(substance_id: str):
     pdf_path = os.path.join(UPLOAD_DIR, f"{substance_id}.pdf")
@@ -151,6 +167,7 @@ async def get_safety_sheet(substance_id: str):
         headers={"Content-Disposition": f'inline; filename="{substance_id}.pdf"'}
     )
 
+
 # --------------------------
 # Records
 # --------------------------
@@ -159,12 +176,12 @@ async def list_records():
     cursor = fetch_records()
     return JSONResponse(content=json.loads(dumps(cursor)))
 
+
 @api.post("/add_record")
 async def add_record(record: Record = Body(...)):
     logger.info(f"Adding record {record}")
     inserted_id = insert_record(record.model_dump())
     return {"inserted_id": str(inserted_id)}
-
 
 
 # Finally, register the router

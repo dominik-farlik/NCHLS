@@ -74,14 +74,14 @@ PROPERTIES = {
             "2"
         }
     },
-    "STOT-SE": {
+    "STOT SE": {
         "categories": {
             "1",
             "2",
             "3"
         }
     },
-    "STOT-RE": {
+    "STOT RE": {
         "categories": {
             "1",
             "2"
