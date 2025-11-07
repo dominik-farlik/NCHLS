@@ -88,7 +88,7 @@ function AddSubstance() {
                 (p) => p.name.trim() !== ''
             );
 
-            const response = await fetch('http://localhost:8000/add_substance', {
+            const response = await fetch('/api/add_substance', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -107,7 +107,7 @@ function AddSubstance() {
                 const fileFormData = new FormData();
                 fileFormData.append('safety_sheet', substance.safety_sheet);
 
-                const fileResponse = await fetch(`http://localhost:8000/${substanceId}/add_safety_sheet`, {
+                const fileResponse = await fetch(`/api/${substanceId}/add_safety_sheet`, {
                     method: 'POST',
                     body: fileFormData,
                 });
