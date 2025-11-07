@@ -1,21 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum, IntEnum
 
-class Unit(Enum):
-    G = "g"
-    KG = "kg"
-    ML = "ml"
-    L = "l"
-    KS = "ks"
-    NONE = ""
-
-
-class PhysicalForm(Enum):
-    SOLID = "Pevná"
-    LIQUID = "Kapalná"
-    GAS = "Plynná"
-    NONE = ""
-
 
 # ACUTE TOXICITY
 class ExposureRoute(Enum):

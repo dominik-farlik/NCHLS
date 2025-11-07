@@ -75,3 +75,30 @@ def fetch_records():
 def fetch_departments():
     """Fetch all departments from the collection."""
     return db.departments.find({})
+
+def check_duplicate_name(name: str, oid: ObjectId):
+    """Check if a name is duplicate."""
+    exists = db.substances.find_one({"name": name, "_id": {"$ne": oid}})
+    if exists:
+        raise HTTPException(status_code=400, detail=f"Látka s názvem {name} již existuje.")
+
+def db_update_substance(substance_id, payload):
+    print(payload)
+    oid = ObjectId(substance_id)
+    update_doc = payload.model_dump(exclude_unset=True)
+
+    if not update_doc:
+        raise HTTPException(status_code=400, detail="Nebyly poskytnuty žádné změny.")
+    update_doc.pop("id", None)
+
+    check_duplicate_name(update_doc["name"], oid)
+
+    try:
+        result = get_db().substances.update_one({"_id": oid}, {"$set": jsonable_encoder(update_doc)})
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Látka nenalezena.")
+        updated = get_db().substances.find_one({"_id": oid})
+        updated["id"] = str(updated.pop("_id"))
+        return {"updated": True, "substance": updated}
+    except DuplicateKeyError:
+        raise HTTPException(status_code=400, detail="Látka s tímto názvem již existuje.")

@@ -11,10 +11,10 @@ from bson.json_util import dumps
 import json
 import os
 
-from models import Record, Substance, SubstanceUpdate
+from models import Record, Substance
 from db import insert_record, insert_substance, add_safety_sheet, fetch_substances, fetch_substances_names, get_db, \
-    fetch_records, fetch_departments
-from property_lists import UNITS, PROPERTIES, PHYSICAL_FORMS
+    fetch_records, fetch_departments, db_update_substance
+from property_lists import Unit, PROPERTIES, PhysicalForm
 
 app = FastAPI()
 api = APIRouter(prefix="/api")
@@ -47,7 +47,7 @@ async def read_root():
 # --------------------------
 @api.get("/units")
 async def get_units():
-    return UNITS
+    return [value.value for value in Unit]
 
 
 @api.get("/properties")
@@ -57,7 +57,7 @@ async def get_properties():
 
 @api.get("/physical_forms")
 async def get_physical_forms():
-    return PHYSICAL_FORMS
+    return [value.value for value in PhysicalForm]
 
 
 @api.get("/departments")
@@ -102,30 +102,8 @@ async def add_substance(substance: Substance = Body(...)):
 
 
 @api.put("/substances/{substance_id}")
-async def update_substance(substance_id: str, payload: SubstanceUpdate = Body(...)):
-    if not ObjectId.is_valid(substance_id):
-        raise HTTPException(status_code=400, detail="Neplatné ID látky.")
-    oid = ObjectId(substance_id)
-
-    update_doc = payload.model_dump(exclude_unset=True)
-    if not update_doc:
-        raise HTTPException(status_code=400, detail="Nebyly poskytnuty žádné změny.")
-    update_doc.pop("_id", None)
-
-    if "name" in update_doc and update_doc["name"]:
-        exists = get_db().substances.find_one({"name": update_doc["name"], "_id": {"$ne": oid}})
-        if exists:
-            raise HTTPException(status_code=400, detail=f"Látka s názvem {update_doc['name']} již existuje.")
-
-    try:
-        result = get_db().substances.update_one({"_id": oid}, {"$set": jsonable_encoder(update_doc)})
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Látka nenalezena.")
-        updated = get_db().substances.find_one({"_id": oid})
-        updated["id"] = str(updated.pop("_id"))
-        return {"updated": True, "substance": updated}
-    except DuplicateKeyError:
-        raise HTTPException(status_code=400, detail="Látka s tímto názvem již existuje.")
+async def update_substance(substance_id: str, substance: Substance = Body(...)):
+    db_update_substance(substance_id, substance)
 
 
 @api.get("/substances/{substance_id}")

@@ -1,6 +1,20 @@
-UNITS = ["g", "kg", "ml", "l", "ks"]
+from enum import StrEnum
 
-PHYSICAL_FORMS = ["pevná", "plynná", "kapalná"]
+class Unit(StrEnum):
+    GRAM = "g"
+    KILOGRAM = "kg"
+    MILLILITER = "ml"
+    LITER = "l"
+    PIECE = "ks"
+    NONE = ""
+
+class PhysicalForm(StrEnum):
+     SOLID = "pevná látka"
+     GAS = "plyn"
+     LIQUID = "kapalina"
+     AEROSOL = "aerosol"
+     DUST = "prášek"
+     NONE = ""
 
 PROPERTIES = {
     # HEALTH PROPERTIES
