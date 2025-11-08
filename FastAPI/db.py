@@ -1,12 +1,12 @@
 from bson import ObjectId
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from pymongo import MongoClient, InsertOne
+from pymongo import MongoClient
 import os
 import logging
-import json
 
-from pymongo.errors import DuplicateKeyError
+
+from models import Substance
 
 logger = logging.getLogger(__name__)
 
@@ -18,27 +18,20 @@ MONGO_PORT = os.getenv("MONGO_PORT", "27017")
 client = MongoClient(f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}")
 db = client.nchls
 
-def insert_substance(data: dict):
+
+def insert_substance(substance: dict):
     """Insert a substance into the collection and return inserted ID."""
-    if db.substances.find_one({"name": data.get("name")}):
-        raise HTTPException(
-            status_code=400,
-            detail = "Látka s názvem {} již existuje.".format(data.get('name'))
-        )
-    try:
-        result = db.substances.insert_one(jsonable_encoder(data))
-        return result.inserted_id
-    except DuplicateKeyError:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Substance with name '{data.get('name')}' already exists.",
-        )
+    check_duplicate_name(substance.get("name"))
 
-
-def insert_record(data: dict):
-    """Insert a record into the collection and return inserted ID."""
-    result = db.records.insert_one(data)
+    result = db.substances.insert_one(jsonable_encoder(substance))
     return result.inserted_id
+
+
+def insert_record(record: dict):
+    """Insert a record into the collection and return inserted ID."""
+    result = db.records.insert_one(record)
+    return result.inserted_id
+
 
 def add_safety_sheet(substance_id: str):
     """Set a safety sheet in the collection to true."""
@@ -60,32 +53,33 @@ def fetch_substances():
     """Fetch all substances from the collection."""
     return db.substances.find({})
 
-def fetch_substances_names():
-    """Fetch substance names as a list."""
-    return [doc["name"] for doc in db.substances.find({}, {"name": 1, "_id": 0})]
 
+def fetch_substance(substance_id: str):
+    """Fetch substance by id from the collection."""
+    return db.substances.find_one({"_id": ObjectId(substance_id)})
 
-def get_db():
-    return db
 
 def fetch_records():
     """Fetch all substances from the collection."""
     return db.records.find({})
 
+
 def fetch_departments():
     """Fetch all departments from the collection."""
     return db.departments.find({})
 
-def check_duplicate_name(name: str, oid: ObjectId):
+
+def check_duplicate_name(name: str, oid: ObjectId = None):
     """Check if a name is duplicate."""
     exists = db.substances.find_one({"name": name, "_id": {"$ne": oid}})
     if exists:
-        raise HTTPException(status_code=400, detail=f"Látka s názvem {name} již existuje.")
+        raise HTTPException(status_code=409, detail=f"Látka s názvem {name} již existuje.")
 
-def db_update_substance(substance_id, payload):
-    print(payload)
-    oid = ObjectId(substance_id)
-    update_doc = payload.model_dump(exclude_unset=True)
+
+def db_update_substance(substance: Substance):
+    print(substance)
+    update_doc = substance.model_dump()
+    oid = ObjectId(update_doc["id"])
 
     if not update_doc:
         raise HTTPException(status_code=400, detail="Nebyly poskytnuty žádné změny.")
@@ -93,12 +87,11 @@ def db_update_substance(substance_id, payload):
 
     check_duplicate_name(update_doc["name"], oid)
 
-    try:
-        result = get_db().substances.update_one({"_id": oid}, {"$set": jsonable_encoder(update_doc)})
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Látka nenalezena.")
-        updated = get_db().substances.find_one({"_id": oid})
-        updated["id"] = str(updated.pop("_id"))
-        return {"updated": True, "substance": updated}
-    except DuplicateKeyError:
-        raise HTTPException(status_code=400, detail="Látka s tímto názvem již existuje.")
+    result = db.substances.update_one({"_id": oid}, {"$set": jsonable_encoder(update_doc)})
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Látka nenalezena.")
+
+    updated = db.substances.find_one({"_id": oid})
+    updated["id"] = str(updated.pop("_id"))
+    return {"updated": True, "substance": updated}

@@ -1,9 +1,9 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from property_dicts import Unit, PhysicalForm
-from bson import ObjectId
 
 class Substance(BaseModel):
+    id: Optional[str] = None
     name: str
     physical_form: PhysicalForm
     properties: Optional[list[dict[str, str]]]

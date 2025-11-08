@@ -3,6 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import SelectPropertyAttribute from "../components/SelectPropertyAttribute.jsx";
 import ImageUploadPreview from "../components/ImageUploadPreview.jsx";
+import Substances from "./Substances.jsx";
 
 function EditSubstance() {
     const { substance_id } = useParams();
@@ -86,9 +87,14 @@ function EditSubstance() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(substance);
-        await axios.put(`/api/substances/${substance_id}`, substance)
-        await navigate("/substances");
+        await axios.put("/api/substances", substance)
+            .then(response => {
+                console.log(response);
+                navigate("/substances");
+            })
+            .catch(error => {
+                console.log(error);
+            })
     };
 
     return (

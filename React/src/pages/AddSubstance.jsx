@@ -16,8 +16,6 @@ function AddSubstance() {
         safety_sheet: undefined,
     });
     const [propertyList, setPropertyList] = useState([]);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         axios.get("/api/properties")
@@ -31,14 +29,6 @@ function AddSubstance() {
         setSubstance((prev) => ({
             ...prev,
             [name]: value,
-        }));
-    };
-
-    const handleFileChange = (e) => {
-        const { name, files } = e.target;
-        setSubstance((prev) => ({
-            ...prev,
-            [name]: files[0],
         }));
     };
 
@@ -79,54 +69,19 @@ function AddSubstance() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage('');
-        setSuccessMessage('');
-        let payload = { ...substance };
-
-        try {
-            payload.properties = payload.properties.filter(
-                (p) => p.name.trim() !== ''
-            );
-
-            const response = await fetch('/api/add_substance', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                setErrorMessage((await response.json()).detail);
-                return;
-            }
-
-            const data = await response.json();
-            setSuccessMessage('Látka byla úspěšně přidána.');
-
-            if (substance.safety_sheet) {
-                const substanceId = data.id;
-                const fileFormData = new FormData();
-                fileFormData.append('safety_sheet', substance.safety_sheet);
-
-                const fileResponse = await fetch(`/api/${substanceId}/add_safety_sheet`, {
-                    method: 'POST',
-                    body: fileFormData,
-                });
-
-                if (!fileResponse.ok) {
-                    const fileErrorText = await fileResponse.text();
-                    setErrorMessage(`Nepodařilo se nahrát bezpečnostní list: ${fileErrorText}`);
-                    return;
-                }
-            }
-        } catch (err) {
-            setErrorMessage(`Neočekávaná chyba: ${err.message}`);
-        }
+        await axios.post("/api/substances", substance)
+        .then(response => {
+            console.log(response);
+            return <AddSubstance />;
+        })
+        .catch(error => {
+            console.log(error);
+        })
     };
 
     return (
         <div className="container mt-4">
-            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-            {successMessage && <div className="alert alert-success">{successMessage}</div>}
+            <p>alert</p>
             <div className="card shadow-sm">
                 <div className="card-body">
                     <h2 className="mb-4">Přidat látku</h2>
@@ -225,7 +180,6 @@ function AddSubstance() {
                         <input
                             name="safety_sheet"
                             type="file"
-                            onChange={handleFileChange}
                             className="form-control"
                         />
                     </div>

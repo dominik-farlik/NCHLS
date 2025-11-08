@@ -1,9 +1,7 @@
 from pathlib import Path
 from bson import ObjectId
 from fastapi import FastAPI, Body, UploadFile, File, HTTPException, APIRouter
-from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-from pymongo.errors import DuplicateKeyError
 from starlette.responses import JSONResponse, FileResponse
 import shutil
 import logging
@@ -12,8 +10,8 @@ import json
 import os
 
 from models import Record, Substance
-from db import insert_record, insert_substance, add_safety_sheet, fetch_substances, fetch_substances_names, get_db, \
-    fetch_records, fetch_departments, db_update_substance
+from db import insert_record, insert_substance, add_safety_sheet, fetch_substances, \
+    fetch_records, fetch_departments, db_update_substance, fetch_substance
 from property_dicts import Unit, PROPERTIES, PhysicalForm
 
 app = FastAPI()
@@ -89,32 +87,27 @@ async def list_substances():
     return JSONResponse(content=json.loads(dumps(cursor)))
 
 
-@api.get("/substances/names")
-async def list_substance_names():
-    return fetch_substances_names()
+@api.get("/substances/{substance_id}")
+async def get_substance(substance_id: str):
+    if not ObjectId.is_valid(substance_id):
+        raise HTTPException(status_code=400, detail="Neplatné ID látky.")
+    doc = fetch_substance(substance_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="Látka nenalezena.")
+    doc["id"] = str(doc.pop("_id"))
+    return doc
 
 
-@api.post("/add_substance")
+@api.post("/substances")
 async def add_substance(substance: Substance = Body(...)):
     logger.info(f"Adding substance {substance}")
     inserted_id = insert_substance(substance.model_dump())
     return {"id": str(inserted_id)}
 
 
-@api.put("/substances/{substance_id}")
-async def update_substance(substance_id: str, substance: Substance = Body(...)):
-    db_update_substance(substance_id, substance)
-
-
-@api.get("/substances/{substance_id}")
-async def get_substance(substance_id: str):
-    if not ObjectId.is_valid(substance_id):
-        raise HTTPException(status_code=400, detail="Neplatné ID látky.")
-    doc = get_db().substances.find_one({"_id": ObjectId(substance_id)})
-    if not doc:
-        raise HTTPException(status_code=404, detail="Látka nenalezena.")
-    doc["id"] = str(doc.pop("_id"))
-    return doc
+@api.put("/substances")
+async def update_substance(substance: Substance = Body(...)):
+    db_update_substance(substance)
 
 
 # --------------------------
