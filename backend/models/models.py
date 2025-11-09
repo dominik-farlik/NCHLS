@@ -1,6 +1,6 @@
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
-from property_dicts import Unit, PhysicalForm
+from pydantic import BaseModel
+from constants.property_dicts import Unit, PhysicalForm
 
 class Substance(BaseModel):
     id: Optional[str] = None

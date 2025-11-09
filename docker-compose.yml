@@ -26,7 +26,9 @@ services:
       ME_CONFIG_BASICAUTH: "false"
 
   fastapi:
-    image: dominikfarlik/nchls-fastapi:latest
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
     container_name: fastapi
     restart: always
     depends_on:
@@ -34,7 +36,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./FastAPI:/app
+      - ./backend:/app
     environment:
       MONGO_USER: admin
       MONGO_PASSWORD: secret

@@ -1,0 +1,13 @@
+.git
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+node_modules/
+React/node_modules/
+React/dist/
+uploads/
+Dockerfile
+docker-compose.yml

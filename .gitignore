@@ -1,2 +1,8 @@
 ﻿.idea
 FastAPI/__pycache__
+backend/__pycache__
+backend/routers/__pycache__
+backend/constants/__pycache__
+backend/core/__pycache__
+backend/db/__pycache__
+backend/models/__pycache__

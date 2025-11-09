@@ -6,7 +6,7 @@ import os
 import logging
 
 
-from models import Substance
+from models.models import Substance
 
 logger = logging.getLogger(__name__)
 

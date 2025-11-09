@@ -135,7 +135,7 @@ function AddRecord() {
                                     required
                                 />
                             </div>
-                            { record.substance_name && <div className="col-md-1">
+                            { substanceName && <div className="col-md-1">
                                 <label className="form-label fw-bold">Jednotka</label>
                                 <input
                                     value={unit}
