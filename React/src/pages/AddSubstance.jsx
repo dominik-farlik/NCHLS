@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import SelectPropertyAttribute from "../components/SelectPropertyAttribute.jsx";
-import ListSelect from "../components/ListSelect.jsx";
 import axios from "axios";
 import Alert from "../components/Alert.jsx";
 
@@ -16,6 +15,8 @@ function AddSubstance() {
         safety_sheet: undefined,
     });
     const [propertyList, setPropertyList] = useState([]);
+    const [unitList, setUnitList] = useState([]);
+    const [physicalFormList, setPhysicalFormList] = useState([]);
     const [alert, setAlert] = useState({
         message: "",
         type: ""
@@ -25,6 +26,15 @@ function AddSubstance() {
         axios.get("/api/properties")
             .then(res => {
                 setPropertyList(res.data);
+            })
+
+        axios.get("/api/units")
+            .then(res => {
+                setUnitList(res.data);
+            })
+        axios.get("/api/physical_forms")
+            .then(res => {
+                setPhysicalFormList(res.data);
             })
     }, []);
 
@@ -111,7 +121,7 @@ function AddSubstance() {
                             onChange={handleChange}
                             className="form-select"
                         >
-                            <option value="" disabled>-- Vyber --</option>
+                            <option value=""></option>
                             <option value="látka">látka</option>
                             <option value="směs">směs</option>
                         </select>
@@ -124,22 +134,27 @@ function AddSubstance() {
                             onChange={handleChange}
                             className="form-select"
                         >
-                            <option value="" disabled>-- Vyber formu --</option>
-                            <option value="pevná_látka">pevná látka</option>
-                            <option value="kapalina">kapalina</option>
-                            <option value="plyn">plyn</option>
-                            <option value="prášek">prášek</option>
-                            <option value="aerosol">aerosol</option>
+                            {physicalFormList.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div className="col-md-2">
-                        <ListSelect
+                        <label className="form-label fw-bold">Jednotka</label>
+                        <select
                             name="unit"
-                            endpoint="units"
                             value={substance.unit}
-                            label="Jednotka"
-                            onChange={(newValue) => handleChange(newValue)}
-                        />
+                            onChange={handleChange}
+                            className="form-select"
+                        >
+                            {unitList.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="col-md-2">
                         <div className="form-check">

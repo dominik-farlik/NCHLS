@@ -5,7 +5,7 @@ from property_dicts import Unit, PhysicalForm
 class Substance(BaseModel):
     id: Optional[str] = None
     name: str
-    physical_form: PhysicalForm
+    physical_form: Optional[PhysicalForm] = None
     properties: Optional[list[dict[str, str]]]
     unit: Optional[Unit] = Unit.PIECE
     substance_mixture: Optional[str] = None
