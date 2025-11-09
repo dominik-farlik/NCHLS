@@ -5,6 +5,8 @@ import axios from 'axios';
 function Substances() {
     const [substances, setSubstances] = useState([]);
     const navigate = useNavigate();
+    const [search, setSearch] = useState("");
+    const [filtered, setFiltered] = useState([]);
 
     useEffect(() => {
         axios.get("/api/substances")
@@ -13,10 +15,25 @@ function Substances() {
             })
     }, []);
 
+    useEffect(() => {
+        const lower = search.toLowerCase();
+        const filteredList = substances.filter(substance =>
+            substance.name.toLowerCase().includes(lower)
+        );
+        setFiltered(filteredList);
+    }, [search, substances]);
+
     const asYesNo = (v) => (v ? "ano" : "ne");
 
     return (
         <div className="mt-4">
+            <input
+                type="text"
+                placeholder="Hledej látku..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="form-control mb-4 w-25"
+            />
             <div className="table-responsive" style={{ maxHeight: "86vh", overflowY: "auto" }}>
                 <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
                     <thead
@@ -41,7 +58,7 @@ function Substances() {
                     </tr>
                     </thead>
                     <tbody>
-                    {substances.map((substance) => {
+                    {filtered.map((substance) => {
                         return (
                             <tr key={substance._id.$oid} onClick={() => navigate(`/edit-substance/${substance._id.$oid}`)} style={{ cursor: "pointer" }}>
                                 <td style={{ fontWeight: "700" }}>{substance.name}</td>
