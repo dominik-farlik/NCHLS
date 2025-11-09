@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from constants.property_dicts import Unit, PROPERTIES, PhysicalForm
+from constants.properties import PROPERTIES
+from constants.unit import Unit
+from constants.physical_form import PhysicalForm
 
 router = APIRouter()
 

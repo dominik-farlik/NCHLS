@@ -3,7 +3,7 @@ from bson import ObjectId
 from bson.json_util import dumps
 import json
 
-from models.models import Substance
+from models.substance import Substance
 from db.repo import insert_substance, fetch_substances, fetch_substance, db_update_substance
 
 router = APIRouter()

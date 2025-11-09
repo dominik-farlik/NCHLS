@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, Query
 from bson.json_util import dumps
 import json
 
-from models.models import Record
+from models.record import Record
 from db.repo import insert_record, fetch_records
 
 router = APIRouter()

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
+import Alert from "../components/Alert.jsx";
 
 function EditSubstance() {
     const { substance_id } = useParams();
@@ -20,6 +21,10 @@ function EditSubstance() {
     const [propertyList, setPropertyList] = useState([]);
     const [unitList, setUnitList] = useState([]);
     const [physicalFormList, setPhysicalFormList] = useState([]);
+    const [alert, setAlert] = useState({
+        message: "",
+        type: ""
+    });
 
 
     useEffect(() => {
@@ -96,12 +101,13 @@ function EditSubstance() {
                 navigate("/substances");
             })
             .catch(error => {
-                console.log(error);
+                setAlert({message: error.response.data.detail, type: "danger"});
             })
     };
 
     return (
         <div className="container mt-4">
+            <Alert message={alert.message} type={alert.type}/>
             <div className="card shadow-sm">
                 <div className="card-body">
                     <h2 className="mb-4">Upravit látku</h2>

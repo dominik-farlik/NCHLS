@@ -1,6 +1,9 @@
 from typing import Optional
 from pydantic import BaseModel
-from constants.property_dicts import Unit, PhysicalForm
+
+from constants.physical_form import PhysicalForm
+from constants.unit import Unit
+
 
 class Substance(BaseModel):
     id: Optional[str] = None
@@ -12,14 +15,3 @@ class Substance(BaseModel):
     iplp: Optional[bool] = False
     disinfection: Optional[bool]
     safety_sheet: Optional[str] = None
-
-class Record(BaseModel):
-    substance_id: str
-    amount: int
-    location_name: str
-    year: int
-
-class PropertyItem(BaseModel):
-    name: Optional[str] = None
-    category: Optional[str] = None
-    exposure_route: Optional[str] = None
