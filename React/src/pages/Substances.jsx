@@ -50,7 +50,7 @@ function Substances() {
                                 <td>{asYesNo(substance.iplp)}</td>
                                 <td>{asYesNo(substance.disinfection)}</td>
                                 <td>{substance.properties.map((property, index) => (
-                                    <div key={index}>{property.name} {property.category}</div>))}
+                                    <div key={index}>{property.name} {property.category} {property.exposure_route}</div>))}
                                 </td>
                                 <td>{asYesNo(substance.safety_sheet)}</td>
                                 <td>{substance.max_tons ?? ""}</td>

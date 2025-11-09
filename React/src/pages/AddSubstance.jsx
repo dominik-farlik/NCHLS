@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import SelectPropertyAttribute from "../components/SelectPropertyAttribute.jsx";
 import axios from "axios";
 import Alert from "../components/Alert.jsx";
 
@@ -204,52 +203,62 @@ function AddSubstance() {
                         <label className="form-label fw-bold col-md-2">Kategorie</label>
                         <label className="form-label fw-bold col-md-2">Typ expozice</label>
                     </div>
-                    {substance.properties.map((property, i) => (
-                        <div key={i} className="row mb-3">
+                    {substance.properties.map((property, index) => (
+                        <div key={index} className="row mb-3">
                             <div className="col-md-3">
                                 <input
                                     type="text"
                                     placeholder="Název vlastnosti"
                                     value={property.name}
-                                    onChange={(e) => handlePropertyChange(i, "name", e.target.value)}
+                                    onChange={(e) => handlePropertyChange(index, "name", e.target.value)}
                                     className="form-control"
                                     list="datalistOptions"
                                 />
                                 <datalist id="datalistOptions">
-                                    {propertyList.map((property) => (
-                                        <option key={property} value={property}>
-                                            {property}
+                                    {propertyList.map((p) => (
+                                        <option key={p.name} value={p.name}>
+                                            {p.name}
                                         </option>
                                     ))}
                                 </datalist>
                             </div>
                             <div className="col-md-2">
-                                <SelectPropertyAttribute
-                                    endpoint={
-                                        propertyList.includes(property.name)
-                                            ? "categories/" + property.name
-                                            : null
-                                    }
+                                <select
+                                    name="category"
                                     value={property.category}
-                                    onChange={(newValue) => handlePropertyChange(i, "category", newValue)}
-                                />
+                                    onChange={(e) => handlePropertyChange(index, "category", e.target.value)}
+                                    className="form-select"
+                                    required={property.name}
+                                    disabled={propertyList.find(p => p.name === property.name)?.categories.length === 0}
+                                >
+                                    {propertyList.find(p => p.name === property.name)?.categories.map((category) => (
+                                        <option key={category} value={category}>
+                                            {category}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="col-md-2">
-                                <SelectPropertyAttribute
-                                    endpoint={
-                                        propertyList.includes(property.name)
-                                            ? "exposure_routes/" + property.name
-                                            : null
-                                    }
+                                <select
+                                    name="exposure_route"
                                     value={property.exposure_route}
-                                    onChange={(newValue) => handlePropertyChange(i, "exposure_route", newValue)}
-                                />
+                                    onChange={(e) => handlePropertyChange(index, "exposure_route", e.target.value)}
+                                    className="form-select"
+                                    required={property.category}
+                                    disabled={(propertyList.find(p => p.name === property.name)?.exposure_routes?.length ?? 0) === 0}
+                                >
+                                    {propertyList.find(p => p.name === property.name)?.exposure_routes.map((exposure_route) => (
+                                        <option key={exposure_route} value={exposure_route}>
+                                            {exposure_route}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="col text-end">
                                 <button
                                     type="button"
                                     className="btn btn-outline-danger"
-                                    onClick={() => removePropertyRow(i)}
+                                    onClick={() => removePropertyRow(index)}
                                     disabled={
                                         substance.properties.length === 1 &&
                                         !substance.properties[0].name &&

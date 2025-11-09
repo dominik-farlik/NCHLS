@@ -16,223 +16,153 @@ class PhysicalForm(StrEnum):
      AEROSOL = "aerosol"
      DUST = "prášek"
 
-PROPERTIES = {
-    # HEALTH PROPERTIES
-    "Acute Tox.": {
-        "categories": {
-            "1",
-            "2",
-            "3",
-            "4",
-        },
-        "exposure_routes": {
-            "oral",
-            "dermal",
-            "inhalation",
-        }
+PROPERTIES = [
+    {
+        "name": "Acute Tox.",
+        "categories": [1, 2, 3, 4],
+        "exposure_routes": ["oral", "dermal", "inhal"],
     },
-    "Skin Corr.": {
-        "categories": {
-            "1A",
-            "1B",
-            "1C",
-        }
+    {
+        "name": "Skin Corr.",
+        "categories": ["1A", "1B", "1C"],
+        "exposure_routes": [],
     },
-    "Skin Irrit.": {
-        "categories": {
-            "2"
-        }
+    {
+        "name": "Skin Irrit.",
+        "categories": ["2"],
+        "exposure_routes": [],
     },
-    "Eye Dam.": {
-        "categories": {
-            "1"
-        }
+    {
+        "name": "Eye Dam.",
+        "categories": ["1"],
+        "exposure_routes": [],
     },
-    "Eye Irrit.": {
-        "categories": {
-            "2"
-        }
+    {
+        "name": "Eye Irrit.",
+        "categories": ["2"],
+        "exposure_routes": [],
     },
-    "Skin Sens.": {
-        "categories": {
-            "1",
-            "1A",
-            "1B"
-        }
+    {
+        "name": "Skin Sens.",
+        "categories": ["1", "1A", "1B"],
+        "exposure_routes": [],
     },
-    "Resp. Sens.": {
-        "categories": {
-            "1",
-            "1A",
-            "1B"
-        }
+    {
+        "name": "Resp. Sens.",
+        "categories": ["1", "1A", "1B"],
+        "exposure_routes": [],
     },
-    "Muta.": {
-        "categories": {
-            "1A",
-            "1B",
-            "2" 
-        }
+    {
+        "name": "Muta.",
+        "categories": ["1A", "1B", "2"],
+        "exposure_routes": [],
     },
-    "Carc.": {
-        "categories": {
-            "1A",
-            "1B",
-            "2"
-        }
+    {
+        "name": "Carc.",
+        "categories": ["1A", "1B", "2"],
+        "exposure_routes": [],
     },
-    "Repr.": {
-        "categories": {
-            "1A",
-            "1B",
-            "2"
-        }
+    {
+        "name": "Repr.",
+        "categories": ["1A", "1B", "2"],
+        "exposure_routes": [],
     },
-    "STOT SE": {
-        "categories": {
-            "1",
-            "2",
-            "3"
-        }
+    {
+        "name": "STOT SE",
+        "categories": ["1", "2", "3"],
+        "exposure_routes": ["CNS", ""],
     },
-    "STOT RE": {
-        "categories": {
-            "1",
-            "2"
-        }
+    {
+        "name": "STOT RE",
+        "categories": ["1", "2"],
+        "exposure_routes": [],
     },
-    "Asp. Tox.": {
-        "categories": {
-            "1",
-            "2"
-        }
+    {
+        "name": "Asp. Tox.",
+        "categories": ["1", "2"],
+        "exposure_routes": [],
     },
-    "Flam. Gas": {
-        "categories": {
-            "1",
-            "1A",
-            "1B",
-            "2"
-        }
+    {
+        "name": "Flam. Gas",
+        "categories": ["1", "1A", "1B", "2"],
+        "exposure_routes": [],
     },
-    "chem. Unst. Gas": {
-        "categories": {
-            "A",
-            "B"
-        }
+    {
+        "name": "chem. Unst. Gas",
+        "categories": ["A", "B"],
+        "exposure_routes": [],
     },
-    "Ox. Gas": {
-        "categories": {
-            "1"
-        }
+    {
+        "name": "Ox. Gas",
+        "categories": ["1"],
+        "exposure_routes": [],
     },
-    "Ox. Liq." : {
-        "categories": {
-            "1",
-            "2",
-            "3"
-        }
+    {
+        "name": "Ox. Liq.",
+        "categories": ["1", "2", "3"],
+        "exposure_routes": [],
     },
-    "Pyroph. Liq.": {
-        "categories": {
-            "1"
-        }
+    {
+        "name": "Pyroph. Liq.",
+        "categories": ["1"],
+        "exposure_routes": [],
     },
-    "Pyroph. Sol.": {
-        "categories": {
-            "1"
-        }
+    {
+        "name": "Pyroph. Sol.",
+        "categories": ["1"],
+        "exposure_routes": [],
     },
-    "Aerosol": {
-        "categories": {
-            "1",
-            "2",
-            "3"
-        }
+    {
+        "name": "Aerosol",
+        "categories": ["1", "2", "3"],
+        "exposure_routes": [],
     },
-    "Self-heat.": {
-        "categories": {
-            "1",
-            "2"
-        }
+    {
+        "name": "Self-heat.",
+        "categories": ["1", "2"],
+        "exposure_routes": [],
     },
-    "Water-react": {
-        "categories": {
-            "1",
-            "2",
-            "3"
-        }
+    {
+        "name": "Water-react",
+        "categories": ["1", "2", "3"],
+        "exposure_routes": [],
     },
-    "Flam. Liq.": {
-        "categories": {
-            "1",
-            "2",
-            "3"
-        }
+    {
+        "name": "Flam. Liq.",
+        "categories": ["1", "2", "3"],
+        "exposure_routes": [],
     },
-    "Flam. Sol.": {
-        "categories": {
-            "1",
-            "2"
-        }
+    {
+        "name": "Flam. Sol.",
+        "categories": ["1", "2"],
+        "exposure_routes": [],
     },
-    "Press. Gas.": {
-        "categories": {
-            "komprimovaný",
-            "zkapalněný",
-            "zchlazený",
-            "rozpuštěný"
-        }
+    {
+        "name": "Press. Gas.",
+        "categories": ["komprimovaný", "zkapalněný", "zchlazený", "rozpuštěný"],
+        "exposure_routes": [],
     },
-    "Met. Corr.": {
-        "categories": {
-            "1"
-        }
+    {
+        "name": "Met. Corr.",
+        "categories": ["1"],
+        "exposure_routes": [],
     },
-    "Aq. Chronic": {
-        "categories": {
-            "1",
-            "2",
-            "3",
-            "4"
-        }
+    {
+        "name": "Aq. Chronic",
+        "categories": ["1", "2", "3", "4"],
+        "exposure_routes": [],
     },
-    "Aq. Acute": {
-        "categories": {
-            "1",
-            "2",
-            "3",
-            "4"
-        }
+    {
+        "name": "Aq. Acute",
+        "categories": ["1", "2", "3", "4"],
+        "exposure_routes": [],
     },
-    "EUH": {
-        "categories": {
-            "001",
-            "006",
-            "014",
-            "018",
-            "019",
-            "029",
-            "031",
-            "032",
-            "044",
-            "059",
-            "066",
-            "070",
-            "071",
-            "201",
-            "201A",
-            "202",
-            "203",
-            "204",
-            "205",
-            "206",
-            "207",
-            "208",
-            "209",
-            "209A",
-            "210",
-            "401"
-        }
-    }
-}
+    {
+        "name": "EUH",
+        "categories": [
+            "001", "006", "014", "018", "019", "029", "031", "032", "044",
+            "059", "066", "070", "071", "201", "201A", "202", "203", "204",
+            "205", "206", "207", "208", "209", "209A", "210", "401"
+        ],
+    },
+]

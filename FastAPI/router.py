@@ -50,7 +50,7 @@ async def get_units():
 
 @api.get("/properties")
 async def get_properties():
-    return list(PROPERTIES.keys())
+    return PROPERTIES
 
 
 @api.get("/physical_forms")
