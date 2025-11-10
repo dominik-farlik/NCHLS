@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 function Records() {
     const [records, setRecords] = useState([]);
@@ -15,6 +15,23 @@ function Records() {
 
     return (
         <div className="container mt-4">
+            <div className="d-flex justify-content-between align-items-center px-4 mb-3">
+                <input
+                    type="text"
+                    placeholder="Hledej látku..."
+                    //value={search}
+                    //onChange={e => setSearch(e.target.value)}
+                    className="form-control me-3"
+                    style={{ width: "auto" }}
+                    disabled
+                />
+                <Link
+                    to="/add-record"
+                    className="btn btn-primary btn-block"
+                >
+                    Přidat
+                </Link>
+            </div>
             <div className="table-responsive" style={{ maxHeight: "79vh", overflowY: "auto" }}>
                 <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
                     <thead

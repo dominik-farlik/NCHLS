@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
 
 function Substances() {
@@ -27,13 +27,22 @@ function Substances() {
 
     return (
         <div className="mt-4">
-            <input
-                type="text"
-                placeholder="Hledej látku..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="form-control mb-4 w-25"
-            />
+            <div className="d-flex justify-content-between align-items-center px-4 mb-3">
+                <input
+                    type="text"
+                    placeholder="Hledej látku..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="form-control me-3"
+                    style={{ width: "auto" }}
+                />
+                <Link
+                    to="/add-substance"
+                    className="btn btn-primary btn-block"
+                >
+                    Přidat
+                </Link>
+            </div>
             <div className="table-responsive" style={{ maxHeight: "79vh", overflowY: "auto" }}>
                 <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
                     <thead
