@@ -10,7 +10,7 @@ class Substance(BaseModel):
     name: str
     physical_form: Optional[PhysicalForm] = None
     properties: Optional[list[dict[str, str]]]
-    unit: Optional[Unit] = Unit.PIECE
+    unit: Unit | None = None
     substance_mixture: Optional[str] = None
     iplp: Optional[bool] = False
     disinfection: Optional[bool]

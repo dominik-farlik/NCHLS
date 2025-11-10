@@ -75,13 +75,7 @@ function Substances() {
 
                                 style={{ cursor: "pointer" }}
                             >
-                                <td
-                                    className="text-truncate"
-                                    style={{ maxWidth: "320px", fontWeight: "700" }}
-                                    title={substance.danger_category}
-                                >
-                                    {substance.name}
-                                </td>
+                                <td style={{ maxWidth: "400px", fontWeight: "700" }}>{substance.name}</td>
                                 <td>{substance.substance_mixture ?? ""}</td>
                                 <td>{substance.physical_form ?? ""}</td>
                                 <td>{asYesNo(substance.iplp)}</td>
@@ -89,9 +83,7 @@ function Substances() {
                                 <td>
                                     {substance.properties.map((property, index) => (
                                     <div key={index}>
-                                        {property.name}
-                                        {property.category}
-                                        {property.exposure_route}
+                                        {`${property.name} ${property.category} ${property.exposure_route ? `(${property.exposure_route})` : ""}`}
                                     </div>
                                 ))}
                                 </td>

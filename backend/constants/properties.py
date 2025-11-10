@@ -52,7 +52,7 @@ PROPERTIES = [
     {
         "name": "STOT SE",
         "categories": ["1", "2", "3"],
-        "exposure_routes": ["CNS", ""],
+        "exposure_routes": ["","CNS"],
     },
     {
         "name": "STOT RE",
@@ -121,7 +121,7 @@ PROPERTIES = [
     },
     {
         "name": "Press. Gas.",
-        "categories": ["komprimovaný", "zkapalněný", "zchlazený", "rozpuštěný"],
+        "categories": ["","komprimovaný", "zkapalněný", "zchlazený", "rozpuštěný"],
         "exposure_routes": [],
     },
     {

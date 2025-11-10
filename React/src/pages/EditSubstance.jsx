@@ -96,6 +96,7 @@ function EditSubstance() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(substance);
         await axios.put("/api/substances", substance)
             .then(() => {
                 navigate("/substances");
@@ -148,9 +149,7 @@ function EditSubstance() {
                                     onChange={handleChange}
                                     className="form-select"
                                 >
-                                    <option value="" disabled>
-                                        -- Vyber --
-                                    </option>
+                                    <option value="" disabled/>
                                     {physicalFormList.map((option) => (
                                         <option key={option} value={option}>
                                             {option}
@@ -248,6 +247,7 @@ function EditSubstance() {
                                         required={property.name}
                                         disabled={propertyList.find(p => p.name === property.name)?.categories.length === 0}
                                     >
+                                        <option value="" disabled></option>
                                         {propertyList.find(p => p.name === property.name)?.categories.map((category) => (
                                             <option key={category} value={category}>
                                                 {category}
@@ -264,6 +264,7 @@ function EditSubstance() {
                                         required={property.category}
                                         disabled={propertyList.find(p => p.name === property.name)?.exposure_routes.length === 0}
                                     >
+                                        <option value="" disabled/>
                                         {propertyList.find(p => p.name === property.name)?.exposure_routes.map((exposure_route) => (
                                             <option key={exposure_route} value={exposure_route}>
                                                 {exposure_route}

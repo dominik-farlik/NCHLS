@@ -119,7 +119,7 @@ function AddSubstance() {
                             onChange={handleChange}
                             className="form-select"
                         >
-                            <option value=""></option>
+                            <option value="" disabled />
                             <option value="látka">látka</option>
                             <option value="směs">směs</option>
                         </select>
@@ -132,6 +132,7 @@ function AddSubstance() {
                             onChange={handleChange}
                             className="form-select"
                         >
+                            <option value="" disabled />
                             {physicalFormList.map((option) => (
                                 <option key={option} value={option}>
                                     {option}
@@ -147,6 +148,7 @@ function AddSubstance() {
                             onChange={handleChange}
                             className="form-select"
                         >
+                            <option value="" disabled />
                             {unitList.map((option) => (
                                 <option key={option} value={option}>
                                     {option}
@@ -230,6 +232,7 @@ function AddSubstance() {
                                     required={property.name}
                                     disabled={propertyList.find(p => p.name === property.name)?.categories.length === 0}
                                 >
+                                    <option value="" disabled />
                                     {propertyList.find(p => p.name === property.name)?.categories.map((category) => (
                                         <option key={category} value={category}>
                                             {category}
@@ -246,6 +249,7 @@ function AddSubstance() {
                                     required={property.category}
                                     disabled={(propertyList.find(p => p.name === property.name)?.exposure_routes?.length ?? 0) === 0}
                                 >
+                                    <option value="" disabled />
                                     {propertyList.find(p => p.name === property.name)?.exposure_routes.map((exposure_route) => (
                                         <option key={exposure_route} value={exposure_route}>
                                             {exposure_route}

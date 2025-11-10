@@ -127,7 +127,7 @@ function AddRecord() {
                                 <label className="form-label fw-bold">Množství</label>
                                 <input
                                     type="number"
-                                    step="0.1"
+                                    step="1"
                                     name="amount"
                                     placeholder="0"
                                     value={record.amount}
