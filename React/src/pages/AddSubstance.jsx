@@ -132,7 +132,6 @@ function AddSubstance() {
                             onChange={handleChange}
                             className="form-select"
                         >
-                            <option value="" disabled />
                             {physicalFormList.map((option) => (
                                 <option key={option} value={option}>
                                     {option}
@@ -148,7 +147,6 @@ function AddSubstance() {
                             onChange={handleChange}
                             className="form-select"
                         >
-                            <option value="" disabled />
                             {unitList.map((option) => (
                                 <option key={option} value={option}>
                                     {option}

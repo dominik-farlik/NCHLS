@@ -2,16 +2,17 @@ from typing import Optional
 from pydantic import BaseModel
 
 from constants.physical_form import PhysicalForm
+from constants.substance_mixture import SubstanceMixture
 from constants.unit import Unit
 
 
 class Substance(BaseModel):
     id: Optional[str] = None
     name: str
-    physical_form: Optional[PhysicalForm] = None
+    physical_form: PhysicalForm = PhysicalForm.NONE
     properties: Optional[list[dict[str, str]]]
-    unit: Unit | None = None
-    substance_mixture: Optional[str] = None
+    unit: Unit = Unit.NONE
+    substance_mixture: SubstanceMixture = SubstanceMixture.NONE
     iplp: Optional[bool] = False
-    disinfection: Optional[bool]
+    disinfection: Optional[bool] = False
     safety_sheet: Optional[str] = None
