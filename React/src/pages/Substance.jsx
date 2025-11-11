@@ -186,6 +186,11 @@ function Substance({ substance_id, handleSubmit, heading }) {
                             <input
                                 id="safety_sheet"
                                 name="safety_sheet"
+                                onChange={(e) =>
+                                    setSubstance({
+                                        ...substance,
+                                        safety_sheet: e.target.files[0],
+                                    })}
                                 type="file"
                                 className="form-control"
                             />

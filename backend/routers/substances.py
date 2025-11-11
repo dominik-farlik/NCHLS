@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, HTTPException, UploadFile
+from pathlib import Path
+from fastapi.responses import FileResponse
 from bson import ObjectId
 from bson.json_util import dumps
 import json
 
+from core.config import settings
 from models.substance import Substance
-from db.repo import insert_substance, fetch_substances, fetch_substance, db_update_substance
+from db.repo import insert_substance, fetch_substances, fetch_substance, db_update_substance, fetch_safety_sheet
 
 router = APIRouter()
 
@@ -32,3 +35,20 @@ async def add_substance(substance: Substance = Body(...)):
 async def update_substance(substance: Substance = Body(...)):
     db_update_substance(substance)
     return {"status": "ok"}
+
+@router.post("/safety_sheet")
+async def add_safety_sheet(safety_sheet: UploadFile):
+    with open(f"{settings.UPLOAD_DIR}/{safety_sheet.filename}", "wb") as file:
+        file.write(await safety_sheet.read())
+    print(f"Saved {safety_sheet.filename}")
+
+@router.get("/safety_sheet/{substance_id}")
+def download_safety_sheet(substance_id: str):
+    path = fetch_safety_sheet(substance_id)
+    print(f"{path}")
+    return FileResponse(
+        path,
+        media_type="application/pdf",
+        filename=Path(path).name,
+        headers={"Content-Disposition": f'inline; filename="{Path(path).name}"'}
+    )

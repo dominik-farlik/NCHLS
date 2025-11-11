@@ -23,6 +23,10 @@ function Substances() {
         setFiltered(filteredList);
     }, [search, substances]);
 
+    function openSafetySheet(substance_id) {
+        window.open(`/api/substances/safety_sheet/${substance_id}`);
+    }
+
     const asYesNo = (v) => (v ? "ano" : "ne");
 
     return (
@@ -69,13 +73,15 @@ function Substances() {
                     <tbody>
                     {filtered.map((substance) => {
                         return (
-                            <tr
-                                key={substance._id.$oid}
-                                onClick={() => navigate(`/edit-substance/${substance._id.$oid}`)}
-
-                                style={{ cursor: "pointer" }}
-                            >
-                                <td style={{ maxWidth: "400px", fontWeight: "700" }}>{substance.name}</td>
+                            <tr key={substance._id.$oid} style={{ cursor: "pointer" }}>
+                                <td
+                                    style={{ maxWidth: "400px", fontWeight: "700" }}
+                                    onClick={() => {
+                                        navigate(`/edit-substance/${substance._id.$oid}`)
+                                    }}
+                                >
+                                    {substance.name}
+                                </td>
                                 <td>{substance.substance_mixture ?? ""}</td>
                                 <td>{substance.physical_form ?? ""}</td>
                                 <td>{asYesNo(substance.iplp)}</td>
@@ -87,7 +93,9 @@ function Substances() {
                                     </div>
                                 ))}
                                 </td>
-                                <td>{asYesNo(substance.safety_sheet)}</td>
+                                <td onClick={() => openSafetySheet(substance._id.$oid)}>
+                                    {substance.safety_sheet ? "💾" : ""}
+                                </td>
                                 <td
                                     className="text-truncate"
                                     style={{ maxWidth: "50px" }}

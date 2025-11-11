@@ -5,7 +5,7 @@ from pymongo import MongoClient
 import os
 import logging
 
-
+from core.config import settings
 from models.substance import Substance
 
 logger = logging.getLogger(__name__)
@@ -32,22 +32,6 @@ def insert_record(record: dict):
     record["substance_id"] = ObjectId(record["substance_id"])
     result = db.records.insert_one(record)
     return result.inserted_id
-
-
-def add_safety_sheet(substance_id: str):
-    """Set a safety sheet in the collection to true."""
-    try:
-        obj_id = ObjectId(substance_id)
-        result = db.substances.update_one(
-            {"_id": obj_id},
-            {"$set": {"safety_sheet": True}}
-        )
-        if result.matched_count == 0:
-            logger.warning(f"No substance found with id: {substance_id}")
-        else:
-            logger.info(f"Safety sheet set for substance id: {substance_id}")
-    except Exception as e:
-        logger.error(f"Failed to update safety sheet for id {substance_id}: {e}")
 
 
 def fetch_substances():
@@ -97,7 +81,7 @@ def check_duplicate_name(name: str, oid: ObjectId = None):
 
 def db_update_substance(substance: Substance):
     print(substance)
-    update_doc = substance.model_dump()
+    update_doc = substance.model_dump(exclude_none=True)
     oid = ObjectId(update_doc["id"])
 
     if not update_doc:
@@ -114,3 +98,8 @@ def db_update_substance(substance: Substance):
     updated = db.substances.find_one({"_id": oid})
     updated["id"] = str(updated.pop("_id"))
     return {"updated": True, "substance": updated}
+
+def fetch_safety_sheet(substance_id: str):
+    """Fetch a safety sheet from the collection."""
+    substance = db.substances.find_one({"_id": ObjectId(substance_id)})
+    return f"{settings.UPLOAD_DIR}/{substance['safety_sheet']}"

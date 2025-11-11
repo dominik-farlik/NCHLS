@@ -15,13 +15,29 @@ function EditSubstance() {
 
     const handleSubmit = async (e, substance) => {
         e.preventDefault();
-        await axios.put("/api/substances", substance)
+
+        const payload = {
+            ...substance,
+            safety_sheet: substance.safety_sheet?.name || '',
+        };
+
+        await axios.put("/api/substances", payload)
             .then(() => {
                 navigate("/substances");
             })
             .catch(error => {
                 setAlert({message: error.response.data.detail, type: "danger"});
             })
+
+        if (substance.safety_sheet) {
+            const formData = new FormData();
+            formData.append("safety_sheet", substance.safety_sheet);
+
+            await axios.post("/api/substances/safety_sheet", formData)
+                .catch(error => {
+                    console.log(error.response.data.detail)
+                });
+        }
     };
 
     return (

@@ -11,13 +11,29 @@ function AddSubstance() {
 
     const handleSubmit = async (e, substance) => {
         e.preventDefault();
-        await axios.post("/api/substances", substance)
+
+        const payload = {
+            ...substance,
+            safety_sheet: substance.safety_sheet?.name || '',
+        };
+
+        await axios.post("/api/substances", payload)
         .then(() => {
             setAlert({message: "Látka byla přidána", type: "success"});
         })
         .catch(error => {
             setAlert({message: error.response.data.detail, type: "danger"});
         })
+
+        if (substance.safety_sheet) {
+            const formData = new FormData();
+            formData.append("safety_sheet", substance.safety_sheet);
+
+            await axios.post("/api/substances/safety_sheet", formData)
+                .catch(error => {
+                    console.log(error.response.data.detail)
+                });
+        }
     };
 
     return (
