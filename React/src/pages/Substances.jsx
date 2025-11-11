@@ -73,9 +73,9 @@ function Substances() {
                     <tbody>
                     {filtered.map((substance) => {
                         return (
-                            <tr key={substance._id.$oid} style={{ cursor: "pointer" }}>
+                            <tr key={substance._id.$oid}>
                                 <td
-                                    style={{ maxWidth: "400px", fontWeight: "700" }}
+                                    style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer" }}
                                     onClick={() => {
                                         navigate(`/edit-substance/${substance._id.$oid}`)
                                     }}
@@ -94,8 +94,9 @@ function Substances() {
                                 ))}
                                 </td>
                                 <td
-                                    onClick={() => openSafetySheet(substance._id.$oid)}
+                                    onClick={() => substance.safety_sheet && openSafetySheet(substance._id.$oid)}
                                     title={substance.safety_sheet}
+                                    style={substance.safety_sheet && { cursor: "pointer" }}
                                 >
                                     {substance.safety_sheet ? "💾" : ""}
                                 </td>
