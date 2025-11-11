@@ -40,7 +40,8 @@ function Substances() {
                 />
                 <Link
                     to="/add-substance"
-                    className="btn btn-primary btn-block"
+                    className="btn btn-block"
+                    style={{ backgroundColor: "pink" }}
                 >
                     Přidat
                 </Link>
@@ -48,7 +49,6 @@ function Substances() {
             <div className="table-responsive border-top border-2 border-light" style={{ maxHeight: "79vh", overflowY: "auto" }}>
                 <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
                     <thead
-                        className="table-light"
                         style={{
                             position: "sticky",
                             top: 0,
@@ -94,7 +94,7 @@ function Substances() {
                                 <td
                                     onClick={() => substance.safety_sheet && openSafetySheet(substance._id.$oid)}
                                     title={substance.safety_sheet}
-                                    style={substance.safety_sheet && { cursor: "pointer" }}
+                                    style={substance.safety_sheet ? { cursor: "pointer" } : {}}
                                 >
                                     {substance.safety_sheet ? "💾" : ""}
                                 </td>

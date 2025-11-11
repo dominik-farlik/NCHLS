@@ -2,10 +2,13 @@ import { NavLink } from "react-router-dom";
 
 function Navbar() {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav className="navbar navbar-expand-lg"
+            style={{ backgroundColor: "pink" }}
+        >
             <div className="container-fluid">
                 <NavLink className="navbar-brand" to="/">
-                    NCHLS
+                    <img src="/public/favicon.png" alt="Logo" height="35"
+                         className="d-inline-block align-text-top"/>
                 </NavLink>
                 <button
                     className="navbar-toggler"
@@ -18,11 +21,11 @@ function Navbar() {
                 >
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
+                <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul className="navbar-nav">
                         <li className="nav-item">
                             <NavLink
-                                className={({ isActive }) =>
+                                className={({isActive}) =>
                                     "nav-link" + (isActive ? " active" : "")
                                 }
                                 to="/substances"
@@ -32,7 +35,7 @@ function Navbar() {
                         </li>
                         <li className="nav-item">
                             <NavLink
-                                className={({ isActive }) =>
+                                className={({isActive}) =>
                                     "nav-link" + (isActive ? " active" : "")
                                 }
                                 to="/records"
@@ -42,7 +45,7 @@ function Navbar() {
                         </li>
                         <li className="nav-item">
                             <NavLink
-                                className={({ isActive }) =>
+                                className={({isActive}) =>
                                     "nav-link" + (isActive ? " active" : "")
                                 }
                                 to="/departments"
