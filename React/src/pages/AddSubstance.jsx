@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from "axios";
 import Alert from "../components/Alert.jsx";
-import Substance from "./Substance.jsx";
+import Substance from "../components/Substance.jsx";
 
 function AddSubstance() {
     const [alert, setAlert] = useState({

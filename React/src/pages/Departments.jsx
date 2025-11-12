@@ -22,7 +22,7 @@ function Departments() {
                     >
                         <NavLink
                             className="list-group-item list-group-item-action"
-                            to={`/records/${department.name}`}
+                            to={`/inventory/${department.name}`}
                         >
                             {department.id}. {department.name}
                         </NavLink>

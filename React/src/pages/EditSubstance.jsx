@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import Alert from "../components/Alert.jsx";
-import Substance from "./Substance.jsx";
+import Substance from "../components/Substance.jsx";
 import axios from "axios";
 
 function EditSubstance() {

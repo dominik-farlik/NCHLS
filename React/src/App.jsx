@@ -7,6 +7,7 @@ import Substances from "./pages/Substances.jsx";
 import Records from "./pages/Records.jsx";
 import EditSubstance from "./pages/EditSubstance.jsx";
 import Departments from "./pages/Departments.jsx";
+import Inventory from "./pages/Inventory.jsx";
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/records" element={<Records />} />
                     <Route path="/records/:departmentName" element={<Records />} />
                     <Route path="/departments" element={<Departments />} />
+                    <Route path="/inventory/:departmentName" element={<Inventory />} />
                 </Routes>
         </Router>
     );

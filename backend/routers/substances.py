@@ -45,7 +45,6 @@ async def add_safety_sheet(safety_sheet: UploadFile):
 @router.get("/safety_sheet/{substance_id}")
 def download_safety_sheet(substance_id: str):
     path = fetch_safety_sheet(substance_id)
-    print(f"{path}")
     return FileResponse(
         path,
         media_type="application/pdf",
