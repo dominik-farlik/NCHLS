@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {openSafetySheet} from "../utils/fileUtils.js";
+import {openSafetySheet} from "../utils/fileUtils.jsx";
 
 function Substance({ substance_id, handleSubmit, heading }) {
         const [substance, setSubstance] = useState({
@@ -21,22 +21,27 @@ function Substance({ substance_id, handleSubmit, heading }) {
     useEffect(() => {
         if (!substance_id) return;
 
-        Promise.all([
-            axios.get(`/api/substances/${substance_id}`),
-            axios.get(`/api/substances/safety_sheet/${substance_id}`)
-        ]).then(([substance_res, file_res]) => {
-            const data = substance_res.data;
-            const file = file_res.data;
-            setSubstance({
-                ...data,
-                properties: [
-                    ...(data.properties ?? []).filter(p => p.name),
-                    { name: '', category: '', exposure_route: '' }
-                ],
-                safety_sheet: file,
+        axios.get(`/api/substances/${substance_id}`)
+            .then(async res => {
+                const data = res.data;
+
+                let file = undefined;
+                if (data.safety_sheet) {
+                    const file_res = await axios.get(`/api/substances/safety_sheet/${substance_id}`);
+                    file = file_res.data;
+                }
+
+                setSubstance({
+                    ...data,
+                    properties: [
+                        ...(data.properties ?? []).filter(p => p.name),
+                        { name: '', category: '', exposure_route: '' }
+                    ],
+                    safety_sheet: file,
+                });
             });
-        });
     }, [substance_id]);
+
 
 
 
@@ -206,10 +211,9 @@ function Substance({ substance_id, handleSubmit, heading }) {
                                 className="form-control"
                             />
                         </div>
-                        {substance.safety_sheet &&
-                            <div className="col-md-3">
-                                <label className="form-label fw-bold text-muted">Aktuální bezpečnostní list</label>
-                                <button className="btn btn-light form-control" onClick={() => openSafetySheet(substance_id)}>💾</button>
+                        {substance_id && substance.safety_sheet &&
+                            <div className="col-md-3 flex-column align-content-end">
+                                <a className="btn btn-light form-control w-25" onClick={() => openSafetySheet(substance_id)}>💾</a>
                             </div>
                         }
                     </div>
