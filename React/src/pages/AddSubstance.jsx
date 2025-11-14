@@ -8,6 +8,7 @@ function AddSubstance() {
         message: "",
         type: ""
     });
+    const [resetSignal, setResetSignal] = useState(false);
 
     const handleSubmit = async (e, substance) => {
         e.preventDefault();
@@ -20,6 +21,7 @@ function AddSubstance() {
         await axios.post("/api/substances", payload)
         .then(() => {
             setAlert({message: "Látka byla přidána", type: "success"});
+            setResetSignal(prev => !prev);
         })
         .catch(error => {
             setAlert({message: error.response.data.detail, type: "danger"});
@@ -43,6 +45,7 @@ function AddSubstance() {
                 setAlert={setAlert}
                 handleSubmit={handleSubmit}
                 heading={"Přidat látku"}
+                resetSignal={resetSignal}
             />
         </div>
     );

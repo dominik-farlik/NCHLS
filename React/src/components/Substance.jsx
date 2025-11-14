@@ -2,23 +2,30 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import {openSafetySheet} from "../utils/fileUtils.jsx";
 import {useNavigate} from "react-router-dom";
+import Modal from "./Modal.jsx";
 
-function Substance({ substance_id, handleSubmit, heading }) {
-    const [substance, setSubstance] = useState({
-        name: '',
-        unit: '',
-        iplp: false,
-        disinfection: false,
-        substance_mixture: '',
-        physical_form: '',
-        properties: [{ name: '', category: '', exposure_route: ''}],
-        safety_sheet: undefined,
-        safety_sheet_rev_date: '',
-    });
+const defaultSubstance = {
+    name: '',
+    unit: '',
+    iplp: false,
+    disinfection: false,
+    substance_mixture: '',
+    physical_form: '',
+    properties: [{ name: '', category: '', exposure_route: ''}],
+    safety_sheet: undefined,
+    safety_sheet_rev_date: '',
+};
+
+function Substance({ substance_id, handleSubmit, heading, resetSignal }) {
+    const [substance, setSubstance] = useState(defaultSubstance);
     const [propertyList, setPropertyList] = useState([]);
     const [unitList, setUnitList] = useState([]);
     const [physicalFormList, setPhysicalFormList] = useState([]);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setSubstance(defaultSubstance);
+    }, [resetSignal]);
 
     useEffect(() => {
         if (!substance_id) return;
@@ -319,13 +326,17 @@ function Substance({ substance_id, handleSubmit, heading }) {
                         <button
                             type="button"
                             className="form-control btn btn-outline-danger w-auto text-nowrap"
-                            onClick={handleDelete}
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
                         >
                             Odebrat
                         </button>
                     </div>
                 </form>
             </div>
+            <Modal handleDelete={handleDelete}>
+                Opravdu chceš odstranit <b>{substance.name}</b>?
+            </Modal>
         </div>
     );
 }
