@@ -145,7 +145,7 @@ function AddRecord() {
                                 />
                             </div>}
                         </div>
-                        <button type="submit" className="btn btn-primary w-100">Uložit</button>
+                        <button type="submit" className="btn w-100" style={{ backgroundColor: "pink" }}>Uložit</button>
                     </form>
                 </div>
             </div>

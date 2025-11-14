@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import AddButton from "../components/AddButton.jsx";
 
 function Records() {
     const [allRecords, setAllRecords] = useState([]);
@@ -55,13 +56,7 @@ function Records() {
         <div className="container mt-4">
             <div className="row mb-4 align-items-center">
                 <div className="col-auto align-self-end">
-                    <Link
-                        to="/add-record"
-                        className="form-control btn btn-block"
-                        style={{ backgroundColor: "pink" }}
-                    >
-                        Přidat
-                    </Link>
+                    <AddButton endpoint="/add-record" />
                 </div>
                 <div className="col-md-3">
                     <label className="form-label fw-bold">Látka</label>
@@ -114,6 +109,7 @@ function Records() {
                     <tr className="border" style={{ position: "sticky", top: "0" }}>
                         <th>Látka</th>
                         <th>Množství</th>
+                        <th>Vlastnosti</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -121,6 +117,13 @@ function Records() {
                         <tr key={record._id?.$oid}>
                             <td>{record.substance.name}</td>
                             <td>{record.amount} {record.substance.unit || "ks"}</td>
+                            <td>
+                                {record.substance.properties.map((property, index) => (
+                                    <div key={index}>
+                                        {`${property.name} ${property.category} ${property.exposure_route ? `(${property.exposure_route})` : ""}`}
+                                    </div>
+                                ))}
+                            </td>
                         </tr>
                     ))}
                     </tbody>

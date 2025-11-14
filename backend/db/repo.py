@@ -44,8 +44,10 @@ def fetch_substance(substance_id: str):
     return db.substances.find_one({"_id": ObjectId(substance_id)})
 
 
-def fetch_records(filter_: dict = {}):
+def fetch_records(filter_=None):
     """Fetch all records from the collection."""
+    if filter_ is None:
+        filter_ = {}
     return db.records.aggregate([
         {"$match": filter_},
         {"$addFields": {

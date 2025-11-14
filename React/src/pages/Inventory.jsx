@@ -11,22 +11,7 @@ function Inventory() {
 
         axios.get("/api/records", { params: { department_name: departmentName } })
             .then(async (response) => {
-                const records = response.data;
-
-                const substances = await Promise.all(
-                    records.map(record =>
-                        axios.get(`/api/substances/${record.substance_id.$oid}`)
-                            .then(res => res.data)
-                            .catch(() => null)
-                    )
-                );
-
-                const recordsWithSubstances = records.map((record, i) => ({
-                    ...record,
-                    substance: substances[i],
-                }));
-
-                setRecords(recordsWithSubstances);
+                setRecords(response.data);
             });
     }, [departmentName]);
 

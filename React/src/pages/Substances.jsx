@@ -3,6 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
 import {openSafetySheet} from "../utils/fileUtils.jsx";
 import Spinner from "../components/Spinner.jsx";
+import AddButton from "../components/AddButton.jsx";
 
 function Substances() {
     const [substances, setSubstances] = useState([]);
@@ -38,13 +39,7 @@ function Substances() {
         <div className="mt-4 px-5">
             <div className="row align-items-center mb-3">
                 <div className="col-auto">
-                    <Link
-                        to="/add-substance"
-                        className="btn btn-block"
-                        style={{ backgroundColor: "pink" }}
-                    >
-                        Přidat
-                    </Link>
+                    <AddButton endpoint='/add-substance' />
                 </div>
                 <div className="col-auto">
                     <input
