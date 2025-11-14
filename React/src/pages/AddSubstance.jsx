@@ -40,9 +40,11 @@ function AddSubstance() {
 
     return (
         <div className="container mt-4">
-            <Alert message={alert.message} type={alert.type}/>
+            <Alert message={alert.message}
+                   type={alert.type}
+                   onClose={() => setAlert({ message: "", type: "" })}
+            />
             <Substance
-                setAlert={setAlert}
                 handleSubmit={handleSubmit}
                 heading={"Přidat látku"}
                 resetSignal={resetSignal}
