@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import AddButton from "../components/AddButton.jsx";
+import Table from "../components/Table.jsx";
+import THead from "../components/THead.jsx";
 
 function Records() {
     const [allRecords, setAllRecords] = useState([]);
@@ -98,37 +100,28 @@ function Records() {
                     </select>
                 </div>
             </div>
-            <div className="table-responsive" style={{ maxHeight: "73vh", overflowY: "auto" }}>
-                <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
-                    <thead
-                        className="pink-thead"
-                        style={{
-                            position: "sticky",
-                            top: 0,
-                        }}>
-                    <tr className="border" style={{ position: "sticky", top: "0" }}>
-                        <th>Látka</th>
-                        <th>Množství</th>
-                        <th>Vlastnosti</th>
+            <Table>
+                <THead>
+                    <th>Látka</th>
+                    <th>Množství</th>
+                    <th>Vlastnosti</th>
+                </THead>
+                <tbody>
+                {records.map((record) => (
+                    <tr key={record._id?.$oid}>
+                        <td>{record.substance.name}</td>
+                        <td>{record.amount} {record.substance.unit || "ks"}</td>
+                        <td>
+                            {record.substance.properties.map((property, index) => (
+                                <div key={index}>
+                                    {`${property.name} ${property.category} ${property.exposure_route ? `(${property.exposure_route})` : ""}`}
+                                </div>
+                            ))}
+                        </td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {records.map((record) => (
-                        <tr key={record._id?.$oid}>
-                            <td>{record.substance.name}</td>
-                            <td>{record.amount} {record.substance.unit || "ks"}</td>
-                            <td>
-                                {record.substance.properties.map((property, index) => (
-                                    <div key={index}>
-                                        {`${property.name} ${property.category} ${property.exposure_route ? `(${property.exposure_route})` : ""}`}
-                                    </div>
-                                ))}
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
+                ))}
+                </tbody>
+            </Table>
         </div>
     );
 }

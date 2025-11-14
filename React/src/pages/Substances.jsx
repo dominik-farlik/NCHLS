@@ -4,6 +4,8 @@ import axios from 'axios';
 import {openSafetySheet} from "../utils/fileUtils.jsx";
 import Spinner from "../components/Spinner.jsx";
 import AddButton from "../components/AddButton.jsx";
+import Table from "../components/Table.jsx";
+import THead from "../components/THead.jsx";
 
 function Substances() {
     const [substances, setSubstances] = useState([]);
@@ -52,103 +54,91 @@ function Substances() {
                     />
                 </div>
             </div>
-            <div className="table-responsive border-top border-2 border-light" style={{ maxHeight: "79vh", overflowY: "auto" }}>
-                <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
-                    <thead
-                        className="pink-thead"
-                        style={{
-                            position: "sticky",
-                            top: 0,
-                            zIndex: 2,
-                        }}
-                    >
-                    <tr style={{ position: "sticky", top: "0" }}>
-                        <th style={{ position: "sticky", left: "0" }}>Název</th>
-                        <th>Látka/Směs</th>
-                        <th>Fyzikální forma</th>
-                        <th>IPLP</th>
-                        <th>Dezinfekce</th>
-                        <th>Vlastnosti</th>
-                        <th title="Bezpečnostní list">BL</th>
-                        <th>Max. sklad. v tunách</th>
-                        <th>Kategorie nebezpečnosti</th>
-                        <th>EC50</th>
-                        <th>Jednotka</th>
-                        <th>Oddělení</th>
+            <Table>
+                <THead>
+                    <th style={{ position: "sticky", left: "0" }}>Název</th>
+                    <th>Látka/Směs</th>
+                    <th>Fyzikální forma</th>
+                    <th>IPLP</th>
+                    <th>Dezinfekce</th>
+                    <th>Vlastnosti</th>
+                    <th title="Bezpečnostní list">BL</th>
+                    <th>Max. sklad. v tunách</th>
+                    <th>Kategorie nebezpečnosti</th>
+                    <th>EC50</th>
+                    <th>Jednotka</th>
+                    <th>Oddělení</th>
+                </THead>
+                <tbody>
+                {loading ? (
+                    <tr>
+                        <td colSpan={12}>
+                            <Spinner />
+                        </td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {loading ? (
-                        <tr>
-                            <td colSpan={12}>
-                                <Spinner />
-                            </td>
-                        </tr>
-                    ) : (
-                    filtered.map((substance) => (
-                            <tr key={substance._id.$oid}>
-                                <td
-                                    className="table-light"
-                                    style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgba(253,190,201,0.15)" }}
-                                    onClick={() => {
-                                        navigate(`/edit-substance/${substance._id.$oid}`)
-                                    }}
-                                >
-                                    {substance.name}
-                                </td>
-                                <td>{substance.substance_mixture ?? ""}</td>
-                                <td>{substance.physical_form ?? ""}</td>
-                                <td>{substance.iplp ? "ano" : "ne"}</td>
-                                <td>{substance.disinfection ? "ano" : "ne"}</td>
-                                <td>
-                                    {substance.properties.map((property, index) => (
-                                    <div key={index}>
-                                        {`${property.name} ${property.category} ${property.exposure_route ? `(${property.exposure_route})` : ""}`}
-                                    </div>
-                                ))}
-                                </td>
-                                <td
-                                    onClick={() => substance.safety_sheet && openSafetySheet(substance._id.$oid)}
-                                    title={substance.safety_sheet}
-                                    style={substance.safety_sheet ? { cursor: "pointer" } : {}}
-                                >
-                                    {substance.safety_sheet ? "💾" : ""}
-                                </td>
-                                <td
-                                    className="text-truncate text-end"
-                                    style={{ maxWidth: "50px" }}
-                                    title={substance.max_tons}
-                                >
-                                    {substance.max_tons ?? ""}
-                                </td>
-                                <td
-                                    className="text-truncate"
-                                    style={{ maxWidth: "60px" }}
-                                    title={substance.danger_category}
-                                >
-                                    {substance.danger_category ?? ""}
-                                </td>
-                                <td className="text-truncate"
-                                    style={{ maxWidth: "80px" }}
-                                    title={substance.water_toxicity_EC50}
-                                >
-                                    {substance.water_toxicity_EC50 ?? ""}
-                                </td>
-                                <td
-                                    className="text-truncate"
-                                    style={{ maxWidth: "60px" }}
-                                    title={substance.unit}
-                                >{substance.unit ?? ""}</td>
-                                <td>{substance.departments.map((department) => (
-                                    <div key={department}>{department}</div>
-                                    ))}
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
+                ) : (filtered.map((substance) => (
+                    <tr key={substance._id.$oid}>
+                        <td
+                            className="table-light"
+                            style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgba(253,190,201,0.15)" }}
+                            onClick={() => {
+                                navigate(`/edit-substance/${substance._id.$oid}`)
+                            }}
+                        >
+                            {substance.name}
+                        </td>
+                        <td>{substance.substance_mixture ?? ""}</td>
+                        <td>{substance.physical_form ?? ""}</td>
+                        <td>{substance.iplp ? "ano" : "ne"}</td>
+                        <td>{substance.disinfection ? "ano" : "ne"}</td>
+                        <td>
+                            {substance.properties.map((property, index) => (
+                                <div key={index}>
+                                    {`${property.name} ${property.category} ${property.exposure_route ? `(${property.exposure_route})` : ""}`}
+                                </div>
+                            ))}
+                        </td>
+                        <td
+                            onClick={() => substance.safety_sheet && openSafetySheet(substance._id.$oid)}
+                            title={substance.safety_sheet}
+                            style={substance.safety_sheet ? { cursor: "pointer" } : {}}
+                        >
+                            {substance.safety_sheet ? "💾" : ""}
+                        </td>
+                        <td
+                            className="text-truncate text-end"
+                            style={{ maxWidth: "50px" }}
+                            title={substance.max_tons}
+                        >
+                            {substance.max_tons ?? ""}
+                        </td>
+                        <td
+                            className="text-truncate"
+                            style={{ maxWidth: "60px" }}
+                            title={substance.danger_category}
+                        >
+                            {substance.danger_category ?? ""}
+                        </td>
+                        <td className="text-truncate"
+                            style={{ maxWidth: "80px" }}
+                            title={substance.water_toxicity_EC50}
+                        >
+                            {substance.water_toxicity_EC50 ?? ""}
+                        </td>
+                        <td
+                            className="text-truncate"
+                            style={{ maxWidth: "60px" }}
+                            title={substance.unit}
+                        >{substance.unit ?? ""}</td>
+                        <td>{substance.departments.map((department) => (
+                            <div key={department}>{department}</div>
+                        ))}
+                        </td>
+                    </tr>
+                    ))
+                )}
+                </tbody>
+            </Table>
         </div>
     );
 }
