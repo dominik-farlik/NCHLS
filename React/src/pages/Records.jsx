@@ -103,7 +103,7 @@ function Records() {
                     </select>
                 </div>
             </div>
-            <div className="table-responsive" style={{ maxHeight: "79vh", overflowY: "auto" }}>
+            <div className="table-responsive" style={{ maxHeight: "73vh", overflowY: "auto" }}>
                 <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
                     <thead
                         className="table-light"

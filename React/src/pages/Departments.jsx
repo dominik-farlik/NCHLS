@@ -23,7 +23,7 @@ function Departments() {
                             to={`/inventory/${department.name}`}
                             className="text-decoration-none"
                         >
-                            <div className="card h-100 shadow-sm">
+                            <div className="card h-100 shadow-sm border-0">
                                 <div className="card-body text-center" style={{ backgroundColor: "rgba(253,190,201,0.15)" }}>
                                     <h5 className="card-title mb-0">
                                         {department.id && `${department.id}.`} {department.name}

@@ -26,33 +26,39 @@ function Substances() {
 
     return (
         <div className="mt-4 px-5">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <input
-                    type="text"
-                    placeholder="Hledej látku..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="form-control me-3"
-                    style={{ width: "auto" }}
-                />
-                <Link
-                    to="/add-substance"
-                    className="btn btn-block"
-                    style={{ backgroundColor: "pink" }}
-                >
-                    Přidat
-                </Link>
+            <div className="row align-items-center mb-3">
+                <div className="col-auto">
+                    <Link
+                        to="/add-substance"
+                        className="btn btn-block"
+                        style={{ backgroundColor: "pink" }}
+                    >
+                        Přidat
+                    </Link>
+                </div>
+                <div className="col-auto">
+                    <input
+                        type="text"
+                        placeholder="Hledej látku..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="form-control me-3"
+                        style={{ width: "auto" }}
+                    />
+                </div>
             </div>
             <div className="table-responsive border-top border-2 border-light" style={{ maxHeight: "79vh", overflowY: "auto" }}>
                 <table className="table table-hover align-middle table-bordered" style={{ position: "relative" }}>
                     <thead
+                        className="pink-thead"
                         style={{
                             position: "sticky",
                             top: 0,
+                            zIndex: 2,
                         }}
                     >
                     <tr style={{ position: "sticky", top: "0" }}>
-                        <th>Název</th>
+                        <th style={{ position: "sticky", left: "0" }}>Název</th>
                         <th>Látka/Směs</th>
                         <th>Fyzikální forma</th>
                         <th>IPLP</th>
@@ -71,7 +77,8 @@ function Substances() {
                         return (
                             <tr key={substance._id.$oid}>
                                 <td
-                                    style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer" }}
+                                    className="table-light"
+                                    style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgba(253,190,201,0.15)" }}
                                     onClick={() => {
                                         navigate(`/edit-substance/${substance._id.$oid}`)
                                     }}
