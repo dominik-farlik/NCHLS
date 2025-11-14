@@ -33,10 +33,10 @@ function Inventory() {
 
     return (
         <div className="container mt-4 d-flex justify-content-center">
-            <div className="card shadow-sm p-2">
+            <div className="card shadow-sm p-2 shadow-sm mb-2">
                 <div className="card-body">
                     <h1 className="mb-4">{departmentName}</h1>
-                    <div className="table-responsive" style={{ maxHeight: "70vh", overflowY: "auto", scrollbarWidth: "none" }}>
+                    <div className="table-responsive" style={{ maxHeight: "68vh", overflowY: "auto", scrollbarWidth: "none" }}>
                         <table className="table align-middle table-bordered" style={{ position: "relative" }}>
                             <thead
                                 className="table-light"

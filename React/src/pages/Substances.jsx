@@ -2,18 +2,28 @@ import React, { useState, useEffect } from "react";
 import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
 import {openSafetySheet} from "../utils/fileUtils.jsx";
+import Spinner from "../components/Spinner.jsx";
 
 function Substances() {
     const [substances, setSubstances] = useState([]);
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
     const [filtered, setFiltered] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get("/api/substances")
+        setLoading(true);
+        axios
+            .get("/api/substances")
             .then(res => {
                 setSubstances(res.data);
             })
+            .catch(err => {
+                console.error(err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, []);
 
     useEffect(() => {
@@ -73,8 +83,14 @@ function Substances() {
                     </tr>
                     </thead>
                     <tbody>
-                    {filtered.map((substance) => {
-                        return (
+                    {loading ? (
+                        <tr>
+                            <td colSpan={12}>
+                                <Spinner />
+                            </td>
+                        </tr>
+                    ) : (
+                    filtered.map((substance) => (
                             <tr key={substance._id.$oid}>
                                 <td
                                     className="table-light"
@@ -128,10 +144,13 @@ function Substances() {
                                     style={{ maxWidth: "60px" }}
                                     title={substance.unit}
                                 >{substance.unit ?? ""}</td>
-                                <td>{substance.departments.map((department) => (<div key={department}>{department}</div>))}</td>
+                                <td>{substance.departments.map((department) => (
+                                    <div key={department}>{department}</div>
+                                    ))}
+                                </td>
                             </tr>
-                        );
-                    })}
+                        ))
+                    )}
                     </tbody>
                 </table>
             </div>
