@@ -63,7 +63,7 @@ function Substances() {
                     <th>Dezinfekce</th>
                     <th>Vlastnosti</th>
                     <th title="Bezpečnostní list">BL</th>
-                    <th>Max. sklad. v tunách</th>
+                    <th>Max. sklad.</th>
                     <th>Kategorie nebezpečnosti</th>
                     <th>EC50</th>
                     <th>Jednotka</th>
@@ -110,7 +110,7 @@ function Substances() {
                             style={{ maxWidth: "50px" }}
                             title={substance.max_tons}
                         >
-                            {substance.max_tons ?? ""}
+                            {substance.max_tons ? `${substance.max_tons} t` : ""}
                         </td>
                         <td
                             className="text-truncate"

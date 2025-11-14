@@ -16,4 +16,4 @@ class Substance(BaseModel):
     iplp: Optional[bool] = False
     disinfection: Optional[bool] = False
     safety_sheet: Optional[str] = None
-    safety_sheet_rev_date: Optional[int] = ''
+    safety_sheet_rev_date: Optional[int | str] = ''

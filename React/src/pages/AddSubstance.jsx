@@ -16,7 +16,7 @@ function AddSubstance() {
             ...substance,
             safety_sheet: substance.safety_sheet?.name || '',
         };
-
+        console.log(payload);
         await axios.post("/api/substances", payload)
         .then(() => {
             setAlert({message: "Látka byla přidána", type: "success"});
