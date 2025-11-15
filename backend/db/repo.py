@@ -190,3 +190,8 @@ def fetch_amount_sum_substance(substance_id: ObjectId):
 def db_delete_substance(substance_id: str):
     """Delete a substance from the collection."""
     result = db.substances.delete_one({"_id": ObjectId(substance_id)})
+
+
+def db_delete_record(record_id: str):
+    """Delete a record from the collection."""
+    result = db.records.delete_one({"_id": ObjectId(record_id)})

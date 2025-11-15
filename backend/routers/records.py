@@ -4,7 +4,7 @@ from bson.json_util import dumps
 import json
 
 from models.record import Record
-from db.repo import insert_record, fetch_records, fetch_record, db_update_record
+from db.repo import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record
 
 router = APIRouter()
 
@@ -33,3 +33,8 @@ async def get_record(record_id: str):
 async def update_record(substance: Record = Body(...)):
     db_update_record(substance)
     return {"status": "ok"}
+
+
+@router.delete("/{record_id}")
+async def delete_record(record_id: str):
+    db_delete_record(record_id)
