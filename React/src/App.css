@@ -2,6 +2,19 @@
     background-color: rgb(255, 224, 232) !important ;
 }
 
+[data-bs-theme="dark"] .pink-thead th {
+    background-color: rgb(80, 50, 60) !important;
+    color: white;
+}
+
+.bg-pink {
+    background-color: pink !important;
+}
+
+[data-bs-theme="dark"] .bg-pink {
+    background-color: rgb(80, 50, 60) !important;
+}
+
 .nav-link-big {
     font-size: 1.2rem !important ;
     font-weight: 400 !important ;

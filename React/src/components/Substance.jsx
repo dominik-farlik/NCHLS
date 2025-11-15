@@ -318,8 +318,7 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                     <div className="d-flex justify-content-between">
                         <button
                             type="submit"
-                            className="form-control btn"
-                            style={{ backgroundColor: "pink" }}
+                            className="form-control btn bg-pink"
                         >
                             Uložit
                         </button>

@@ -1,10 +1,13 @@
 import { NavLink } from "react-router-dom";
 
 function Navbar() {
+    const toggleTheme = () => {
+        const current = document.body.getAttribute("data-bs-theme") || "light";
+        document.body.setAttribute("data-bs-theme", current === "light" ? "dark" : "light");
+    };
+
     return (
-        <nav className="navbar navbar-expand-lg"
-            style={{ backgroundColor: "pink" }}
-        >
+        <nav className="navbar navbar-expand-lg bg-pink">
             <div className="container-fluid">
                 <NavLink className="navbar-brand" to="/">
                     <img src="/public/favicon.png" alt="Logo" height="35"
@@ -55,6 +58,9 @@ function Navbar() {
                         </li>
                     </ul>
                 </div>
+                <button className="btn ms-3" onClick={toggleTheme}>
+                    🌓
+                </button>
             </div>
         </nav>
     );

@@ -5,8 +5,7 @@ function AddButton({ endpoint}) {
     return (
         <Link
             to={endpoint}
-            className="btn btn-block"
-            style={{ backgroundColor: "pink" }}
+            className="btn btn-block bg-pink"
         >
             Přidat
         </Link>
