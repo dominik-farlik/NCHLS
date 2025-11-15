@@ -16,7 +16,7 @@ const defaultSubstance = {
     safety_sheet_rev_date: '',
 };
 
-function Substance({ substance_id, handleSubmit, heading, resetSignal }) {
+function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
     const [substance, setSubstance] = useState(defaultSubstance);
     const [propertyList, setPropertyList] = useState([]);
     const [unitList, setUnitList] = useState([]);
@@ -28,15 +28,15 @@ function Substance({ substance_id, handleSubmit, heading, resetSignal }) {
     }, [resetSignal]);
 
     useEffect(() => {
-        if (!substance_id) return;
+        if (!substanceId) return;
 
-        axios.get(`/api/substances/${substance_id}`)
+        axios.get(`/api/substances/${substanceId}`)
             .then(async res => {
                 const data = res.data;
 
                 let file = undefined;
                 if (data.safety_sheet) {
-                    const file_res = await axios.get(`/api/substances/safety_sheet/${substance_id}`);
+                    const file_res = await axios.get(`/api/substances/safety_sheet/${substanceId}`);
                     file = file_res.data;
                 }
 
@@ -49,7 +49,7 @@ function Substance({ substance_id, handleSubmit, heading, resetSignal }) {
                     safety_sheet: file,
                 });
             });
-    }, [substance_id]);
+    }, [substanceId]);
 
     useEffect(() => {
         axios.get("/api/properties")
@@ -68,7 +68,7 @@ function Substance({ substance_id, handleSubmit, heading, resetSignal }) {
     }, []);
 
     function handleDelete() {
-        axios.delete(`/api/substances/${substance_id}`)
+        axios.delete(`/api/substances/${substanceId}`)
             .then(() => {
                 navigate("/substances");
             })
@@ -224,9 +224,9 @@ function Substance({ substance_id, handleSubmit, heading, resetSignal }) {
                                 className="form-control"
                             />
                         </div>
-                        {substance_id && substance.safety_sheet &&
+                        {substanceId && substance.safety_sheet &&
                             <div className="col-md-1 flex-column align-content-end">
-                                <a className="btn btn-light form-control" onClick={() => openSafetySheet(substance_id)}>💾</a>
+                                <a className="btn btn-light form-control" onClick={() => openSafetySheet(substanceId)}>💾</a>
                             </div>
                         }
                         {substance.safety_sheet && <div className="col-md-2">
@@ -323,14 +323,14 @@ function Substance({ substance_id, handleSubmit, heading, resetSignal }) {
                         >
                             Uložit
                         </button>
-                        <button
+                        {substanceId && <button
                             type="button"
                             className="form-control btn btn-outline-danger w-auto text-nowrap"
                             data-bs-toggle="modal"
                             data-bs-target="#deleteModal"
                         >
                             Odebrat
-                        </button>
+                        </button>}
                     </div>
                 </form>
             </div>

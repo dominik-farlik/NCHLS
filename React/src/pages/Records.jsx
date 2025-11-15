@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import AddButton from "../components/AddButton.jsx";
 import Table from "../components/Table.jsx";
 import THead from "../components/THead.jsx";
@@ -14,6 +14,7 @@ function Records() {
         department: "",
         year: "",
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.get("/api/records")
@@ -55,8 +56,8 @@ function Records() {
     }
 
     return (
-        <div className="container mt-4">
-            <div className="row mb-4 align-items-center">
+        <div className="mt-4 px-5" style={{ display: "flex", flexDirection: "column", height: "87.5vh" }}>
+            <div className="row align-items-center mb-3">
                 <div className="col-auto align-self-end">
                     <AddButton endpoint="/add-record" />
                 </div>
@@ -109,7 +110,14 @@ function Records() {
                 <tbody>
                 {records.map((record) => (
                     <tr key={record._id?.$oid}>
-                        <td>{record.substance.name}</td>
+                        <td
+                            style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0" }}
+                            onClick={() => {
+                                navigate(`/edit-record/${record._id.$oid}`)
+                            }}
+                        >
+                            {record.substance.name}
+                        </td>
                         <td>{record.amount} {record.substance.unit || "ks"}</td>
                         <td>
                             {record.substance.properties.map((property, index) => (

@@ -5,7 +5,7 @@ import Substance from "../components/Substance.jsx";
 import axios from "axios";
 
 function EditSubstance() {
-    const { substance_id } = useParams();
+    const { substanceId } = useParams();
     const [alert, setAlert] = useState({
         message: "",
         type: ""
@@ -44,8 +44,7 @@ function EditSubstance() {
         <div className="container mt-4">
             <Alert message={alert.message} type={alert.type}/>
             <Substance
-                substance_id={substance_id}
-                setAlert={setAlert}
+                substanceId={substanceId}
                 handleSubmit={handleSubmit}
                 heading={"Upravit látku"}
             />

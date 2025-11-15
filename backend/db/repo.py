@@ -6,6 +6,7 @@ import os
 import logging
 
 from core.config import settings
+from models.record import Record
 from models.substance import Substance
 
 logger = logging.getLogger(__name__)
@@ -69,6 +70,11 @@ def fetch_records(filter_=None):
     ])
 
 
+def fetch_record(record_id: str):
+    """Fetch record by id from the collection."""
+    return db.records.find_one({"_id": ObjectId(record_id)})
+
+
 def fetch_departments():
     """Fetch all departments from the collection."""
     return db.departments.find({})
@@ -82,7 +88,6 @@ def check_duplicate_name(name: str, oid: ObjectId = None):
 
 
 def db_update_substance(substance: Substance):
-    print(substance)
     update_doc = substance.model_dump(exclude_none=True)
     oid = ObjectId(update_doc["id"])
 
@@ -100,6 +105,21 @@ def db_update_substance(substance: Substance):
     updated = db.substances.find_one({"_id": oid})
     updated["id"] = str(updated.pop("_id"))
     return {"updated": True, "substance": updated}
+
+
+def db_update_record(record: Record):
+    update_doc = record.model_dump(exclude_none=True)
+    oid = ObjectId(update_doc["id"])
+    update_doc["substance_id"] = ObjectId(update_doc["substance_id"])
+    if not update_doc:
+        raise HTTPException(status_code=400, detail="Nebyly poskytnuty žádné změny.")
+    update_doc.pop("id", None)
+
+    result = db.records.update_one({"_id": oid}, {"$set": update_doc})
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Záznam nenalezen.")
+
 
 def fetch_safety_sheet(substance_id: str):
     """Fetch a safety sheet from the collection."""

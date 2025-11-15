@@ -1,19 +1,28 @@
-import {useEffect, useMemo, useState} from 'react';
-import axios from "axios";
 import Alert from "../components/Alert.jsx";
+import {useNavigate, useParams} from "react-router-dom";
+import {useState} from "react";
 import Record from "../components/Record.jsx";
+import axios from "axios";
 
-function AddRecord() {
+function EditRecord() {
+    const { recordId } = useParams();
     const [alert, setAlert] = useState({
         message: "",
         type: ""
     });
+    const navigate = useNavigate();
 
     const handleSubmit = async (e, record) => {
         e.preventDefault();
-        await axios.post("/api/records", record)
+
+        const payload = {
+            ...record,
+            substance_id: record.substance_id.$oid,
+        };
+
+        await axios.put("/api/records", payload)
             .then(() => {
-                setAlert({message: "Záznam byl přidán", type: "success"});
+                navigate("/records");
             })
             .catch(error => {
                 setAlert({message: error.response.data.detail, type: "danger"});
@@ -26,9 +35,12 @@ function AddRecord() {
                    type={alert.type}
                    onClose={() => setAlert({ message: "", type: "" })}
             />
-            <Record handleSubmit={handleSubmit} />
+            <Record
+                recordId={recordId}
+                handleSubmit={handleSubmit}
+            />
         </div>
     );
 }
 
-export default AddRecord;
+export default EditRecord;

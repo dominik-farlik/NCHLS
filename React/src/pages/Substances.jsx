@@ -38,7 +38,7 @@ function Substances() {
     }, [search, substances]);
 
     return (
-        <div className="mt-4 px-5">
+        <div className="mt-4 px-5" style={{ display: "flex", flexDirection: "column", height: "87.5vh" }}>
             <div className="row align-items-center mb-3">
                 <div className="col-auto">
                     <AddButton endpoint='/add-substance' />
@@ -79,7 +79,6 @@ function Substances() {
                 ) : (filtered.map((substance) => (
                     <tr key={substance._id.$oid}>
                         <td
-                            className="table-light"
                             style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgba(253,190,201,0.15)" }}
                             onClick={() => {
                                 navigate(`/edit-substance/${substance._id.$oid}`)
