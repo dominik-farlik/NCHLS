@@ -11,6 +11,10 @@
     background-color: pink !important;
 }
 
+.btn.bg-pink:hover {
+    background-color: #ff9fae !important;
+}
+
 [data-bs-theme="dark"] .bg-pink {
     background-color: rgb(80, 50, 60) !important;
 }

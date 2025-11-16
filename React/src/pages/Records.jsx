@@ -56,7 +56,7 @@ function Records() {
     }
 
     return (
-        <div className="mt-4 px-5" style={{ display: "flex", flexDirection: "column", height: "87.5vh" }}>
+        <div className="mt-4 px-5" style={{ display: "flex", flexDirection: "column", height: "90.5vh" }}>
             <div className="row align-items-center mb-3">
                 <div className="col-auto align-self-end">
                     <AddButton endpoint="/add-record" />

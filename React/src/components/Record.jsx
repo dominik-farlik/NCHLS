@@ -157,7 +157,7 @@ function Record({ recordId, handleSubmit }) {
                     <div className="d-flex justify-content-between">
                         <button
                             type="submit"
-                            className="btn bg-pink"
+                            className="form-control btn bg-pink"
                         >
                             Uložit
                         </button>

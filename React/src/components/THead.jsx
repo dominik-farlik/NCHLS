@@ -8,7 +8,12 @@ function THead({ children }) {
                 zIndex: 2,
             }}
         >
-            <tr style={{ position: "sticky", top: "0" }}>
+            <tr
+                style={{
+                    position: "sticky",
+                    top: "0",
+                }}
+            >
                 {children}
             </tr>
         </thead>
