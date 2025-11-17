@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
+const getInitialTheme = () => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "light" || stored === "dark") return stored;
+
+    return document.body.getAttribute("data-bs-theme") || "light";
+};
+
 function Navbar() {
-    const initialTheme = document.body.getAttribute("data-bs-theme") || "light";
-    const [theme, setTheme] = useState(initialTheme);
+    const [theme, setTheme] = useState(getInitialTheme);
+
+    useEffect(() => {
+        document.body.setAttribute("data-bs-theme", theme);
+        localStorage.setItem("theme", theme);
+    }, [theme]);
 
     const toggleTheme = () => {
-        const next = theme === "light" ? "dark" : "light";
-        document.body.setAttribute("data-bs-theme", next);
-        setTheme(next);
+        setTheme(prev => (prev === "light" ? "dark" : "light"));
     };
 
     return (
@@ -44,7 +53,6 @@ function Navbar() {
                                 Látky
                             </NavLink>
                         </li>
-
                         <li className="nav-item">
                             <NavLink
                                 className={({ isActive }) =>
@@ -55,7 +63,6 @@ function Navbar() {
                                 Záznamy
                             </NavLink>
                         </li>
-
                         <li className="nav-item">
                             <NavLink
                                 className={({ isActive }) =>
@@ -68,6 +75,7 @@ function Navbar() {
                         </li>
                     </ul>
                 </div>
+
                 <button className="btn ms-3 btn-outline-warning" onClick={toggleTheme}>
                     {theme === "light" ? "🌙" : "🌞"}
                 </button>

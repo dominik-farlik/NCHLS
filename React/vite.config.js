@@ -9,6 +9,7 @@ export default defineConfig({
       '/api': {
         target: 'http://fastapi:8000',
       }
-    }
+    },
+    allowedHosts: ['victus.home'],
   }
 })
