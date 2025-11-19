@@ -51,18 +51,9 @@ def fetch_records(filter_=None):
         filter_ = {}
     return db.records.aggregate([
         {"$match": filter_},
-        {"$addFields": {
-            "substance_oid": {
-                "$cond": [
-                    {"$eq": [{"$type": "$substance_id"}, "objectId"]},
-                    "$substance_id",
-                    {"$toObjectId": "$substance_id"}
-                ]
-            }
-        }},
         {"$lookup": {
             "from": "substances",
-            "localField": "substance_oid",
+            "localField": "substance_id",
             "foreignField": "_id",
             "as": "substance"
         }},
