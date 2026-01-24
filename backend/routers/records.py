@@ -4,7 +4,7 @@ from bson.json_util import dumps
 import json
 
 from models.record import Record
-from db.repo import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record
+from db.repo import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record, db_upsert_inventory_records
 
 router = APIRouter()
 
@@ -12,12 +12,28 @@ router = APIRouter()
 async def list_records(department_name: str | None = Query(default=None)):
     filter_ = {"location_name": department_name} if department_name else {}
     cursor = fetch_records(filter_)
-    return json.loads(dumps(list(cursor)))
+    records = list(cursor)
+
+    for record in records:
+        record["id"] = str(record.pop("_id"))
+        record["substance_id"] = str(record["substance_id"])
+        record["substance"]["id"] = str(record["substance"].pop("_id"))
+
+    return records
 
 @router.post("")
 async def add_record(record: Record = Body(...)):
     inserted_id = insert_record(record.model_dump())
     return {"inserted_id": str(inserted_id)}
+
+
+@router.post("/inventory")
+async def add_records(records: list[Record] = Body(...)):
+    if not records:
+        raise HTTPException(status_code=400, detail="Seznam záznamů je prázdný.")
+
+    return db_upsert_inventory_records(records)
+
 
 @router.get("/{record_id}")
 async def get_record(record_id: str):

@@ -20,13 +20,14 @@ async def list_substances():
     substances = list(cursor)
 
     for substance in substances:
-        departments_docs = list(fetch_substance_departments(substance["_id"]))
-        if departments_docs:
-            substance["departments"] = departments_docs[0]["departments"]
-        else:
-            substance["departments"] = []
+        substance["substance_id"] = str(substance.pop("_id"))
 
-        amount_docs = list(fetch_amount_sum_substance(substance["_id"]))
+        departments_docs = list(fetch_substance_departments(substance["substance_id"]))
+        substance["departments"] = (
+            departments_docs[0]["departments"] if departments_docs else []
+        )
+
+        amount_docs = list(fetch_amount_sum_substance(substance["substance_id"]))
         if amount_docs and "unit" in amount_docs[0]:
             total_amount = amount_docs[0]["total_amount"]
             unit = amount_docs[0]["unit"]
@@ -34,7 +35,7 @@ async def list_substances():
         else:
             substance["max_tons"] = 0
 
-    return json.loads(dumps(substances))
+    return substances
 
 
 @router.get("/{substance_id}")
@@ -44,7 +45,7 @@ async def get_substance(substance_id: str):
     doc = fetch_substance(substance_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Látka nenalezena.")
-    doc["id"] = str(doc.pop("_id"))
+    doc["substance_id"] = str(doc.pop("_id"))
     return doc
 
 
@@ -56,6 +57,7 @@ async def add_substance(substance: Substance = Body(...)):
 
 @router.put("")
 async def update_substance(substance: Substance = Body(...)):
+    print(substance)
     db_update_substance(substance)
     return {"status": "ok"}
 

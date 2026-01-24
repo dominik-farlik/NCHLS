@@ -42,7 +42,7 @@ function Record({ recordId, handleSubmit }) {
         if (selected) {
             setRecord(prev => ({
                 ...prev,
-                substance_id: selected._id
+                substance_id: selected.substance_id
             }));
         }
     }, [substanceName, substanceList]);
@@ -50,7 +50,7 @@ function Record({ recordId, handleSubmit }) {
     useEffect(() => {
         if (!record.substance_id || !substanceList.length) return;
         const substance = substanceList.find(
-            (s) => s._id.$oid === record.substance_id.$oid
+            (s) => s.substance_id === record.substance_id
         );
         setSubstanceName(substance?.name ?? "");
     }, [record.substance_id, substanceList]);

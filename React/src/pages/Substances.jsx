@@ -77,11 +77,11 @@ function Substances() {
                         </td>
                     </tr>
                 ) : (filtered.map((substance) => (
-                    <tr key={substance._id.$oid}>
+                    <tr key={substance.substance_id}>
                         <td
                             style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgba(253,190,201,0.15)" }}
                             onClick={() => {
-                                navigate(`/edit-substance/${substance._id.$oid}`)
+                                navigate(`/edit-substance/${substance.substance_id}`)
                             }}
                         >
                             {substance.name}
@@ -98,7 +98,7 @@ function Substances() {
                             ))}
                         </td>
                         <td
-                            onClick={() => substance.safety_sheet && openSafetySheet(substance._id.$oid)}
+                            onClick={() => substance.safety_sheet && openSafetySheet(substance.substance_id)}
                             title={substance.safety_sheet}
                             style={substance.safety_sheet ? { cursor: "pointer" } : {}}
                         >
