@@ -1,7 +1,7 @@
 from bson import ObjectId
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne, InsertOne
 import os
 import logging
 
@@ -80,7 +80,10 @@ def check_duplicate_name(name: str, oid: ObjectId = None):
 
 def db_update_substance(substance: Substance):
     update_doc = substance.model_dump(exclude_none=True)
-    oid = ObjectId(update_doc["id"])
+    oid = ObjectId(update_doc["substance_id"])
+
+    if update_doc.get("safety_sheet") in (None, ""):
+        update_doc.pop("safety_sheet", None)
 
     if not update_doc:
         raise HTTPException(status_code=400, detail="Nebyly poskytnuty žádné změny.")
@@ -118,12 +121,12 @@ def fetch_safety_sheet(substance_id: str):
     return f"{settings.UPLOAD_DIR}/{substance['safety_sheet']}"
 
 
-def fetch_substance_departments(substance_id: ObjectId):
+def fetch_substance_departments(substance_id: str):
     """Fetch departments, where is substance located."""
     return db.records.aggregate([
         {
             "$match": {
-                "substance_id": substance_id
+                "substance_id": ObjectId(substance_id)
             }
         },
         {
@@ -186,3 +189,61 @@ def db_delete_substance(substance_id: str):
 def db_delete_record(record_id: str):
     """Delete a record from the collection."""
     result = db.records.delete_one({"_id": ObjectId(record_id)})
+
+
+def db_upsert_inventory_records(records: list[Record]) -> dict:
+    ops = []
+    insert_count_expected = 0
+
+    for i, rec in enumerate(records):
+        doc = rec.model_dump(exclude_none=True)
+
+        substance_id = doc.get("substance_id")
+        if not substance_id:
+            raise HTTPException(status_code=400, detail=f"Záznam na indexu {i} nemá substance_id.")
+        if not ObjectId.is_valid(substance_id):
+            raise HTTPException(status_code=400, detail=f"Záznam na indexu {i} má neplatné substance_id.")
+        doc["substance_id"] = ObjectId(substance_id)
+
+        rec_id = doc.pop("id", None)
+
+        if rec_id:
+            if not ObjectId.is_valid(rec_id):
+                raise HTTPException(status_code=400, detail=f"Záznam na indexu {i} má neplatné id.")
+
+            oid = ObjectId(rec_id)
+
+            # update existujícího / upsert nového s daným _id
+            ops.append(
+                UpdateOne(
+                    {"_id": oid},
+                    {"$set": doc},
+                    upsert=True
+                )
+            )
+        else:
+            ops.append(InsertOne(doc))
+            insert_count_expected += 1
+
+    if not ops:
+        return {"matched": 0, "modified": 0, "upserted": 0, "inserted": 0, "upserted_ids": [], "inserted_ids": []}
+
+    res = db.records.bulk_write(ops, ordered=False)
+
+    upserted_ids = []
+    if getattr(res, "upserted_ids", None):
+        upserted_ids = [str(oid) for _, oid in sorted(res.upserted_ids.items(), key=lambda x: x[0])]
+
+    inserted_ids = []
+    # některé verze PyMongo `inserted_ids` u bulk_write neposkytují
+    if hasattr(res, "inserted_ids") and res.inserted_ids:
+        inserted_ids = [str(x) for x in res.inserted_ids]
+
+    return {
+        "matched": res.matched_count,
+        "modified": res.modified_count,
+        "upserted": res.upserted_count,
+        "inserted": len(inserted_ids) if inserted_ids else insert_count_expected,
+        "upserted_ids": upserted_ids,
+        "inserted_ids": inserted_ids,
+    }
