@@ -7,11 +7,11 @@ from constants.unit import Unit
 
 
 class Substance(BaseModel):
-    id: Optional[str] = None
+    substance_id: Optional[str] = None
     name: str
     physical_form: PhysicalForm = PhysicalForm.NONE
     properties: Optional[list[dict[str, str]]]
-    unit: Unit = Unit.NONE
+    unit: Unit | None = Unit.NONE
     substance_mixture: SubstanceMixture = SubstanceMixture.NONE
     iplp: Optional[bool] = False
     disinfection: Optional[bool] = False
