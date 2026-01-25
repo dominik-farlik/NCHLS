@@ -7,3 +7,5 @@ backend/core/__pycache__
 backend/db/__pycache__
 backend/models/__pycache__
 backend/uploads
+nginx
+docker-compose.prod.yml
