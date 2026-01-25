@@ -4,6 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import Table from "../components/Table.jsx";
 import THead from "../components/THead.jsx";
 import Spinner from "../components/Spinner.jsx";
+import Modal from "../components/Modal.jsx";
 
 function Inventory() {
     const [records, setRecords] = useState([]);
@@ -12,10 +13,10 @@ function Inventory() {
     const [year, setYear] = useState(new Date().getFullYear());
     const [substanceList, setSubstanceList] = useState([]);
     const [unitList, setUnitList] = useState([]);
+    const [recordToDelete, setRecordToDelete] = useState(null);
     const [newRecord, setNewRecord] = useState({
         name: "",
-        amount: "",
-        unit: "",
+        substance: null,
     });
     const navigate = useNavigate();
 
@@ -77,7 +78,7 @@ function Inventory() {
         };
 
         setRecords(prev => [...prev, newRecordObj]);
-        setNewRecord({name: "", amount: "", unit: ""});
+        setNewRecord({ name: "", substance: null });
     }
 
     const handleUnitChange = async (e, index) => {
@@ -110,11 +111,10 @@ function Inventory() {
         }
     };
 
-
-
     const handleSubmit = () => {
         const payload = records
             .map(r => ({
+                id: r.id,
                 substance_id: r.substance_id,
                 amount: r.amount,
                 year: year,
@@ -125,6 +125,26 @@ function Inventory() {
         .then(() => {
             navigate("/departments");
         })
+    }
+
+    function handleDelete() {
+        if (!recordToDelete) return;
+
+        if (!recordToDelete.id) {
+            setRecords(prev => prev.filter(r => r !== recordToDelete));
+            setRecordToDelete(null);
+            return;
+        }
+
+        axios.delete(`/api/records/${recordToDelete.id}`)
+            .then(() => {
+                setRecords(prev => prev.filter(r => r.id !== recordToDelete.id));
+                setRecordToDelete(null);
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Nepodařilo se odstranit záznam.");
+            });
     }
 
     return (
@@ -159,6 +179,7 @@ function Inventory() {
                                 <th>Látka</th>
                                 <th style={{ width: "28%" }}>Množství</th>
                                 <th>Vlastnosti</th>
+                                <th></th>
                             </THead>
                             <tbody>
                                 {records.map((record, index) => (
@@ -208,6 +229,17 @@ function Inventory() {
                                                 )
                                             )}
                                         </td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                className="btn btn-danger w-100 form-control"
+                                                onClick={() => setRecordToDelete(record)}
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal"
+                                            >
+                                                Odstranit
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 <tr>
@@ -222,7 +254,7 @@ function Inventory() {
                                                 setNewRecord({
                                                     ...newRecord,
                                                     name: e.target.value,
-                                                    ...(substance ? { unit: substance.unit } : {})
+                                                    substance: substance || null,
                                                 });
                                             }}
                                         />
@@ -232,30 +264,41 @@ function Inventory() {
                                             ))}
                                         </datalist>
                                     </td>
-                                    <td className="align-middle input-group">
-                                        <input
-                                            type="number"
-                                            name="amount"
-                                            className="form-control"
-                                            value={newRecord.amount}
-                                            onChange={(e) => {
-                                                setNewRecord({
-                                                    ...newRecord,
-                                                    amount: e.target.value
-                                                });
-                                            }}
-                                        />
-                                        <span
-                                            className="input-group-text d-flex justify-content-center align-items-center"
-                                            style={{ width: "30%" }}
-                                        >
-                                            {newRecord?.unit || "ks"}
-                                        </span>
+                                    <td className="align-middle align-middle">
+                                        <div className="input-group">
+                                            <input
+                                                type="number"
+                                                name="amount"
+                                                className="form-control"
+                                                value={newRecord.amount}
+                                                onChange={(e) => {
+                                                    setNewRecord({
+                                                        ...newRecord,
+                                                        amount: e.target.value
+                                                    });
+                                                }}
+                                            />
+                                            <span
+                                                className="input-group-text d-flex justify-content-center align-items-center"
+                                                style={{ width: "30%" }}
+                                            >
+                                                {newRecord.substance?.unit || "ks"}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {newRecord.substance?.properties?.map((property, idx) => (
+                                            <div key={idx}>
+                                                {`${property.name} ${property.category} ${
+                                                    property.exposure_route ? `(${property.exposure_route})` : ""
+                                                }`}
+                                            </div>
+                                        ))}
                                     </td>
                                     <td>
                                         <button
                                             type="button"
-                                            className="btn bg-pink w-100 form-control"
+                                            className="btn btn-success w-100 form-control"
                                             onClick={handleNewRecord}
                                         >
                                             Přidat látku
@@ -274,6 +317,9 @@ function Inventory() {
                     </button>
                 </div>
             )}
+            <Modal handleDelete={handleDelete}>
+                Opravdu chceš odstranit záznam?
+            </Modal>
         </div>
     );
 }

@@ -49,6 +49,7 @@ function Record({ recordId, handleSubmit }) {
 
     useEffect(() => {
         if (!record.substance_id || !substanceList.length) return;
+
         const substance = substanceList.find(
             (s) => s.substance_id === record.substance_id
         );
@@ -145,14 +146,16 @@ function Record({ recordId, handleSubmit }) {
                                 required
                             />
                         </div>
-                        { substanceName && <div className="col-md-1">
-                            <label className="form-label fw-bold">Jednotka</label>
-                            <input
-                                value={unit}
-                                className="form-control"
-                                disabled
-                            />
-                        </div>}
+                        { substanceName &&
+                            <div className="col-md-1">
+                                <label className="form-label fw-bold">Jednotka</label>
+                                <input
+                                    value={unit}
+                                    className="form-control"
+                                    disabled
+                                />
+                            </div>
+                        }
                     </div>
                     <div className="d-flex justify-content-between">
                         <button
