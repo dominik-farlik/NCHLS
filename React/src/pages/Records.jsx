@@ -109,11 +109,11 @@ function Records() {
                 </THead>
                 <tbody>
                 {records.map((record) => (
-                    <tr key={record._id?.$oid}>
+                    <tr key={record.id}>
                         <td
                             style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0" }}
                             onClick={() => {
-                                navigate(`/edit-record/${record._id.$oid}`)
+                                navigate(`/edit-record/${record.id}`)
                             }}
                         >
                             {record.substance.name}

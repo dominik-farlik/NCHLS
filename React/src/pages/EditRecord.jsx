@@ -17,7 +17,7 @@ function EditRecord() {
 
         const payload = {
             ...record,
-            substance_id: record.substance_id.$oid,
+            substance_id: record.substance_id,
         };
 
         await axios.put("/api/records", payload)
