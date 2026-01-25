@@ -147,12 +147,12 @@ def fetch_substance_departments(substance_id: str):
     ])
 
 
-def fetch_amount_sum_substance(substance_id: ObjectId):
+def fetch_amount_sum_substance(substance_id: str):
     """Fetch an amount sum of substance from the collection."""
     return db.records.aggregate([
         {
             "$match": {
-                "substance_id": substance_id
+                "substance_id": ObjectId(substance_id)
             }
         },
         {

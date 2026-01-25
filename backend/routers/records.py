@@ -47,6 +47,7 @@ async def get_record(record_id: str):
     if not record:
         raise HTTPException(status_code=404, detail="Záznam nenalezen.")
     record["id"] = str(record.pop("_id"))
+    record["substance_id"] = str(record["substance_id"])
     return json.loads(dumps(record))
 
 @router.put("")
