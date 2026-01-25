@@ -8,7 +8,6 @@ import Spinner from "../components/Spinner.jsx";
 function Inventory() {
     const [records, setRecords] = useState([]);
     const { departmentName } = useParams();
-    const [years, setYears] = useState([]);
     const [loading, setLoading] = useState(true);
     const [year, setYear] = useState(new Date().getFullYear());
     const [substanceList, setSubstanceList] = useState([]);
@@ -35,17 +34,18 @@ function Inventory() {
         setLoading(true);
         axios
             .get("/api/records", {
-                params: { department_name: departmentName },
+                params: {
+                    department_name: departmentName,
+                    year: year
+                },
             })
             .then((response) => {
                 setRecords(response.data);
-                const years = [...new Set(response.data.map((r) => r.year))];
-                setYears(years);
             })
             .finally(() => {
                 setLoading(false);
             });
-    }, [departmentName]);
+    }, [departmentName, year]);
 
     const handleChange = (e, index) => {
         const { name, value } = e.target;
@@ -137,22 +137,21 @@ function Inventory() {
                 <div className="card shadow-sm p-2 shadow-sm mb-2">
                     <div className="card-body">
                         <div className="row mb-4 align-items-center">
-                            <h1 className="col-auto flex-grow-1">
-                                {departmentName}
-                            </h1>
                             <div className="col-auto">
-                                <select
+                                <h1>
+                                    {departmentName}
+                                </h1>
+                            </div>
+                            <div className="col-auto ms-auto">
+                                <input
                                     id="year"
-                                    className="form-control"
+                                    className="form-control text-center"
+                                    style={{ width: "100px" }}
                                     value={year}
+                                    type="number"
                                     onChange={handleYearChange}
                                 >
-                                    {years.map((year) => (
-                                        <option key={year} value={year}>
-                                            {year}
-                                        </option>
-                                    ))}
-                                </select>
+                                </input>
                             </div>
                         </div>
                         <Table>
@@ -180,7 +179,7 @@ function Inventory() {
                                                     name="unit"
                                                     value={record.substance?.unit || "ks"}
                                                     onChange={(e) => handleUnitChange(e, index)}
-                                                    className="form-select input-group-text"
+                                                    className="form-select input-group-text text-center"
                                                     style={{
                                                         maxWidth: "30%",
                                                         appearance: "none",
@@ -195,7 +194,6 @@ function Inventory() {
                                                         </option>
                                                     ))}
                                                 </select>
-
                                             </div>
                                         </td>
                                         <td>
@@ -248,8 +246,8 @@ function Inventory() {
                                             }}
                                         />
                                         <span
-                                            className="input-group-text"
-                                            style={{ minWidth: "40px" }}
+                                            className="input-group-text d-flex justify-content-center align-items-center"
+                                            style={{ width: "30%" }}
                                         >
                                             {newRecord?.unit || "ks"}
                                         </span>
