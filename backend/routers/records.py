@@ -9,8 +9,12 @@ from db.repo import insert_record, fetch_records, fetch_record, db_update_record
 router = APIRouter()
 
 @router.get("")
-async def list_records(department_name: str | None = Query(default=None)):
-    filter_ = {"location_name": department_name} if department_name else {}
+async def list_records(department_name: str | None = Query(default=None), year: int | None = Query(default=None)):
+    filter_ = {}
+    if department_name:
+        filter_["location_name"] = department_name
+    if year is not None:
+        filter_["year"] = year
     cursor = fetch_records(filter_)
     records = list(cursor)
 
