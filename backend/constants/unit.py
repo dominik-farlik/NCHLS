@@ -7,6 +7,7 @@ class Unit(StrEnum):
     MILLILITER = "ml"
     LITER = "l"
     PIECE = "ks"
+    PIPE = "rozvod v trubkách"
 
 UNIT_TO_TON_FACTOR = {
     "kg": 1 / 1000,
