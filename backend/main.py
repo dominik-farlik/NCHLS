@@ -17,7 +17,7 @@ app.add_middleware(
 UPLOAD_DIR = Path(settings.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-app.include_router(health.router,  prefix="/api", tags=["health"])
+app.include_router(health.router, prefix="/api", tags=["health"])
 app.include_router(dictionaries.router, prefix="/api", tags=["dictionaries"])
-app.include_router(substances.router,   prefix="/api/substances", tags=["substances"])
-app.include_router(records.router,      prefix="/api/records",    tags=["records"])
+app.include_router(substances.router, prefix="/api/substances", tags=["substances"])
+app.include_router(records.router, prefix="/api/records", tags=["records"])

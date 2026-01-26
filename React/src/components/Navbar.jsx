@@ -25,7 +25,7 @@ function Navbar() {
             <div className="container-fluid">
                 <NavLink className="navbar-brand" to="/">
                     <img
-                        src="/public/favicon.png"
+                        src="/favicon.png"
                         alt="Logo"
                         height="35"
                         className="d-inline-block align-text-top"
