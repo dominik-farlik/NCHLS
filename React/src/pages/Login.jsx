@@ -18,18 +18,18 @@ export default function Login() {
     }
 
     return (
-        <section className="vh-100" style={{ backgroundColor: "#9A616D" }}>
+        <section className="vh-100" style={{ backgroundColor: "#ffc0cb" }}>
             <div className="container py-5 h-100">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="col col-xl-10">
                         <div className="card" style={{ borderRadius: "1rem" }}>
                             <div className="row g-0">
-                                <div className="col-md-6 col-lg-5 d-none d-md-block" style={{ alignContent: "center" }}>
+                                <div className="col-md-6 col-lg-5 d-none d-md-block">
                                     <img
-                                        src="login_picture.webp"
+                                        src="login_image.png"
                                         alt="login form"
                                         className="img-fluid"
-                                        style={{ borderRadius: "1rem 0 0 1rem" }}
+                                        style={{ borderRadius: "1rem 0 0 1rem", maxHeight: "90vh" }}
                                     />
                                 </div>
 
@@ -119,7 +119,6 @@ export default function Login() {
                                         </form>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
