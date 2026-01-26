@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import axios from 'axios';
 import {openSafetySheet} from "../utils/fileUtils.jsx";
 import Spinner from "../components/Spinner.jsx";
 import AddButton from "../components/AddButton.jsx";
 import Table from "../components/Table.jsx";
 import THead from "../components/THead.jsx";
+import api from "../api/axios.js";
 
 function Substances() {
     const [substances, setSubstances] = useState([]);
@@ -16,8 +16,7 @@ function Substances() {
 
     useEffect(() => {
         setLoading(true);
-        axios
-            .get("/api/substances")
+        api.get("/substances")
             .then(res => {
                 setSubstances(res.data);
             })
