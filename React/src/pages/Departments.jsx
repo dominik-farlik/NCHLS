@@ -15,24 +15,28 @@ function Departments() {
     return (
         <div className="container mt-4">
             <h1 className="mb-4 text-center">Vyber oddělení</h1>
-
             <div className="row row-cols-1 row-cols-md-3 g-3 mb-4">
-                {departments.map((department) => (
-                    <div className="col" key={department.name}>
-                        <NavLink
-                            to={`/inventory/${department.name}`}
-                            className="text-decoration-none"
-                        >
-                            <div className="card h-100 shadow-sm border-0">
-                                <div className="card-body text-center" style={{ backgroundColor: "rgba(253,190,201,0.15)" }}>
-                                    <h5 className="card-title mb-0">
-                                        {department.id && `${department.id}.`} {department.name}
-                                    </h5>
+                {[...departments]
+                    .sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
+                    .map((department) => (
+                        <div className="col" key={department.name}>
+                            <NavLink
+                                to={`/inventory/${department.name}`}
+                                className="text-decoration-none"
+                            >
+                                <div className="card h-100 shadow-sm border-0">
+                                    <div
+                                        className="card-body text-center"
+                                        style={{ backgroundColor: "rgba(253,190,201,0.15)" }}
+                                    >
+                                        <h5 className="card-title mb-0">
+                                            {department.id && `${department.id}.`} {department.name}
+                                        </h5>
+                                    </div>
                                 </div>
-                            </div>
-                        </NavLink>
-                    </div>
-                ))}
+                            </NavLink>
+                        </div>
+                    ))}
             </div>
         </div>
     )
