@@ -16,6 +16,7 @@ function Inventory() {
     const [recordToDelete, setRecordToDelete] = useState(null);
     const [newRecord, setNewRecord] = useState({
         name: "",
+        amount: 0,
         substance: null,
     });
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ function Inventory() {
     useEffect(() => {
         if (!departmentName) return;
         setLoading(true);
-        api.get("/api/records", {
+        api.get("/records", {
             params: {
                 department_name: departmentName,
                 year: year
@@ -77,7 +78,7 @@ function Inventory() {
         };
 
         setRecords(prev => [...prev, newRecordObj]);
-        setNewRecord({ name: "", substance: null });
+        setNewRecord({ name: "", amount: 0, substance: null });
     }
 
     const handleUnitChange = async (e, index) => {
@@ -231,7 +232,7 @@ function Inventory() {
                                         <td>
                                             <button
                                                 type="button"
-                                                className="btn btn-danger w-100 form-control"
+                                                className="btn btn-outline-danger w-100 form-control"
                                                 onClick={() => setRecordToDelete(record)}
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#deleteModal"
@@ -297,7 +298,7 @@ function Inventory() {
                                     <td>
                                         <button
                                             type="button"
-                                            className="btn btn-success w-100 form-control"
+                                            className="btn btn-outline-success w-100 form-control"
                                             onClick={handleNewRecord}
                                         >
                                             Přidat látku
