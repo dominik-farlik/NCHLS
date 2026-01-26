@@ -37,7 +37,7 @@ function Substances() {
     }, [search, substances]);
 
     return (
-        <div className="mt-4 px-5" style={{ display: "flex", flexDirection: "column", height: "90.5vh" }}>
+        <div className="mt-4 px-5 flex-column" style={{ display: "flex", height: "calc(100vh - 88px)" }}>
             <div className="row align-items-center mb-3">
                 <div className="col-auto">
                     <AddButton endpoint='/add-substance' />
@@ -78,7 +78,7 @@ function Substances() {
                 ) : (filtered.map((substance) => (
                     <tr key={substance.substance_id}>
                         <td
-                            style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgba(253,190,201,0.15)" }}
+                            style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgb(255,200,209)" }}
                             onClick={() => {
                                 navigate(`/edit-substance/${substance.substance_id}`)
                             }}
