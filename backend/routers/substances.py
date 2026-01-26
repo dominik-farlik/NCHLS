@@ -2,8 +2,6 @@ from fastapi import APIRouter, Body, HTTPException, UploadFile
 from pathlib import Path
 from fastapi.responses import FileResponse
 from bson import ObjectId
-from bson.json_util import dumps
-import json
 
 from constants.unit import to_tons
 from core.config import settings
