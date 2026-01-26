@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
-import axios from "axios";
 import Modal from "./Modal.jsx";
 import {useNavigate} from "react-router-dom";
+import api from "../api/axios.js";
 
 function Record({ recordId, handleSubmit }) {
     const [record, setRecord] = useState({
@@ -16,11 +16,11 @@ function Record({ recordId, handleSubmit }) {
     const [substanceName, setSubstanceName] = useState("");
 
     useEffect(() => {
-        axios.get("/api/substances")
+        api.get("/substances")
             .then(res => {
                 setSubstanceList(res.data);
             })
-        axios.get("/api/departments")
+        api.get("/departments")
             .then(res => {
                 setDepartmentList(res.data);
             })
@@ -29,7 +29,7 @@ function Record({ recordId, handleSubmit }) {
     useEffect(() => {
         if (!recordId) return;
 
-        axios.get(`/api/records/${recordId}`)
+        api.get(`/records/${recordId}`)
             .then(async res => {
                 const data = res.data;
                 setRecord(data);
@@ -57,7 +57,7 @@ function Record({ recordId, handleSubmit }) {
     }, [record.substance_id, substanceList]);
 
     function handleDelete() {
-        axios.delete(`/api/records/${recordId}`)
+        api.delete(`/records/${recordId}`)
             .then(() => {
                 navigate("/records");
             })

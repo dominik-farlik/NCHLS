@@ -1,7 +1,7 @@
-import {useEffect, useMemo, useState} from 'react';
-import axios from "axios";
+import {useState} from 'react';
 import Alert from "../components/Alert.jsx";
 import Record from "../components/Record.jsx";
+import api from "../api/axios.js";
 
 function AddRecord() {
     const [alert, setAlert] = useState({
@@ -11,7 +11,7 @@ function AddRecord() {
 
     const handleSubmit = async (e, record) => {
         e.preventDefault();
-        await axios.post("/api/records", record)
+        await api.post("/records", record)
             .then(() => {
                 setAlert({message: "Záznam byl přidán", type: "success"});
             })

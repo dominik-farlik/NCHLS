@@ -2,7 +2,7 @@ import { useState } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import Alert from "../components/Alert.jsx";
 import Substance from "../components/Substance.jsx";
-import axios from "axios";
+import api from "../api/axios.js";
 
 function EditSubstance() {
     const { substanceId } = useParams();
@@ -21,7 +21,7 @@ function EditSubstance() {
             safety_sheet: substance.safety_sheet?.name || '',
         };
 
-        await axios.put("/api/substances", payload)
+        await api.put("/substances", payload)
             .then(() => {
                 navigate("/substances");
             })
@@ -33,7 +33,7 @@ function EditSubstance() {
             const formData = new FormData();
             formData.append("safety_sheet", substance.safety_sheet);
 
-            await axios.post("/api/substances/safety_sheet", formData)
+            await api.post("/substances/safety_sheet", formData)
                 .catch(error => {
                     console.log(error.response.data.detail)
                 });

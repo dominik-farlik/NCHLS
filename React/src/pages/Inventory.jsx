@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {useNavigate, useParams} from "react-router-dom";
 import Table from "../components/Table.jsx";
 import THead from "../components/THead.jsx";
 import Spinner from "../components/Spinner.jsx";
 import Modal from "../components/Modal.jsx";
+import api from "../api/axios.js";
 
 function Inventory() {
     const [records, setRecords] = useState([]);
@@ -21,10 +21,10 @@ function Inventory() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("/api/substances").then((res) => {
+        api.get("/substances").then((res) => {
             setSubstanceList(res.data);
         });
-        axios.get("/api/units")
+        api.get("/units")
             .then(res => {
                 setUnitList(res.data);
             })
@@ -33,12 +33,11 @@ function Inventory() {
     useEffect(() => {
         if (!departmentName) return;
         setLoading(true);
-        axios
-            .get("/api/records", {
-                params: {
-                    department_name: departmentName,
-                    year: year
-                },
+        api.get("/api/records", {
+            params: {
+                department_name: departmentName,
+                year: year
+            },
             })
             .then((response) => {
                 setRecords(response.data);
@@ -104,7 +103,7 @@ function Inventory() {
         };
 
         try {
-            await axios.put("/api/substances", payload);
+            await api.put("/substances", payload);
         } catch (err) {
             console.error(err);
             alert("Nepodařilo se uložit jednotku látky.");
@@ -121,7 +120,7 @@ function Inventory() {
                 location_name: departmentName,
             }));
         console.log(payload);
-            axios.post("/api/records/inventory", payload)
+            api.post("/records/inventory", payload)
         .then(() => {
             navigate("/departments");
         })
@@ -136,7 +135,7 @@ function Inventory() {
             return;
         }
 
-        axios.delete(`/api/records/${recordToDelete.id}`)
+        api.delete(`/records/${recordToDelete.id}`)
             .then(() => {
                 setRecords(prev => prev.filter(r => r.id !== recordToDelete.id));
                 setRecordToDelete(null);

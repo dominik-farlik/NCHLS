@@ -2,7 +2,7 @@ import Alert from "../components/Alert.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {useState} from "react";
 import Record from "../components/Record.jsx";
-import axios from "axios";
+import api from "../api/axios.js";
 
 function EditRecord() {
     const { recordId } = useParams();
@@ -20,7 +20,7 @@ function EditRecord() {
             substance_id: record.substance_id,
         };
 
-        await axios.put("/api/records", payload)
+        await api.put("/records", payload)
             .then(() => {
                 navigate("/records");
             })

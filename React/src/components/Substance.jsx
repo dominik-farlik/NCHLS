@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import {openSafetySheet} from "../utils/fileUtils.jsx";
 import {useNavigate} from "react-router-dom";
 import Modal from "./Modal.jsx";
+import api from "../api/axios.js";
 
 const defaultSubstance = {
     name: '',
@@ -30,13 +30,13 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
     useEffect(() => {
         if (!substanceId) return;
 
-        axios.get(`/api/substances/${substanceId}`)
+        api.get(`/substances/${substanceId}`)
             .then(async res => {
                 const data = res.data;
 
                 let file = undefined;
                 if (data.safety_sheet) {
-                    const file_res = await axios.get(`/api/substances/safety_sheet/${substanceId}`);
+                    const file_res = await api.get(`/substances/safety_sheet/${substanceId}`);
                     file = file_res.data;
                 }
 
@@ -52,23 +52,23 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
     }, [substanceId]);
 
     useEffect(() => {
-        axios.get("/api/properties")
+        api.get("/properties")
             .then(res => {
                 setPropertyList(res.data);
             })
 
-        axios.get("/api/units")
+        api.get("/units")
             .then(res => {
                 setUnitList(res.data);
             })
-        axios.get("/api/physical_forms")
+        api.get("/physical_forms")
             .then(res => {
                 setPhysicalFormList(res.data);
             })
     }, []);
 
     function handleDelete() {
-        axios.delete(`/api/substances/${substanceId}`)
+        api.delete(`/substances/${substanceId}`)
             .then(() => {
                 navigate("/substances");
             })

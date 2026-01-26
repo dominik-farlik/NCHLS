@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import {NavLink} from "react-router-dom";
+import api from "../api/axios.js";
 
 function Departments() {
     const [departments, setDepartments] = useState([]);
 
     useEffect(() => {
-        axios.get("/api/departments")
+        api.get("/departments")
         .then((response) => {
             setDepartments(response.data);
         })

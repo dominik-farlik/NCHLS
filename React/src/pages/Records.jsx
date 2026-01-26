@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import {Link, useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AddButton from "../components/AddButton.jsx";
 import Table from "../components/Table.jsx";
 import THead from "../components/THead.jsx";
+import api from "../api/axios.js";
 
 function Records() {
     const [allRecords, setAllRecords] = useState([]);
@@ -17,7 +17,7 @@ function Records() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("/api/records")
+        api.get("/records")
             .then(response => {
                 const data = response.data;
 

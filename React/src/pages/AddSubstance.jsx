@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import axios from "axios";
 import Alert from "../components/Alert.jsx";
 import Substance from "../components/Substance.jsx";
+import api from "../api/axios.js";
 
 function AddSubstance() {
     const [alert, setAlert] = useState({
@@ -17,8 +17,8 @@ function AddSubstance() {
             ...substance,
             safety_sheet: substance.safety_sheet?.name || '',
         };
-        console.log(payload);
-        await axios.post("/api/substances", payload)
+
+        await api.post("/substances", payload)
         .then(() => {
             setAlert({message: "Látka byla přidána", type: "success"});
             setResetSignal(prev => !prev);
@@ -31,7 +31,7 @@ function AddSubstance() {
             const formData = new FormData();
             formData.append("safety_sheet", substance.safety_sheet);
 
-            await axios.post("/api/substances/safety_sheet", formData)
+            await api.post("/substances/safety_sheet", formData)
                 .catch(error => {
                     console.log(error.response.data.detail)
                 });
