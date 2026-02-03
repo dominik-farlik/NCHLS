@@ -78,7 +78,8 @@ function Substances() {
                 ) : (filtered.map((substance) => (
                     <tr key={substance.substance_id}>
                         <td
-                            style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0", backgroundColor: "rgb(255,200,209)" }}
+                            className="bg-pink"
+                            style={{ maxWidth: "400px", fontWeight: "700", cursor: "pointer", position: "sticky", left: "0" }}
                             onClick={() => {
                                 navigate(`/edit-substance/${substance.substance_id}`)
                             }}
