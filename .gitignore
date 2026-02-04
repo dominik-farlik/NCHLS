@@ -10,3 +10,4 @@ backend/uploads
 nginx
 docker-compose.prod.yml
 *.env
+backend/db/create_new_user.py
