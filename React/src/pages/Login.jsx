@@ -97,17 +97,8 @@ export default function Login() {
                                                 Zapomenuté heslo?
                                             </a>
 
-                                            <p
-                                                className="mb-5 pb-lg-2"
-                                                style={{ color: "#393f81" }}
-                                            >
-                                                Nemáte účet?{" "}
-                                                <a
-                                                    href="#!"
-                                                    style={{ color: "#393f81", textDecoration: "none" }}
-                                                >
-                                                    Zaregistrovat zde
-                                                </a>
+                                            <p className="mb-5 pb-lg-2" style={{ color: "#393f81" }}>
+                                                Nemáte účet?{" "} <a href="#!" style={{ color: "#393f81", textDecoration: "none" }}>Zaregistrovat zde</a>
                                             </p>
 
                                             <a href="#!" className="small text-muted" style={{ textDecoration: "none" }}>

@@ -1,3 +1,6 @@
+import uuid
+from datetime import timedelta
+
 from bson import ObjectId
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -5,6 +8,7 @@ from pymongo import MongoClient, UpdateOne, InsertOne
 import os
 import logging
 
+from core.auth import generate_refresh_token, hash_token, now_utc, REFRESH_TOKEN_EXPIRE_DAYS
 from core.config import settings
 from models.record import Record
 from models.substance import Substance
@@ -18,6 +22,10 @@ MONGO_PORT = os.getenv("MONGO_PORT", "27017")
 
 client = MongoClient(f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}")
 db = client.nchls
+
+db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0)
+db.refresh_tokens.create_index("token_hash", unique=True)
+db.refresh_tokens.create_index("user")
 
 
 def insert_substance(substance: dict):
@@ -247,3 +255,75 @@ def db_upsert_inventory_records(records: list[Record]) -> dict:
         "upserted_ids": upserted_ids,
         "inserted_ids": inserted_ids,
     }
+
+def create_refresh_session(user: str, ip: str | None = None, ua: str | None = None):
+    refresh_plain = generate_refresh_token()
+    token_hash = hash_token(refresh_plain)
+
+    jti = str(uuid.uuid4())
+    doc = {
+        "user": user,
+        "token_hash": token_hash,
+        "jti": jti,
+        "issued_at": now_utc(),
+        "expires_at": now_utc() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+        "revoked_at": None,
+        "replaced_by_jti": None,
+        "last_used_at": None,
+        "ip": ip,
+        "user_agent": ua,
+    }
+
+    db.refresh_tokens.insert_one(doc)
+    return refresh_plain, jti
+
+def rotate_refresh_token(refresh_plain: str, ip: str | None = None, ua: str | None = None):
+    th = hash_token(refresh_plain)
+    doc = db.refresh_tokens.find_one({"token_hash": th})
+
+    if not doc:
+        # token neexistuje -> buď expiroval+TTL smazal, nebo je to útok
+        raise HTTPException(status_code=401, detail="Invalid refresh token.")
+
+    if doc["revoked_at"] is not None:
+        # REUSE DETECTION: někdo použil už jednou otočený token
+        # Doporučení: revoke všechno pro user (nebo family_id) a vynutit login
+        db.refresh_tokens.update_many(
+            {"user": doc["user"], "revoked_at": None},
+            {"$set": {"revoked_at": now_utc()}}
+        )
+        raise HTTPException(status_code=401, detail="Refresh token reuse detected.")
+
+    if doc["expires_at"] <= now_utc():
+        raise HTTPException(status_code=401, detail="Refresh token expired.")
+
+    # vytvoř nový
+    new_refresh_plain = generate_refresh_token()
+    new_hash = hash_token(new_refresh_plain)
+    new_jti = str(uuid.uuid4())
+
+    # označ starý jako revoked/rotated
+    db.refresh_tokens.update_one(
+        {"_id": doc["_id"]},
+        {"$set": {
+            "revoked_at": now_utc(),
+            "replaced_by_jti": new_jti,
+            "last_used_at": now_utc(),
+        }}
+    )
+
+    # ulož nový
+    db.refresh_tokens.insert_one({
+        "user": doc["user"],
+        "token_hash": new_hash,
+        "jti": new_jti,
+        "issued_at": now_utc(),
+        "expires_at": now_utc() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+        "revoked_at": None,
+        "replaced_by_jti": None,
+        "last_used_at": None,
+        "ip": ip,
+        "user_agent": ua,
+    })
+
+    return doc["user"], new_refresh_plain
