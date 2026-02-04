@@ -42,4 +42,5 @@ services:
 
 volumes:
   mongo_data:
+    external: true
     name: nchls_mongo_data

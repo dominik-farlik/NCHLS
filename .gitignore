@@ -9,3 +9,4 @@ backend/models/__pycache__
 backend/uploads
 *.env
 backend/db/create_new_user.py
+cheatsheet.txt
