@@ -7,6 +7,5 @@ backend/core/__pycache__
 backend/db/__pycache__
 backend/models/__pycache__
 backend/uploads
-nginx
 *.env
 backend/db/create_new_user.py
