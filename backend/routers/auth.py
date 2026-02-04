@@ -1,10 +1,8 @@
-from fastapi import APIRouter, HTTPException, Response, Depends, Request
+from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel
-import os
 
-from core.auth import create_access_token, create_refresh_token, get_refresh_subject_from_cookie, \
-    REFRESH_TOKEN_EXPIRE_DAYS, hash_token, now_utc
-from db.repo import create_refresh_session, rotate_refresh_token, db
+from core.auth import create_access_token, REFRESH_TOKEN_EXPIRE_DAYS, hash_token, now_utc
+from db.repo import create_refresh_session, rotate_refresh_token, db, authenticate_user
 
 router = APIRouter()
 
@@ -14,24 +12,22 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 def login(body: LoginRequest, request: Request, response: Response):
-    admin_user = os.getenv("APP_ADMIN_USER", "admin")
-    admin_pass = os.getenv("APP_ADMIN_PASSWORD", "secret")
-
-    if body.username != admin_user or body.password != admin_pass:
+    user = authenticate_user(body.username, body.password)
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    access = create_access_token(subject=body.username)
+    access = create_access_token(subject=user["username"])
 
     ip = request.client.host if request.client else None
     ua = request.headers.get("user-agent")
 
-    refresh_plain, _jti = create_refresh_session(body.username, ip=ip, ua=ua)
+    refresh_plain, _jti = create_refresh_session(user["username"], ip=ip, ua=ua)
 
     response.set_cookie(
         key="refresh_token",
         value=refresh_plain,
         httponly=True,
-        secure=False,          # True na HTTPS
+        secure=False,  # True na HTTPS
         samesite="lax",
         path="/api/auth/refresh",
         max_age=60 * 60 * 24 * REFRESH_TOKEN_EXPIRE_DAYS,

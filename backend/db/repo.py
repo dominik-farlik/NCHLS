@@ -8,7 +8,8 @@ from pymongo import MongoClient, UpdateOne, InsertOne
 import os
 import logging
 
-from core.auth import generate_refresh_token, hash_token, now_utc, REFRESH_TOKEN_EXPIRE_DAYS
+from core.auth import generate_refresh_token, hash_token, now_utc, REFRESH_TOKEN_EXPIRE_DAYS, hash_password, \
+    verify_password
 from core.config import settings
 from models.record import Record
 from models.substance import Substance
@@ -26,7 +27,7 @@ db = client.nchls
 db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0)
 db.refresh_tokens.create_index("token_hash", unique=True)
 db.refresh_tokens.create_index("user")
-
+db.users.create_index("username", unique=True)
 
 def insert_substance(substance: dict):
     """Insert a substance into the collection and return inserted ID."""
@@ -327,3 +328,27 @@ def rotate_refresh_token(refresh_plain: str, ip: str | None = None, ua: str | No
     })
 
     return doc["user"], new_refresh_plain
+
+def get_user_by_username(username: str):
+    return db.users.find_one({"username": username})
+
+def create_user(username: str, password: str):
+    if db.users.find_one({"username": username}):
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    doc = {
+        "username": username,
+        "password_hash": hash_password(password),
+        "is_active": True,
+        "created_at": now_utc(),
+    }
+    db.users.insert_one(doc)
+    return doc
+
+def authenticate_user(username: str, password: str):
+    user = db.users.find_one({"username": username})
+    if not user or not user.get("is_active", True):
+        return None
+    if not verify_password(password, user["password_hash"]):
+        return None
+    return user
