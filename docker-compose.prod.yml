@@ -27,6 +27,18 @@ services:
       - fastapi
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./letsencrypt/etc:/etc/letsencrypt
+      - ./letsencrypt/lib:/var/lib/letsencrypt
+      - ./letsencrypt/webroot:/var/www/certbot
+  
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./letsencrypt/etc:/etc/letsencrypt
+      - ./letsencrypt/lib:/var/lib/letsencrypt
+      - ./letsencrypt/webroot:/var/www/certbot
 
 volumes:
   mongo_data:
