@@ -34,7 +34,7 @@ async def add_record(record: Record = Body(...)):
 @router.post("/inventory")
 async def add_records(records: list[Record] = Body(...)):
     if not records:
-        raise HTTPException(status_code=400, detail="Seznam záznamů je prázdný.")
+        return {"status": "ok", "updated": 0}
 
     return db_upsert_inventory_records(records)
 
