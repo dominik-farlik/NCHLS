@@ -288,7 +288,6 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                                     value={property.exposure_route}
                                     onChange={(e) => handlePropertyChange(index, "exposure_route", e.target.value)}
                                     className="form-select"
-                                    required={property.category}
                                     disabled={(propertyList.find(p => p.name === property.name)?.exposure_routes?.length ?? 0) === 0}
                                 >
                                     <option value=""/>
