@@ -271,7 +271,6 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                                     value={property.category}
                                     onChange={(e) => handlePropertyChange(index, "category", e.target.value)}
                                     className="form-select"
-                                    required={property.name}
                                     disabled={propertyList.find(p => p.name === property.name)?.categories.length === 0}
                                 >
                                     <option value="" disabled />
