@@ -291,7 +291,7 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                                     required={property.category}
                                     disabled={(propertyList.find(p => p.name === property.name)?.exposure_routes?.length ?? 0) === 0}
                                 >
-                                    <option value="" disabled />
+                                    <option value=""/>
                                     {propertyList.find(p => p.name === property.name)?.exposure_routes.map((exposure_route) => (
                                         <option key={exposure_route} value={exposure_route}>
                                             {exposure_route}
