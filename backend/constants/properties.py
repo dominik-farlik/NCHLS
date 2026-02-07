@@ -84,6 +84,11 @@ PROPERTIES = [
         "categories": ["1", "2", "3"],
         "exposure_routes": [],
     },
+{
+        "name": "Ox. Sol.",
+        "categories": ["1", "2", "3"],
+        "exposure_routes": [],
+    },
     {
         "name": "Pyroph. Liq.",
         "categories": ["1"],
