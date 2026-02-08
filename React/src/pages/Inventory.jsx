@@ -334,9 +334,9 @@ function Inventory() {
                                             </>
                                         )}
                                         <td
-                                            style={{ fontWeight: "700" }}
+                                            style={{ fontWeight: "700", cursor: "pointer" }}
                                             onClick={() => {
-                                                window.open(`/edit-substance/${record.substance.substance_id}`, "_blank");
+                                                window.open(`/edit-substance/${record.substance.id}`, "_blank");
                                             }}
                                         >
                                             {record.substance.name}
