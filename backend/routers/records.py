@@ -3,8 +3,10 @@ from fastapi import APIRouter, Body, Query, HTTPException
 from bson.json_util import dumps
 import json
 
+from models.inventory import ResponsibleEmployee
 from models.record import Record
-from db.repo import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record, db_upsert_inventory_records
+from db.repo import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record, \
+    db_upsert_inventory_records, db_add_responsible_employee
 
 router = APIRouter()
 
@@ -38,6 +40,13 @@ async def add_records(records: list[Record] = Body(...)):
 
     return db_upsert_inventory_records(records)
 
+
+@router.post("/inventory/responsible_employee")
+async def add_responsible_employee(data: ResponsibleEmployee):
+    return db_add_responsible_employee(
+        data.employee,
+        data.department_name
+    )
 
 @router.get("/{record_id}")
 async def get_record(record_id: str):

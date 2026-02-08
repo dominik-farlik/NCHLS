@@ -14,6 +14,7 @@ function Inventory() {
     const [substanceList, setSubstanceList] = useState([]);
     const [unitList, setUnitList] = useState([]);
     const [recordToDelete, setRecordToDelete] = useState(null);
+    const [responsibleEmployee, setResponsibleEmployee] = useState("");
     const [newRecord, setNewRecord] = useState({
         name: "",
         amount: 0,
@@ -34,6 +35,7 @@ function Inventory() {
     useEffect(() => {
         if (!departmentName) return;
         setLoading(true);
+
         api.get("/records", {
             params: {
                 department_name: departmentName,
@@ -46,6 +48,16 @@ function Inventory() {
             .finally(() => {
                 setLoading(false);
             });
+
+        api.get("/departments/by_name", { params: { name: departmentName }})
+            .then((res) => {
+                setResponsibleEmployee(res.data.responsible_employee || "");
+            })
+            .catch((err) => {
+                console.error(err);
+                setResponsibleEmployee("");
+            });
+
     }, [departmentName, year]);
 
     const handleChange = (e, index) => {
@@ -62,7 +74,7 @@ function Inventory() {
     };
 
     const handleYearChange = (e) => {
-        setYear(e.target.value);
+        setYear(Number(e.target.value));
     };
 
     const handleNewRecord = () => {
@@ -147,6 +159,20 @@ function Inventory() {
             });
     }
 
+    async function addResponsibleEmployee() {
+        const employee = responsibleEmployee.trim();
+        
+        try {
+            await api.post("/records/inventory/responsible_employee", {
+                employee,
+                department_name: departmentName,
+            });
+        } catch (err) {
+            console.error(err);
+            alert("Nepodařilo se uložit zodpovědného pracovníka.");
+        }
+    }
+
     return (
         <div className="container mt-4 d-flex justify-content-center">
             {loading ? (
@@ -158,20 +184,26 @@ function Inventory() {
                     <div className="card-body">
                         <div className="row mb-4 align-items-center">
                             <div className="col-auto">
-                                <h1>
-                                    {departmentName}
-                                </h1>
+                                <h1>{departmentName}</h1>
                             </div>
-                            <div className="col-auto ms-auto">
+
+                            <div className="col-auto ms-auto d-flex gap-2">
+                                <input
+                                    id="responsible_employee"
+                                    className="form-control"
+                                    placeholder="Zodpovědný pracovník"
+                                    value={responsibleEmployee}
+                                    onChange={(e) => setResponsibleEmployee(e.target.value)}
+                                    onBlur={addResponsibleEmployee}
+                                />
                                 <input
                                     id="year"
+                                    type="number"
                                     className="form-control text-center"
                                     style={{ width: "100px" }}
                                     value={year}
-                                    type="number"
                                     onChange={handleYearChange}
-                                >
-                                </input>
+                                />
                             </div>
                         </div>
                         <Table>

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from constants.properties import PROPERTIES
 from constants.unit import Unit
 from constants.physical_form import PhysicalForm
+from db.repo import fetch_department_by_name
 
 router = APIRouter()
 
@@ -24,6 +25,10 @@ async def get_departments():
     import json
     cursor = fetch_departments()
     return json.loads(dumps(cursor))
+
+@router.get("/departments/by_name")
+async def get_department_by_name(name: str = Query(...)):
+    return fetch_department_by_name(name)
 
 @router.get("/categories/{prop}")
 async def get_categories(prop: str):
