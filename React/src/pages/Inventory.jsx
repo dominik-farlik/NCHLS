@@ -309,6 +309,12 @@ function Inventory() {
                         </div>
                         <Table>
                             <THead>
+                                { departmentName === "OKL-diagnostika" && (
+                                    <>
+                                        <th>Kód</th>
+                                        <th>Dodavatel</th>
+                                    </>
+                                )}
                                 <th>Látka</th>
                                 <th style={{ width: "28%" }}>Množství</th>
                                 <th>Vlastnosti</th>
@@ -317,6 +323,16 @@ function Inventory() {
                             <tbody>
                                 {records.map((record, index) => (
                                     <tr key={index}>
+                                        { departmentName === "OKL-diagnostika" && (
+                                            <>
+                                                <td>
+                                                    {record.substance.code}
+                                                </td>
+                                                <td>
+                                                    {record.substance.manufacturer}
+                                                </td>
+                                            </>
+                                        )}
                                         <td style={{ fontWeight: "700" }}>
                                             {record.substance.name}
                                         </td>
