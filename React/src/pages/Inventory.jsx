@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import Table from "../components/Table.jsx";
 import THead from "../components/THead.jsx";
@@ -15,6 +15,11 @@ function Inventory() {
     const [unitList, setUnitList] = useState([]);
     const [recordToDelete, setRecordToDelete] = useState(null);
     const [responsibleEmployee, setResponsibleEmployee] = useState("");
+    const [initialSnapshot, setInitialSnapshot] = useState(null);
+    const pendingYearRef = useRef(null);
+    const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+    const allowNextPopRef = useRef(false);
+    const currentPathRef = useRef(window.location.pathname + window.location.search);
     const [newRecord, setNewRecord] = useState({
         name: "",
         amount: 0,
@@ -37,13 +42,13 @@ function Inventory() {
         setLoading(true);
 
         api.get("/records", {
-            params: {
-                department_name: departmentName,
-                year: year
-            },
+            params: { department_name: departmentName, year: year },
             })
             .then((response) => {
                 setRecords(response.data);
+
+                const snap = stableStringify(normalizeRecords(response.data, departmentName, year));
+                setInitialSnapshot(snap);
             })
             .finally(() => {
                 setLoading(false);
@@ -60,6 +65,38 @@ function Inventory() {
 
     }, [departmentName, year]);
 
+    function normalizeRecords(list, departmentName, year) {
+        return (list || []).map((r) => ({
+            id: r.id ?? null,
+            substance_id: r.substance_id ?? r.substance?.substance_id ?? r.substance?.id ?? null,
+            amount: Number(r.amount ?? 0),
+            year: Number(r.year ?? year),
+            location_name: r.location_name ?? departmentName,
+            unit: r.substance?.unit ?? null,
+        }))
+            .sort((a, b) => String(a.substance_id).localeCompare(String(b.substance_id)));
+    }
+
+    function stableStringify(obj) {
+        return JSON.stringify(obj);
+    }
+
+    const isDirty = useMemo(() => {
+        if (!initialSnapshot) return false;
+        const current = stableStringify(normalizeRecords(records, departmentName, year));
+        return current !== initialSnapshot;
+    }, [records, initialSnapshot, departmentName, year]);
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (!isDirty) return;
+            e.preventDefault();
+            e.returnValue = "";
+        };
+        window.addEventListener("beforeunload", handler);
+        return () => window.removeEventListener("beforeunload", handler);
+    }, [isDirty]);
+
     const handleChange = (e, index) => {
         const { name, value } = e.target;
 
@@ -74,8 +111,69 @@ function Inventory() {
     };
 
     const handleYearChange = (e) => {
-        setYear(Number(e.target.value));
+        const nextYear = Number(e.target.value);
+
+        if (isDirty) {
+            pendingYearRef.current = nextYear;
+            setShowUnsavedModal(true);
+            return;
+        }
+
+        setYear(nextYear);
     };
+
+    function discardChangesAndContinue() {
+        setShowUnsavedModal(false);
+
+        if (pendingYearRef.current != null) {
+            setYear(pendingYearRef.current);
+            pendingYearRef.current = null;
+            return;
+        }
+
+        allowNextPopRef.current = true;
+        window.history.back();
+    }
+
+
+    function stayHere() {
+        setShowUnsavedModal(false);
+        pendingYearRef.current = null;
+    }
+
+    function blockBackNavigation() {
+        const current = currentPathRef.current;
+        window.history.pushState(null, "", current);
+    }
+
+    const onPopState = useCallback(() => {
+        if (!isDirty) {
+            currentPathRef.current =
+                window.location.pathname + window.location.search;
+            return;
+        }
+
+        if (allowNextPopRef.current) {
+            allowNextPopRef.current = false;
+            currentPathRef.current =
+                window.location.pathname + window.location.search;
+            return;
+        }
+
+        blockBackNavigation();
+        setShowUnsavedModal(true);
+    }, [isDirty]);
+
+    useEffect(() => {
+        currentPathRef.current = window.location.pathname + window.location.search;
+
+        if (isDirty) {
+            window.history.pushState(null, "", currentPathRef.current);
+        }
+
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, [isDirty, onPopState]);
 
     const handleNewRecord = () => {
         const substance = substanceList.find(sub => sub.name === newRecord.name);
@@ -132,11 +230,14 @@ function Inventory() {
                 year: year,
                 location_name: departmentName,
             }));
-        console.log(payload);
-            api.post("/records/inventory", payload)
-        .then(() => {
-            navigate("/departments");
-        })
+
+        api.post("/records/inventory", payload)
+            .then(() => {
+                const snap = stableStringify(normalizeRecords(records, departmentName, year));
+                setInitialSnapshot(snap);
+
+                navigate("/departments");
+            })
     }
 
     function handleDelete() {
@@ -161,7 +262,7 @@ function Inventory() {
 
     async function addResponsibleEmployee() {
         const employee = responsibleEmployee.trim();
-        
+
         try {
             await api.post("/records/inventory/responsible_employee", {
                 employee,
@@ -352,6 +453,30 @@ function Inventory() {
             <Modal handleDelete={handleDelete}>
                 Opravdu chceš odstranit záznam?
             </Modal>
+            {showUnsavedModal && (
+                <div className="modal fade show" style={{ display: "block" }} tabIndex="-1">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Neuložené změny</h5>
+                                <button type="button" className="btn-close" onClick={stayHere}></button>
+                            </div>
+                            <div className="modal-body">
+                                Máš neuložené změny. Pokud budeš pokračovat, změny se zahodí.
+                            </div>
+                            <div className="modal-footer">
+                                <button className="btn btn-secondary" onClick={stayHere}>
+                                    Zůstat
+                                </button>
+                                <button className="btn btn-danger" onClick={discardChangesAndContinue}>
+                                    Zahodit změny
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showUnsavedModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
 }
