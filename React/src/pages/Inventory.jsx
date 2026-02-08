@@ -333,7 +333,12 @@ function Inventory() {
                                                 </td>
                                             </>
                                         )}
-                                        <td style={{ fontWeight: "700" }}>
+                                        <td
+                                            style={{ fontWeight: "700" }}
+                                            onClick={() => {
+                                                window.open(`/edit-substance/${record.substance.substance_id}`, "_blank");
+                                            }}
+                                        >
                                             {record.substance.name}
                                         </td>
                                         <td className="align-middle">
