@@ -69,6 +69,10 @@ async def add_safety_sheet(safety_sheet: UploadFile):
 @router.get("/safety_sheet/{substance_id}")
 async def download_safety_sheet(substance_id: str):
     path = fetch_safety_sheet(substance_id)
+
+    if not path:
+        raise HTTPException(status_code=404, detail="Bezpečnostní list není evidován.")
+    
     return FileResponse(
         path,
         media_type="application/pdf",
