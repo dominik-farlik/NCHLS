@@ -55,7 +55,6 @@ async def add_substance(substance: Substance = Body(...)):
 
 @router.put("")
 async def update_substance(substance: Substance = Body(...)):
-    print(substance)
     db_update_substance(substance)
     return {"status": "ok"}
 

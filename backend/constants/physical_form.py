@@ -7,4 +7,15 @@ class PhysicalForm(StrEnum):
     GAS = "plyn"
     LIQUID = "kapalina"
     AEROSOL = "aerosol"
-    DUST = "prášek"
+    POWDER = "prášek"
+
+class FormAddition(StrEnum):
+    IPLP = "IPLP"
+    DISINFECTION = "dezinfekce"
+    OINTMENT = "mast"
+    POWDER = "prášek"
+    CLEANSING = "čistící"
+    NAPKINS = "ubrousky"
+    FREEZE_DRIED = "lyofilizovaný"
+    DRUG = "léčivo"
+    SOUP = "mýdlo"
