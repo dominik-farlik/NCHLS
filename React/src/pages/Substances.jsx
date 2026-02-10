@@ -58,8 +58,7 @@ function Substances() {
                     <th style={{ position: "sticky", left: "0" }}>Název</th>
                     <th>Látka/Směs</th>
                     <th>Fyzikální forma</th>
-                    <th>IPLP</th>
-                    <th>Dezinfekce</th>
+                    <th>Doplňující forma</th>
                     <th>Vlastnosti</th>
                     <th title="Bezpečnostní list">BL</th>
                     <th>Max. sklad.</th>
@@ -88,8 +87,13 @@ function Substances() {
                         </td>
                         <td>{substance.substance_mixture ?? ""}</td>
                         <td>{substance.physical_form ?? ""}</td>
-                        <td>{substance.iplp ? "ano" : "ne"}</td>
-                        <td>{substance.disinfection ? "ano" : "ne"}</td>
+                        <td
+                            className="text-truncate"
+                            style={{ "maxWidth": "200px" }}
+                            title={substance.form_addition.join(", ")}
+                        >
+                            {substance.form_addition.join(", ")}
+                        </td>
                         <td>
                             {substance.properties.map((property, index) => (
                                 <div key={index}>

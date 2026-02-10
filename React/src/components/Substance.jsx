@@ -7,10 +7,9 @@ import api from "../api/axios.js";
 const defaultSubstance = {
     name: '',
     unit: '',
-    iplp: false,
-    disinfection: false,
     substance_mixture: '',
     physical_form: '',
+    form_addition: [],
     properties: [{ name: '', category: '', exposure_route: ''}],
     safety_sheet: undefined,
     safety_sheet_rev_date: '',
@@ -21,6 +20,7 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
     const [propertyList, setPropertyList] = useState([]);
     const [unitList, setUnitList] = useState([]);
     const [physicalFormList, setPhysicalFormList] = useState([]);
+    const [formAdditionList, setFormAdditionList] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,6 +42,7 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
 
                 setSubstance({
                     ...data,
+                    form_addition: Array.isArray(data.form_addition) ? data.form_addition : [],
                     properties: [
                         ...(data.properties ?? []).filter(p => p.name),
                         { name: '', category: '', exposure_route: '' }
@@ -65,6 +66,8 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
             .then(res => {
                 setPhysicalFormList(res.data);
             })
+        api.get("/form_additions")
+            .then(res => setFormAdditionList(res.data));
     }, []);
 
     function handleDelete() {
@@ -96,6 +99,18 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
         if (index === newProperties.length - 1 && (newProperties[index].name || "").trim() !== "") {
             addPropertyRow();
         }
+    };
+
+    const toggleFormAddition = (value) => {
+        setSubstance(prev => {
+            const current = Array.isArray(prev.form_addition) ? prev.form_addition : [];
+            return {
+                ...prev,
+                form_addition: current.includes(value)
+                    ? current.filter(v => v !== value)
+                    : [...current, value],
+            };
+        });
     };
 
     const addPropertyRow = () => {
@@ -162,6 +177,56 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                                 ))}
                             </select>
                         </div>
+
+                        <div className="col-md-2">
+                            <label className="form-label fw-bold">Doplňující forma</label>
+
+                            <div className="dropdown w-100">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary dropdown-toggle w-100 text-truncate"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    title={substance.form_addition.join(", ")}
+                                >
+                                    {(substance.form_addition?.length ?? 0) > 0
+                                        ? substance.form_addition.join(", ")
+                                        : "Vyber"}
+                                </button>
+
+                                <ul className="dropdown-menu p-2 w-100" style={{ maxHeight: "240px", overflowY: "auto" }}>
+                                    {formAdditionList.map(val => (
+                                        <li key={val}>
+                                            <label className="dropdown-item d-flex align-items-center gap-2" style={{ cursor: "pointer" }}>
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-check-input m-0"
+                                                    checked={(substance.form_addition ?? []).includes(val)}
+                                                    onChange={() => toggleFormAddition(val)}
+                                                />
+                                                <span>{val}</span>
+                                            </label>
+                                        </li>
+                                    ))}
+
+                                    {(substance.form_addition?.length ?? 0) > 0 && (
+                                        <>
+                                            <li><hr className="dropdown-divider" /></li>
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    className="dropdown-item text-danger"
+                                                    onClick={() => setSubstance(prev => ({ ...prev, form_addition: [] }))}
+                                                >
+                                                    Vymazat výběr
+                                                </button>
+                                            </li>
+                                        </>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+
                         <div className="col-md-2">
                             <label htmlFor="unit" className="form-label fw-bold">Jednotka</label>
                             <select
@@ -177,40 +242,6 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                                     </option>
                                 ))}
                             </select>
-                        </div>
-                        <div className="col-md-2">
-                            <div className="form-check">
-                                <input
-                                    type="checkbox"
-                                    id="iplp"
-                                    name="iplp"
-                                    checked={substance.iplp}
-                                    onChange={(e) =>
-                                        setSubstance({
-                                            ...substance,
-                                            iplp: e.target.checked,
-                                        })
-                                }
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="iplp" className="form-check-label fw-bold">IPLP</label>
-                            </div>
-                            <div className="form-check">
-                                <input
-                                    type="checkbox"
-                                    id="disinfection"
-                                    name="disinfection"
-                                    checked={substance.disinfection}
-                                    onChange={(e) =>
-                                        setSubstance({
-                                            ...substance,
-                                            disinfection: e.target.checked,
-                                        })
-                                }
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="disinfection" className="form-check-label fw-bold">Desinfekce</label>
-                            </div>
                         </div>
                     </div>
                     <div className="row mb-3">
