@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from constants.properties import PROPERTIES
 from constants.unit import Unit
-from constants.physical_form import PhysicalForm
+from constants.physical_form import PhysicalForm, FormAddition
 from db.repo import fetch_department_by_name
 
 router = APIRouter()
@@ -41,3 +41,7 @@ async def get_exposure_routes(prop: str):
     if prop not in PROPERTIES:
         raise HTTPException(status_code=404, detail=f"Property '{prop}' not found")
     return sorted(PROPERTIES[prop].get("exposure_routes", []))
+
+@router.get("/form_additions")
+async def get_form_additions():
+    return [v.value for v in FormAddition]
