@@ -68,16 +68,24 @@ async def add_safety_sheet(safety_sheet: UploadFile):
 
 @router.get("/safety_sheet/{substance_id}")
 async def download_safety_sheet(substance_id: str):
-    path = fetch_safety_sheet(substance_id)
+    path = fetch_safety_sheet(substance_id)  # musí vrátit absolutní cestu nebo cestu vůči /app
 
     if not path:
         raise HTTPException(status_code=404, detail="Bezpečnostní list není evidován.")
-    
+
+    p = Path(path)
+
+    if not p.is_absolute():
+        p = Path(settings.UPLOAD_DIR) / p
+
+    if not p.exists() or not p.is_file():
+        raise HTTPException(status_code=404, detail="Soubor bezpečnostního listu nebyl nalezen na serveru.")
+
     return FileResponse(
-        path,
+        str(p),
         media_type="application/pdf",
-        filename=Path(path).name,
-        headers={"Content-Disposition": f'inline; filename="{Path(path).name}"'}
+        filename=p.name,
+        headers={"Content-Disposition": f'inline; filename="{p.name}"'}
     )
 
 
