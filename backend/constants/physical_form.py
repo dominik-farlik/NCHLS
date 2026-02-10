@@ -19,3 +19,4 @@ class FormAddition(StrEnum):
     FREEZE_DRIED = "lyofilizovaný"
     DRUG = "léčivo"
     SOUP = "mýdlo"
+    ANALYZE = "analyz."
