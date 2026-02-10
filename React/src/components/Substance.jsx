@@ -29,27 +29,37 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
 
     useEffect(() => {
         if (!substanceId) return;
+        let cancelled = false;
 
-        api.get(`/substances/${substanceId}`)
-            .then(async res => {
-                const data = res.data;
+        (async () => {
+            const substanceRes = await api.get(`/substances/${substanceId}`);
+            const data = substanceRes.data;
 
-                let file = undefined;
-                if (data.safety_sheet) {
-                    const file_res = await api.get(`/substances/safety_sheet/${substanceId}`);
-                    file = file_res.data;
-                }
+            const filePromise = data.safety_sheet
+                ? api.get(`/substances/safety_sheet/${substanceId}`).then(r => r.data).catch(err => {
+                    if (err?.response?.status !== 404) console.error(err);
+                    return undefined;
+                })
+                : Promise.resolve(undefined);
 
-                setSubstance({
-                    ...data,
-                    form_addition: Array.isArray(data.form_addition) ? data.form_addition : [],
-                    properties: [
-                        ...(data.properties ?? []).filter(p => p.name),
-                        { name: '', category: '', exposure_route: '' }
-                    ],
-                    safety_sheet: file,
-                });
+            const file = await filePromise;
+
+            if (cancelled) return;
+
+            setSubstance({
+                ...data,
+                form_addition: Array.isArray(data.form_addition) ? data.form_addition : [],
+                properties: [
+                    ...(data.properties ?? []).filter(p => p.name),
+                    { name: "", category: "", exposure_route: "" },
+                ],
+                safety_sheet: file,
             });
+        })().catch(err => {
+            if (!cancelled) console.error(err);
+        });
+
+        return () => { cancelled = true; };
     }, [substanceId]);
 
     useEffect(() => {
