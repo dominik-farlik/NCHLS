@@ -21,7 +21,7 @@ function EditSubstance() {
             safety_sheet: substance.safety_sheet?.name || '',
         };
 
-        await api.put("/substances", payload)
+        await api.put(`/substances/${substance.substance_id}`, payload)
             .then(() => {
                 navigate("/substances");
             })

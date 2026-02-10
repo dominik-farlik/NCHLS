@@ -6,7 +6,6 @@ from constants.unit import Unit
 
 
 class Substance(BaseModel):
-    substance_id: str | None = None
     name: str
     physical_form: PhysicalForm = PhysicalForm.NONE
     form_addition: list[FormAddition] | None = None

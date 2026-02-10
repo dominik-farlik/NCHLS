@@ -87,21 +87,21 @@ def check_duplicate_name(name: str, oid: ObjectId = None):
         raise HTTPException(status_code=409, detail=f"Látka s tímto názvem již existuje.")
 
 
-def db_update_substance(substance: Substance):
-    update_doc = substance.model_dump(exclude_none=True)
-    oid = ObjectId(update_doc["substance_id"])
+from bson import ObjectId
+from fastapi import HTTPException
+from fastapi.encoders import jsonable_encoder
 
-    if update_doc.get("safety_sheet") in (None, ""):
+def db_update_substance(substance_id: str, substance: Substance):
+    oid = ObjectId(substance_id)
+
+    update_doc = jsonable_encoder(substance.model_dump(exclude_none=True))
+
+    if update_doc.get("safety_sheet") in ("", None):
         update_doc.pop("safety_sheet", None)
-
-    if not update_doc:
-        raise HTTPException(status_code=400, detail="Nebyly poskytnuty žádné změny.")
-    update_doc.pop("id", None)
 
     check_duplicate_name(update_doc["name"], oid)
 
-    result = db.substances.update_one({"_id": oid}, {"$set": jsonable_encoder(update_doc)})
-
+    result = db.substances.update_one({"_id": oid}, {"$set": update_doc})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Látka nenalezena.")
 
