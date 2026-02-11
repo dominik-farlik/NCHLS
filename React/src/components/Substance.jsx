@@ -10,6 +10,7 @@ const defaultSubstance = {
     substance_mixture: '',
     physical_form: '',
     form_addition: [],
+    h_phrases: [],
     properties: [{ name: '', category: '', exposure_route: ''}],
     safety_sheet: undefined,
     safety_sheet_rev_date: '',
@@ -21,6 +22,7 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
     const [unitList, setUnitList] = useState([]);
     const [physicalFormList, setPhysicalFormList] = useState([]);
     const [formAdditionList, setFormAdditionList] = useState([]);
+    const [hphraseList, setHphraseList] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -64,20 +66,19 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
 
     useEffect(() => {
         api.get("/properties")
-            .then(res => {
-                setPropertyList(res.data);
-            })
+            .then(res => setPropertyList(res.data));
 
         api.get("/units")
-            .then(res => {
-                setUnitList(res.data);
-            })
+            .then(res => setUnitList(res.data));
+
         api.get("/physical_forms")
-            .then(res => {
-                setPhysicalFormList(res.data);
-            })
+            .then(res => setPhysicalFormList(res.data));
+
         api.get("/form_additions")
             .then(res => setFormAdditionList(res.data));
+
+        api.get("/h_phrases")
+            .then(res => setHphraseList(res.data));
     }, []);
 
     function handleDelete() {
@@ -117,6 +118,18 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
             return {
                 ...prev,
                 form_addition: current.includes(value)
+                    ? current.filter(v => v !== value)
+                    : [...current, value],
+            };
+        });
+    };
+
+    const toggleHphrase = (value) => {
+        setSubstance(prev => {
+            const current = Array.isArray(prev.h_phrases) ? prev.h_phrases : [];
+            return {
+                ...prev,
+                h_phrases: current.includes(value)
                     ? current.filter(v => v !== value)
                     : [...current, value],
             };
@@ -238,6 +251,85 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                         </div>
 
                         <div className="col-md-2">
+                            <label className="form-label fw-bold">H-věty</label>
+
+                            <div className="dropdown w-100">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary dropdown-toggle w-100 text-truncate"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    title={substance.h_phrases?.join(", ")}
+                                >
+                                    {(substance.h_phrases?.length ?? 0) > 0
+                                        ? substance.h_phrases.join(", ")
+                                        : "Vyber"}
+                                </button>
+
+                                <ul className="dropdown-menu p-2 w-100" style={{ maxHeight: "240px", overflowY: "auto" }}>
+                                    {hphraseList.map(val => (
+                                        <li key={val}>
+                                            <label className="dropdown-item d-flex align-items-center gap-2" style={{ cursor: "pointer" }}>
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-check-input m-0"
+                                                    checked={(substance.h_phrases ?? []).includes(val)}
+                                                    onChange={() => toggleHphrase(val)}
+                                                />
+                                                <span>{val}</span>
+                                            </label>
+                                        </li>
+                                    ))}
+
+                                    {(substance.h_phrases?.length ?? 0) > 0 && (
+                                        <>
+                                            <li><hr className="dropdown-divider" /></li>
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    className="dropdown-item text-danger"
+                                                    onClick={() => setSubstance(prev => ({ ...prev, form_addition: [] }))}
+                                                >
+                                                    Vymazat výběr
+                                                </button>
+                                            </li>
+                                        </>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <label htmlFor="safety_sheet" className="form-label fw-bold">Bezpečnostní list</label>
+                            <input
+                                id="safety_sheet"
+                                name="safety_sheet"
+                                onChange={(e) => handleFileChange(e.target.files[0])}
+                                type="file"
+                                className="form-control"
+                            />
+                        </div>
+
+                        {substanceId && substance.safety_sheet &&
+                            <div className="col-md-2 flex-column align-content-end">
+                                <a className="btn btn-light form-control " onClick={() => openSafetySheet(substanceId)}>💾</a>
+                            </div>
+                        }
+
+                        {substance.safety_sheet && <div className="col-md-2">
+                            <label htmlFor="safety_sheet_rev_date" className="form-label fw-bold">Datum revize</label>
+                            <input
+                                id="safety_sheet_rev_date"
+                                name="safety_sheet_rev_date"
+                                type="number"
+                                value={substance.safety_sheet_rev_date}
+                                onChange={handleChange}
+                                className="form-control"
+                            />
+                        </div>}
+
+                        <div className="col-md-2">
                             <label htmlFor="unit" className="form-label fw-bold">Jednotka</label>
                             <select
                                 id="unit"
@@ -253,34 +345,6 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                                 ))}
                             </select>
                         </div>
-                    </div>
-                    <div className="row mb-3">
-                        <div className="col-md-4">
-                            <label htmlFor="safety_sheet" className="form-label fw-bold">Bezpečnostní list</label>
-                            <input
-                                id="safety_sheet"
-                                name="safety_sheet"
-                                onChange={(e) => handleFileChange(e.target.files[0])}
-                                type="file"
-                                className="form-control"
-                            />
-                        </div>
-                        {substanceId && substance.safety_sheet &&
-                            <div className="col-md-1 flex-column align-content-end">
-                                <a className="btn btn-light form-control" onClick={() => openSafetySheet(substanceId)}>💾</a>
-                            </div>
-                        }
-                        {substance.safety_sheet && <div className="col-md-2">
-                            <label htmlFor="safety_sheet_rev_date" className="form-label fw-bold">Datum revize</label>
-                            <input
-                                id="safety_sheet_rev_date"
-                                name="safety_sheet_rev_date"
-                                type="number"
-                                value={substance.safety_sheet_rev_date}
-                                onChange={handleChange}
-                                className="form-control"
-                            />
-                        </div>}
                     </div>
                     <div className="row mb-0">
                         <label className="form-label fw-bold col-md-3">Vlastnost</label>

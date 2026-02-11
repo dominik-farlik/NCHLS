@@ -113,6 +113,7 @@ function Substances() {
                     <th>Fyzikální forma</th>
                     <th>Doplňující forma</th>
                     <th>Vlastnosti</th>
+                    <th>H-věty</th>
                     <th title="Bezpečnostní list">BL</th>
                     <th>Max. sklad.</th>
                     <th>Kategorie nebezpečnosti</th>
@@ -155,6 +156,13 @@ function Substances() {
                             ))}
                         </td>
                         <td
+                            className=""
+                            style={{ "maxWidth": "200px" }}
+                            title={substance.h_phrases?.join(", ")}
+                        >
+                            {substance.h_phrases?.join(", ")}
+                        </td>
+                        <td
                             onClick={() => substance.safety_sheet && openSafetySheet(substance.substance_id)}
                             title={substance.safety_sheet}
                             style={substance.safety_sheet ? { cursor: "pointer" } : {}}
@@ -185,10 +193,11 @@ function Substances() {
                             className="text-truncate"
                             style={{ maxWidth: "60px" }}
                             title={substance.unit}
-                        >{substance.unit ?? ""}</td>
-                        <td>{substance.departments.map((department) => (
-                            <div key={department}>{department}</div>
-                        ))}
+                        >
+                            {substance.unit ?? ""}
+                        </td>
+                        <td>
+                            {substance.departments?.join(", ")}
                         </td>
                     </tr>
                     ))
