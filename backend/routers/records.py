@@ -6,7 +6,7 @@ import json
 from models.inventory import ResponsibleEmployee
 from models.record import Record
 from db.records import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record, \
-    db_upsert_inventory_records
+    db_upsert_inventory_records, get_distinct_years
 from db.departments import db_add_responsible_employee
 
 router = APIRouter()
@@ -40,6 +40,11 @@ async def add_records(records: list[Record] = Body(...)):
         return {"status": "ok", "updated": 0}
 
     return db_upsert_inventory_records(records)
+
+
+@router.get("/years")
+def get_years():
+    return get_distinct_years()
 
 
 @router.post("/inventory/responsible_employee")
