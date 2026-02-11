@@ -114,8 +114,12 @@ function Substances() {
                     <th>Doplňující forma</th>
                     <th>Vlastnosti</th>
                     <th>H-věty</th>
-                    <th title="Bezpečnostní list">BL</th>
-                    <th>Max. sklad.</th>
+                    <th title="Bezpečnostní list">
+                        BL
+                    </th>
+                    <th title="Maximální skladované množství v tunách">
+                        Max. sklad.
+                    </th>
                     <th>Kategorie nebezpečnosti</th>
                     <th>EC50</th>
                     <th>Jednotka</th>
@@ -196,7 +200,7 @@ function Substances() {
                         >
                             {substance.unit ?? ""}
                         </td>
-                        <td>
+                        <td style={{ maxWidth: "400px" }}>
                             {substance.departments?.join(", ")}
                         </td>
                     </tr>
