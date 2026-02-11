@@ -167,3 +167,7 @@ def fetch_amount_sum_substance(substance_id: str):
             }
         }
     ])
+
+def get_distinct_years():
+    years = db.records.distinct("year")
+    return sorted([y for y in years if y is not None], reverse=True)

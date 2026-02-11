@@ -14,9 +14,33 @@ def check_duplicate_name(name: str, oid: ObjectId = None):
         raise HTTPException(status_code=409, detail=f"Látka s tímto názvem již existuje.")
 
 
-def fetch_substances():
-    """Fetch all substances from the collection."""
-    return db.substances.find({})
+def fetch_substances(filter_=None):
+    if not filter_:
+        return list(db.substances.find({}))
+
+    pipeline = [
+        {
+            "$match": filter_
+        },
+        {
+            "$group": {
+                "_id": "$substance_id"
+            }
+        },
+        {
+            "$lookup": {
+                "from": "substances",
+                "localField": "_id",
+                "foreignField": "_id",
+                "as": "substance"
+            }
+        },
+        {"$unwind": "$substance"},
+        {"$replaceRoot": {"newRoot": "$substance"}}
+    ]
+
+    return list(db.records.aggregate(pipeline))
+
 
 
 def fetch_substance(substance_id: str):

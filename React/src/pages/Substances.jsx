@@ -13,19 +13,22 @@ function Substances() {
     const [search, setSearch] = useState("");
     const [filtered, setFiltered] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [years, setYears] = useState([]);
+    const [departments, setDepartments] = useState([]);
+    const [filter, setFilter] = useState({
+        department: "",
+        year: "",
+    });
 
     useEffect(() => {
-        setLoading(true);
-        api.get("/substances")
-            .then(res => {
-                setSubstances(res.data);
+        api.get("/departments")
+            .then((response) => {
+                setDepartments(response.data);
             })
-            .catch(err => {
-                console.error(err);
+        api.get("/records/years")
+            .then((response) => {
+                setYears(response.data);
             })
-            .finally(() => {
-                setLoading(false);
-            });
     }, []);
 
     useEffect(() => {
@@ -36,21 +39,71 @@ function Substances() {
         setFiltered(filteredList);
     }, [search, substances]);
 
+    useEffect(() => {
+        setLoading(true);
+
+        const params = {};
+        if (filter.department) params.department_name = filter.department;
+        if (filter.year) params.year = filter.year;
+
+        api.get("/substances", { params })
+            .then(res => setSubstances(res.data))
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [filter.department, filter.year]);
+
+    function handleFilterChange(e) {
+        const { id, value } = e.target;
+
+        setFilter(prev => ({
+            ...prev,
+            [id]: value
+        }));
+    }
+
     return (
         <div className="mt-4 px-5 flex-column" style={{ display: "flex", height: "calc(100vh - 88px)" }}>
-            <div className="row align-items-center mb-3">
-                <div className="col-auto">
+            <div className="row align-items-center mb-3 justify-content-between">
+                <div className="col-auto align-self-end">
                     <AddButton endpoint='/add-substance' />
                 </div>
-                <div className="col-auto">
+                <div className="col-md-3">
+                    <label className="form-label fw-bold">Látka</label>
                     <input
                         type="text"
                         placeholder="Hledej látku..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         className="form-control me-3"
-                        style={{ width: "auto" }}
                     />
+                </div>
+                <div className="col-md-3">
+                    <label className="form-label fw-bold">Oddělení</label>
+                    <select
+                        id="department"
+                        className="form-select"
+                        value={filter.department}
+                        onChange={handleFilterChange}
+                    >
+                        <option value="">Vše</option>
+                        {departments.map(department => (
+                            <option key={department.name} value={department.name}>{department.name}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="col-md-2">
+                    <label className="form-label fw-bold">Rok</label>
+                    <select
+                        id="year"
+                        className="form-control"
+                        value={filter.year}
+                        onChange={handleFilterChange}
+                    >
+                        <option value="">Vše</option>
+                        {years.map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
                 </div>
             </div>
             <Table>

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, HTTPException, UploadFile
+from fastapi import APIRouter, Body, HTTPException, UploadFile, Query
 from pathlib import Path
 from fastapi.responses import FileResponse
 from bson import ObjectId
@@ -13,8 +13,15 @@ router = APIRouter()
 
 
 @router.get("")
-async def list_substances():
-    cursor = fetch_substances()
+async def list_substances(department_name: str | None = Query(default=None), year: int | None = Query(default=None)):
+    filter_ = {}
+    print(department_name)
+    if department_name:
+        filter_["location_name"] = department_name
+    if year is not None:
+        filter_["year"] = year
+
+    cursor = fetch_substances(filter_)
     substances = list(cursor)
 
     for substance in substances:
