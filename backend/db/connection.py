@@ -17,6 +17,8 @@ client = MongoClient(
 db = client.nchls
 
 def init_indexes() -> None:
+    db.records.create_index([("location_name", 1), ("year", 1)])
+    db.records.create_index("substance_id")
     db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0)
     db.refresh_tokens.create_index("token_hash", unique=True)
     db.refresh_tokens.create_index("user")
