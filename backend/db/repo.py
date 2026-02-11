@@ -1,38 +1,20 @@
 import uuid
 from datetime import timedelta
-
 from bson import ObjectId
-from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
-from pymongo import MongoClient, UpdateOne, InsertOne
-import os
-import logging
+from pymongo import UpdateOne, InsertOne
 
 from core.auth import generate_refresh_token, hash_token, now_utc, REFRESH_TOKEN_EXPIRE_DAYS, hash_password, \
     verify_password
 from core.config import settings
+from db.connection import db
 from models.record import Record
 from models.substance import Substance
 
-logger = logging.getLogger(__name__)
 
-MONGO_USER = os.getenv("MONGO_USER", "admin")
-MONGO_PASSWORD = os.getenv("MONGO_PASSWORD", "secret")
-MONGO_HOST = os.getenv("MONGO_HOST", "mongodb")
-MONGO_PORT = os.getenv("MONGO_PORT", "27017")
-
-client = MongoClient(f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}")
-db = client.nchls
-
-db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0)
-db.refresh_tokens.create_index("token_hash", unique=True)
-db.refresh_tokens.create_index("user")
-db.users.create_index("username", unique=True)
 
 def insert_substance(substance: dict):
     """Insert a substance into the collection and return inserted ID."""
     check_duplicate_name(substance.get("name"))
-
     result = db.substances.insert_one(jsonable_encoder(substance))
     return result.inserted_id
 
