@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
+from constants.h_phrase import HPhrase
 from constants.properties import PROPERTIES
 from constants.unit import Unit
 from constants.physical_form import PhysicalForm, FormAddition
@@ -46,3 +47,7 @@ async def get_exposure_routes(prop: str):
 @router.get("/form_additions")
 async def get_form_additions():
     return [v.value for v in FormAddition]
+
+@router.get("/h_phrases")
+async def get_form_additions():
+    return [v.value for v in HPhrase]
