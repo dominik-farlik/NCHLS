@@ -49,8 +49,8 @@ async def get_substance(substance_id: str):
 
 @router.post("")
 async def add_substance(substance: Substance = Body(...)):
-    inserted_id = insert_substance(substance.model_dump())
-    return {"id": str(inserted_id)}
+    insert_substance(substance.model_dump())
+    return {"status": "ok"}
 
 
 @router.put("/{substance_id}")
@@ -63,12 +63,11 @@ async def update_substance(substance_id: str, substance: Substance = Body(...)):
 async def add_safety_sheet(safety_sheet: UploadFile):
     with open(f"{settings.UPLOAD_DIR}/{safety_sheet.filename}", "wb") as file:
         file.write(await safety_sheet.read())
-    print(f"Saved {safety_sheet.filename}")
 
 
 @router.get("/safety_sheet/{substance_id}")
 async def download_safety_sheet(substance_id: str):
-    path = fetch_safety_sheet(substance_id)  # musí vrátit absolutní cestu nebo cestu vůči /app
+    path = fetch_safety_sheet(substance_id)
 
     if not path:
         raise HTTPException(status_code=404, detail="Bezpečnostní list není evidován.")
@@ -92,3 +91,4 @@ async def download_safety_sheet(substance_id: str):
 @router.delete("/{substance_id}")
 async def delete_substance(substance_id: str):
     db_delete_substance(substance_id)
+    return {"status": "ok"}
