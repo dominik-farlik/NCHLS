@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel
 
 from core.auth import create_access_token, REFRESH_TOKEN_EXPIRE_DAYS, hash_token, now_utc
-from db.repo import create_refresh_session, rotate_refresh_token, db, authenticate_user
+from db.auth import create_refresh_session, rotate_refresh_token, db, authenticate_user
 
 router = APIRouter()
 
@@ -27,7 +27,7 @@ def login(body: LoginRequest, request: Request, response: Response):
         key="refresh_token",
         value=refresh_plain,
         httponly=True,
-        secure=False,  # True na HTTPS
+        secure=True,  # True na HTTPS
         samesite="lax",
         path="/api/auth/refresh",
         max_age=60 * 60 * 24 * REFRESH_TOKEN_EXPIRE_DAYS,
@@ -51,7 +51,7 @@ def refresh(request: Request, response: Response):
         key="refresh_token",
         value=new_refresh_plain,
         httponly=True,
-        secure=False,
+        secure=True,
         samesite="lax",
         path="/api/auth/refresh",
         max_age=60*60*24*REFRESH_TOKEN_EXPIRE_DAYS,
