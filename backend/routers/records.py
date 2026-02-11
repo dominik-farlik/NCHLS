@@ -5,8 +5,9 @@ import json
 
 from models.inventory import ResponsibleEmployee
 from models.record import Record
-from db.repo import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record, \
-    db_upsert_inventory_records, db_add_responsible_employee
+from db.records import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record, \
+    db_upsert_inventory_records
+from db.departments import db_add_responsible_employee
 
 router = APIRouter()
 

@@ -5,9 +5,9 @@ from bson import ObjectId
 
 from constants.unit import to_tons
 from core.config import settings
+from db.records import fetch_substance_departments, fetch_amount_sum_substance
 from models.substance import Substance
-from db.repo import insert_substance, fetch_substances, fetch_substance, db_update_substance, fetch_safety_sheet, \
-    fetch_substance_departments, fetch_amount_sum_substance, db_delete_substance
+from db.substances import insert_substance, fetch_substances, fetch_substance, db_update_substance, fetch_safety_sheet, db_delete_substance
 
 router = APIRouter()
 

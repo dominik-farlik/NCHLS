@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Query
+
 from constants.properties import PROPERTIES
 from constants.unit import Unit
 from constants.physical_form import PhysicalForm, FormAddition
-from db.repo import fetch_department_by_name
+from db.departments import fetch_departments, fetch_department_by_name
 
 router = APIRouter()
 
@@ -20,11 +21,11 @@ async def get_physical_forms():
 
 @router.get("/departments")
 async def get_departments():
-    from db.repo import fetch_departments
-    from bson.json_util import dumps
-    import json
     cursor = fetch_departments()
-    return json.loads(dumps(cursor))
+    departments = list(cursor)
+    for department in departments:
+        department["department_id"] = str(department.pop("_id"))
+    return departments
 
 @router.get("/departments/by_name")
 async def get_department_by_name(name: str = Query(...)):
