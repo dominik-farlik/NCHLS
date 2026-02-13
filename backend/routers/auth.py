@@ -27,7 +27,7 @@ def login(body: LoginRequest, request: Request, response: Response):
         key="refresh_token",
         value=refresh_plain,
         httponly=True,
-        secure=True,  # True na HTTPS
+        secure=True,
         samesite="lax",
         path="/api/auth/refresh",
         max_age=60 * 60 * 24 * REFRESH_TOKEN_EXPIRE_DAYS,

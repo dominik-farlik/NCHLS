@@ -61,6 +61,31 @@ function Substances() {
         }));
     }
 
+    function downloadSummary() {
+        const params = {};
+        if (filter.department) params.department_name = filter.department;
+        if (filter.year) params.year = filter.year;
+
+        api.get("/substances/export.csv", { params, responseType: "blob" })
+            .then((res) => {
+                const blob = new Blob([res.data], { type: "text/csv;charset=utf-8" });
+
+                const cd = res.headers["content-disposition"] || "";
+                const match = cd.match(/filename="([^"]+)"/);
+                const filename = match?.[1] ?? "substances.csv";
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(console.error);
+    }
+
     return (
         <div className="mt-4 px-5 flex-column" style={{ display: "flex", height: "calc(100vh - 88px)" }}>
             <div className="row align-items-center mb-3 justify-content-between">
@@ -104,6 +129,16 @@ function Substances() {
                             <option key={year} value={year}>{year}</option>
                         ))}
                     </select>
+                </div>
+
+                <div className="col-auto align-self-end">
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={downloadSummary}
+                    >
+                        Export do csv
+                    </button>
                 </div>
             </div>
             <Table>

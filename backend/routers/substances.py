@@ -1,13 +1,18 @@
+import csv
+from datetime import datetime
+from io import StringIO
+
 from fastapi import APIRouter, Body, HTTPException, UploadFile, Query
+from fastapi.responses import StreamingResponse
 from pathlib import Path
 from fastapi.responses import FileResponse
 from bson import ObjectId
 
-from constants.unit import to_tons
 from core.config import settings
 from db.records import fetch_substance_departments, fetch_amount_sum_substance
 from models.substance import Substance
 from db.substances import insert_substance, fetch_substances, fetch_substance, db_update_substance, fetch_safety_sheet, db_delete_substance
+from utils.substances import get_substance_max_tons, get_substance_departments
 
 router = APIRouter()
 
@@ -15,7 +20,6 @@ router = APIRouter()
 @router.get("")
 async def list_substances(department_name: str | None = Query(default=None), year: int | None = Query(default=None)):
     filter_ = {}
-    print(department_name)
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
@@ -26,21 +30,68 @@ async def list_substances(department_name: str | None = Query(default=None), yea
 
     for substance in substances:
         substance["substance_id"] = str(substance.pop("_id"))
-
-        departments_docs = list(fetch_substance_departments(substance["substance_id"]))
-        substance["departments"] = (
-            departments_docs[0]["departments"] if departments_docs else []
-        )
-
-        amount_docs = list(fetch_amount_sum_substance(substance["substance_id"]))
-        if amount_docs and "unit" in amount_docs[0]:
-            total_amount = amount_docs[0]["total_amount"]
-            unit = amount_docs[0]["unit"]
-            substance["max_tons"] = to_tons(total_amount, unit)
-        else:
-            substance["max_tons"] = 0
+        substance["departments"] = get_substance_departments(substance["substance_id"])
+        substance["max_tons"] = get_substance_max_tons(substance["substance_id"])
 
     return substances
+
+
+@router.get("/export.csv")
+async def export_substances_csv(
+    department_name: str | None = Query(default=None),
+    year: int | None = Query(default=None),
+):
+    filter_ = {}
+    if department_name:
+        filter_["location_name"] = department_name
+    if year is not None:
+        filter_["year"] = year
+
+    substances = fetch_substances(filter_ if filter_ else None)
+
+    output = StringIO()
+    writer = csv.writer(output, delimiter=";")
+
+    writer.writerow([
+        "Název",
+        "Směs / látka",
+        "Fyzikální forma",
+        "Doplňky formy",
+        "Vlastnosti",
+        "Kategorie nebezpečnosti",
+        "Max (t)",
+        "EC50",
+        "Oddělení",
+    ])
+
+    for s in substances:
+        writer.writerow([
+            s.get("name", ""),
+            s.get("substance_mixture", ""),
+            s.get("physical_form", ""),
+            ", ".join(s.get("form_addition", []) or []),
+            ", ".join(
+                f"{p.get('name', '')} {p.get('category', '')}"
+                for p in (s.get("properties") or [])
+            ),
+            s.get("danger_category", ""),
+            get_substance_max_tons(str(s["_id"])),
+            s.get("water_toxicity_EC50", ""),
+            ", ".join(get_substance_departments(str(s["_id"]))),
+        ])
+
+    output.seek(0)
+
+    ts = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    filename = f"substances_{ts}.csv"
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"'
+        },
+    )
 
 
 @router.get("/{substance_id}")
