@@ -37,7 +37,7 @@ function Navbar() {
 
     return (
         <>
-            <nav className="navbar navbar-expand-lg bg-pink">
+            <nav className="navbar nav-underline navbar-expand-lg bg-pink sticky-top">
                 <div className="container-fluid">
                     <NavLink className="navbar-brand" to="/">
                         <img
