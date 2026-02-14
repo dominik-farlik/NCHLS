@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 from constants.h_phrase import HPhrase
 from constants.properties import PROPERTIES
+from constants.protocol_categories import DangerCategory
 from constants.unit import Unit
 from constants.physical_form import PhysicalForm, FormAddition
 from db.departments import fetch_departments, fetch_department_by_name
@@ -51,3 +52,7 @@ async def get_form_additions():
 @router.get("/h_phrases")
 async def get_form_additions():
     return [v.value for v in HPhrase]
+
+@router.get("/danger_categories")
+async def get_form_additions():
+    return [v.value for v in DangerCategory]

@@ -14,6 +14,7 @@ const defaultSubstance = {
     properties: [{ name: '', category: '', exposure_route: ''}],
     safety_sheet: undefined,
     safety_sheet_rev_date: '',
+    danger_category: '',
 };
 
 function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
@@ -23,6 +24,7 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
     const [physicalFormList, setPhysicalFormList] = useState([]);
     const [formAdditionList, setFormAdditionList] = useState([]);
     const [hphraseList, setHphraseList] = useState([]);
+    const [dangerCategories, setDangerCategories] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -79,6 +81,9 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
 
         api.get("/h_phrases")
             .then(res => setHphraseList(res.data));
+
+        api.get("/danger_categories")
+            .then(res => setDangerCategories(res.data));
     }, []);
 
     function handleDelete() {
@@ -300,6 +305,23 @@ function Substance({ substanceId, handleSubmit, heading, resetSignal }) {
                         </div>
                     </div>
                     <div className="row mb-3">
+                        <div className="col-md-2">
+                            <label htmlFor="physical_form" className="form-label fw-bold">Kategorie nebezpečnosti</label>
+                            <select
+                                id="danger_category"
+                                name="danger_category"
+                                value={substance.danger_category}
+                                onChange={handleChange}
+                                className="form-select"
+                            >
+                                {dangerCategories.map((option) => (
+                                    <option key={option} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="col-md-4">
                             <label htmlFor="safety_sheet" className="form-label fw-bold">Bezpečnostní list</label>
                             <input
