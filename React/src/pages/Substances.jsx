@@ -7,6 +7,22 @@ import Table from "../components/Table.jsx";
 import THead from "../components/THead.jsx";
 import api from "../api/axios.js";
 
+const FILTER_STORAGE_KEY = "substances_filters_v1";
+
+function loadFilter() {
+    try {
+        const raw = localStorage.getItem(FILTER_STORAGE_KEY);
+        if (!raw) return { department: "", year: "" };
+        const parsed = JSON.parse(raw);
+        return {
+            department: parsed?.department ?? "",
+            year: parsed?.year ?? "",
+        };
+    } catch {
+        return { department: "", year: "" };
+    }
+}
+
 function Substances() {
     const [substances, setSubstances] = useState([]);
     const navigate = useNavigate();
@@ -15,10 +31,7 @@ function Substances() {
     const [loading, setLoading] = useState(true);
     const [years, setYears] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [filter, setFilter] = useState({
-        department: "",
-        year: "",
-    });
+    const [filter, setFilter] = useState(() => loadFilter());
 
     useEffect(() => {
         api.get("/departments")
@@ -38,6 +51,10 @@ function Substances() {
         );
         setFiltered(filteredList);
     }, [search, substances]);
+
+    useEffect(() => {
+        localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filter));
+    }, [filter]);
 
     useEffect(() => {
         setLoading(true);
