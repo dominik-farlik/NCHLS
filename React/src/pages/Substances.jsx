@@ -32,6 +32,10 @@ function Substances() {
     const [years, setYears] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [filter, setFilter] = useState(() => loadFilter());
+    const [sortConfig, setSortConfig] = useState({
+        key: "name",
+        direction: "asc",
+    });
 
     useEffect(() => {
         api.get("/departments")
@@ -45,12 +49,25 @@ function Substances() {
     }, []);
 
     useEffect(() => {
+        let data = [...substances];
+
+        data.sort((a, b) => {
+            const aVal = (a[sortConfig.key] ?? "").toString().toLowerCase();
+            const bVal = (b[sortConfig.key] ?? "").toString().toLowerCase();
+
+            if (aVal < bVal) return sortConfig.direction === "asc" ? -1 : 1;
+            if (aVal > bVal) return sortConfig.direction === "asc" ? 1 : -1;
+            return 0;
+        });
+
         const lower = search.toLowerCase();
-        const filteredList = substances.filter(substance =>
+        const filteredList = data.filter(substance =>
             substance.name.toLowerCase().includes(lower)
         );
+
         setFiltered(filteredList);
-    }, [search, substances]);
+    }, [search, substances, sortConfig]);
+
 
     useEffect(() => {
         localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filter));
@@ -101,6 +118,18 @@ function Substances() {
                 window.URL.revokeObjectURL(url);
             })
             .catch(console.error);
+    }
+
+    function handleSort(key) {
+        setSortConfig(prev => {
+            if (prev.key === key) {
+                return {
+                    key,
+                    direction: prev.direction === "asc" ? "desc" : "asc",
+                };
+            }
+            return { key, direction: "asc" };
+        });
     }
 
     return (
@@ -160,7 +189,19 @@ function Substances() {
             </div>
             <Table>
                 <THead>
-                    <th style={{ position: "sticky", left: "0" }}>Název</th>
+                    <th
+                        style={{ position: "sticky", left: "0", cursor: "pointer" }}
+                        onClick={() => handleSort("name")}
+                    >
+                        <div className="d-flex justify-content-between align-items-center">
+                            <span className="text-center w-100">Název</span>
+                            <span style={{ width: "20px", textAlign: "right" }}>
+                                {sortConfig.key === "name"
+                                    ? (sortConfig.direction === "asc" ? "▲" : "▼")
+                                    : ""}
+                            </span>
+                        </div>
+                    </th>
                     <th>Látka/Směs</th>
                     <th>Fyzikální forma</th>
                     <th>Doplňující forma</th>
