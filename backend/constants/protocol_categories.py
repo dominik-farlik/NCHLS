@@ -1,4 +1,7 @@
+from dataclasses import dataclass
 from enum import StrEnum
+
+from constants.physical_form import PhysicalForm
 
 
 class DangerCategory(StrEnum):
@@ -78,3 +81,114 @@ class DangerCategory(StrEnum):
     II47 = "II.47. (10)"
     II48 = "II.48. (10)"
 
+
+class Group(StrEnum):
+    H = "H"
+    P = "P"
+    E = "E"
+    O = "O"
+    II = "II"
+
+
+class Table(StrEnum):
+    I = "I"
+    II = "II"
+
+
+@dataclass(frozen=True)
+class DangerMeta:
+    group: Group
+    threshold: float | None
+    form: PhysicalForm | None
+    properties: tuple[str, ...] = ()
+
+    @property
+    def table(self) -> Table:
+        return Table.II if self.group == Group.II else Table.I
+
+
+def meta(group: Group, threshold: float | None, props: tuple[str, ...] = (), form: PhysicalForm | None = None) -> DangerMeta:
+    return DangerMeta(group=group, threshold=threshold, properties=props, form=form)
+
+
+DANGER_META: dict[DangerCategory, DangerMeta] = {
+
+    # H
+    DangerCategory.H1: meta(Group.H, 0.1, ("Acute Tox. 1",)),
+    DangerCategory.H2: meta(Group.H, 1, ("Acute Tox. 2", "Acute Tox. 3 (inhal)")),
+    DangerCategory.H3: meta(Group.H, 1, ("STOT SE 1",)),
+
+    # P
+    DangerCategory.P1a: meta(Group.P, 0.2, ("Unst. Expl.", "Expl. 1.1", "Expl. 1.2", "Expl. 1.3", "Expl. 1.5", "Expl. 1.6")),
+    DangerCategory.P1b: meta(Group.P, 1, ("Expl. 1.4",)),
+    DangerCategory.P2: meta(Group.P, 0.2, ("Flam. Gas 1", "Flam. Gas 2")),
+    DangerCategory.P3a: meta(Group.P, 3, ("Aerosol 1", "Aerosol 2")),
+    DangerCategory.P3b: meta(Group.P, 100, ("Aerosol 1", "Aerosol 2")),
+    DangerCategory.P4: meta(Group.P, 1, ("Ox. Gas 1",)),
+    DangerCategory.P5a: meta(Group.P, 0.2, ("Flam. Liq. 1", "Flam. Liq. 2", "Flam. Liq. 3")),
+    DangerCategory.P5b: meta(Group.P, 1, ("Flam. Liq. 2", "Flam. Liq. 3")),
+    DangerCategory.P5c: meta(Group.P, 100, ("Flam. Liq. 2", "Flam. Liq. 3")),
+    DangerCategory.P6a: meta(Group.P, 0.2, ("Self-react. A", "Self-react. B", "Org. Perox. A", "Org. Perox. B")),
+    DangerCategory.P6b: meta(Group.P, 1, ("Self-react.", "Org. Perox.")),
+    DangerCategory.P7: meta(Group.P, 1, ("Pyr. Liq. 1", "Pyr. Sol. 1")),
+    DangerCategory.P8: meta(Group.P, 1, ("Ox. Liq. 1", "Ox. Liq. 2", "Ox. Liq. 3", "Ox. Sol. 1", "Ox. Sol. 2", "Ox. Sol. 3")),
+
+    # E
+    DangerCategory.E1: meta(Group.E, 2, ("Aquatic Acute 1", "Aquatic Chronic 1")),
+    DangerCategory.E2: meta(Group.E, 4, ("Aquatic Chronic 2",)),
+
+    # O
+    DangerCategory.O1: meta(Group.O, 2),
+    DangerCategory.O2: meta(Group.O, 2, ("Water-react. 1",)),
+    DangerCategory.O3: meta(Group.O, 1),
+
+    # II
+    DangerCategory.II1: meta(Group.II, 100),
+    DangerCategory.II2: meta(Group.II, 25),
+    DangerCategory.II3: meta(Group.II, 7),
+    DangerCategory.II4: meta(Group.II, 0.2),
+    DangerCategory.II5: meta(Group.II, 100),
+    DangerCategory.II6: meta(Group.II, 25),
+    DangerCategory.II7: meta(Group.II, 0.02),
+    DangerCategory.II8: meta(Group.II, None),
+    DangerCategory.II9: meta(Group.II, 0.4),
+    DangerCategory.II10: meta(Group.II, 0.2),
+    DangerCategory.II11: meta(Group.II, None),
+    DangerCategory.II12: meta(Group.II, 0.2),
+    DangerCategory.II13: meta(Group.II, 0.2),
+    DangerCategory.II14: meta(Group.II, 0.1),
+    DangerCategory.II15: meta(Group.II, 0.1),
+    DangerCategory.II16: meta(Group.II, 0.5),
+    DangerCategory.II17: meta(Group.II, 0.1),
+    DangerCategory.II18: meta(Group.II, 1),
+    DangerCategory.II19: meta(Group.II, 0.1),
+    DangerCategory.II20: meta(Group.II, 0.1),
+    DangerCategory.II21: meta(Group.II, 0.1),
+    DangerCategory.II22: meta(Group.II, 10),
+    DangerCategory.II23: meta(Group.II, None),
+    DangerCategory.II24: meta(Group.II, None),
+    DangerCategory.II25: meta(Group.II, 4),
+    DangerCategory.II26: meta(Group.II, 0.2),
+    DangerCategory.II27: meta(Group.II, 0.006),
+    DangerCategory.II28: meta(Group.II, 0.004),
+    DangerCategory.II29: meta(Group.II, 0.004),
+    DangerCategory.II30: meta(Group.II, None),
+    DangerCategory.II31: meta(Group.II, 0.3),
+    DangerCategory.II32: meta(Group.II, None),
+    DangerCategory.II33: meta(Group.II, 0.01),
+    DangerCategory.II34: meta(Group.II, 50),
+    DangerCategory.II35: meta(Group.II, 1),
+    DangerCategory.II36: meta(Group.II, 0.1),
+    DangerCategory.II37: meta(Group.II, 0.1),
+    DangerCategory.II38: meta(Group.II, 1),
+    DangerCategory.II39: meta(Group.II, 1),
+    DangerCategory.II40: meta(Group.II, 1),
+    DangerCategory.II41: meta(Group.II, 4),
+    DangerCategory.II42: meta(Group.II, 10),
+    DangerCategory.II43: meta(Group.II, 4),
+    DangerCategory.II44: meta(Group.II, 10),
+    DangerCategory.II45: meta(Group.II, 2),
+    DangerCategory.II46: meta(Group.II, 10),
+    DangerCategory.II47: meta(Group.II, 10),
+    DangerCategory.II48: meta(Group.II, 10),
+}

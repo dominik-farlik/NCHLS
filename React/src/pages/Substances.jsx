@@ -120,6 +120,31 @@ function Substances() {
             .catch(console.error);
     }
 
+    function downloadProtocol() {
+        const params = {};
+        if (filter.department) params.department_name = filter.department;
+        if (filter.year) params.year = filter.year;
+
+        api.get("/substances/non_inclusion_protocol.csv", { params, responseType: "blob" })
+            .then((res) => {
+                const blob = new Blob([res.data], { type: "text/csv;charset=utf-8" });
+
+                const cd = res.headers["content-disposition"] || "";
+                const match = cd.match(/filename="([^"]+)"/);
+                const filename = match?.[1] ?? "protokol_o_nezarazeni.csv";
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(console.error);
+    }
+
     function handleSort(key) {
         setSortConfig(prev => {
             if (prev.key === key) {
@@ -175,6 +200,16 @@ function Substances() {
                             <option key={year} value={year}>{year}</option>
                         ))}
                     </select>
+                </div>
+
+                <div className="col-auto align-self-end">
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={downloadProtocol}
+                    >
+                        Protokol o nezařazení
+                    </button>
                 </div>
 
                 <div className="col-auto align-self-end">
