@@ -129,7 +129,7 @@ async def export_non_inclusion_protocol_csv(
     writer = csv.writer(output, delimiter=";")
 
     writer.writerow([
-        "kategorie",
+        "látka/směs",
         "množství t",
         "forma",
         "klasifikace",
@@ -203,8 +203,8 @@ async def export_non_inclusion_protocol_csv(
         ])
 
     writer.writerow([
-        "SOUČET POMĚRŮ",
         "", "", "", "", "", "", "",
+        "Součty",
         round(sum_ratio_H, 6),
         round(sum_ratio_P, 6),
         round(sum_ratio_E, 6),

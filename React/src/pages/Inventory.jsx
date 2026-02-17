@@ -214,7 +214,7 @@ function Inventory() {
         };
 
         try {
-            await api.put("/substances", payload);
+            await api.put(`/substances/${payload.substance_id}`, payload);
         } catch (err) {
             console.error(err);
             alert("Nepodařilo se uložit jednotku látky.");
