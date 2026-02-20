@@ -69,7 +69,7 @@ def fetch_substance_departments(substance_id: str):
 
 
 def db_upsert_inventory_records(records: list[Record]) -> dict:
-    ops = []
+    ops: list[InsertOne | UpdateOne] = []
     insert_count_expected = 0
 
     for i, rec in enumerate(records):

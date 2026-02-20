@@ -19,7 +19,7 @@ UNIT_TO_TON_FACTOR = {
 }
 
 
-def to_tons(amount: float, unit: str | None) -> float | None:
+def to_tons(amount: float, unit: str | None) -> float:
     if unit not in UNIT_TO_TON_FACTOR:
         return 0
     return amount * UNIT_TO_TON_FACTOR[unit]

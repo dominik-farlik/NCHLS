@@ -44,12 +44,17 @@ def fetch_substance(substance_id: str):
 def fetch_safety_sheet(substance_id: str):
     """Fetch a safety sheet from the collection."""
     substance = db.substances.find_one({"_id": ObjectId(substance_id)})
+    if substance is None:
+        raise HTTPException(status_code=404, detail="Substance not found.")
     return f"{settings.UPLOAD_DIR}/{substance['safety_sheet']}"
 
 
 def insert_substance(substance: dict):
     """Insert a substance into the collection and return inserted ID."""
-    check_duplicate_name(substance.get("name"))
+    raw_name = substance.get("name")
+    if not isinstance(raw_name, str):
+        raise ValueError("Invalid document: missing 'name'")
+    check_duplicate_name(raw_name)
     result = db.substances.insert_one(jsonable_encoder(substance))
     return result.inserted_id
 

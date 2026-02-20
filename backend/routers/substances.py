@@ -207,19 +207,19 @@ async def export_non_inclusion_protocol_csv(
                 ratio_val = total_amount / limit_value
                 ratio = round(ratio_val, 6)
 
-                if meta.group == Group.H:
+                if meta.group == Group.HEALTH:
                     rH = ratio
                     sum_ratio_H += ratio_val
-                elif meta.group == Group.P:
+                elif meta.group == Group.PHYSICAL:
                     rP = ratio
                     sum_ratio_P += ratio_val
-                elif meta.group == Group.E:
+                elif meta.group == Group.ENVIRONMENTAL:
                     rE = ratio
                     sum_ratio_E += ratio_val
-                elif meta.group == Group.O:
+                elif meta.group == Group.OTHER:
                     rO = ratio
                     sum_ratio_O += ratio_val
-                elif meta.group == Group.II:
+                elif meta.group == Group.TAB_II:
                     rII = ratio
                     sum_ratio_II += ratio_val
 

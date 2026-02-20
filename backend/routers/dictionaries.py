@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from backend.constants.h_phrase import HPhrase
-from backend.constants.properties import PROPERTIES
+from backend.constants.properties import PROPERTIES, PROPERTIES_BY_NAME
 from backend.constants.protocol_categories import DangerCategory
 from backend.constants.unit import Unit
 from backend.constants.physical_form import PhysicalForm, FormAddition
@@ -47,10 +47,11 @@ async def get_categories(prop: str):
 
 
 @router.get("/exposure_routes/{prop}")
-async def get_exposure_routes(prop: str):
-    if prop not in PROPERTIES:
+async def get_exposure_routes(prop: str) -> list[str]:
+    p = PROPERTIES_BY_NAME.get(prop)
+    if p is None:
         raise HTTPException(status_code=404, detail=f"Property '{prop}' not found")
-    return sorted(PROPERTIES[prop].get("exposure_routes", []))
+    return sorted(p.get("exposure_routes", []))
 
 
 @router.get("/form_additions")

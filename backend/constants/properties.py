@@ -1,7 +1,15 @@
-PROPERTIES = [
+from typing import TypedDict, NotRequired
+
+
+class PropertyDef(TypedDict):
+    name: str
+    categories: list[str]
+    exposure_routes: NotRequired[list[str]]
+
+PROPERTIES: list[PropertyDef] = [
     {
         "name": "Acute Tox.",
-        "categories": [1, 2, 3, 4],
+        "categories": ["1", "2", "3", "4"],
         "exposure_routes": ["oral", "dermal", "inhal"],
     },
     {
@@ -177,3 +185,5 @@ PROPERTIES = [
         "exposure_routes": [],
     },
 ]
+
+PROPERTIES_BY_NAME: dict[str, PropertyDef] = {p["name"]: p for p in PROPERTIES}
