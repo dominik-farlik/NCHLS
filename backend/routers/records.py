@@ -23,11 +23,11 @@ router = APIRouter()
 async def list_records(
     department_name: str | None = Query(default=None), year: int | None = Query(default=None)
 ):
-    filter_ = {}
+    filter_: dict[str, str | int] = {}
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = str(year)
+        filter_["year"] = year
     cursor = fetch_records(filter_)
     records = list(cursor)
 
