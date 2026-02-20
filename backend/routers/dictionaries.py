@@ -50,9 +50,9 @@ async def get_form_additions():
     return [v.value for v in FormAddition]
 
 @router.get("/h_phrases")
-async def get_form_additions():
+async def get_h_phrases():
     return [v.value for v in HPhrase]
 
 @router.get("/danger_categories")
-async def get_form_additions():
+async def get_danger_categories():
     return [v.value for v in DangerCategory]

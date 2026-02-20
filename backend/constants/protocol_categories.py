@@ -83,16 +83,16 @@ class DangerCategory(StrEnum):
 
 
 class Group(StrEnum):
-    H = "H"
-    P = "P"
-    E = "E"
-    O = "O"
-    II = "II"
+    HEALTH = "H"
+    PHYSICAL = "P"
+    ENVIRONMENTAL = "E"
+    OTHER = "O"
+    TAB_II = "II"
 
 
 class Table(StrEnum):
-    I = "I"
-    II = "II"
+    TAB_I = "I"
+    TAB_II = "II"
 
 
 @dataclass(frozen=True)

@@ -5,7 +5,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 import os
-import base64, os, hashlib
+import base64
+import hashlib
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-me")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")

@@ -11,7 +11,7 @@ def check_duplicate_name(name: str, oid: ObjectId = None):
     """Check if a name is duplicate."""
     exists = db.substances.find_one({"name": name, "_id": {"$ne": oid}})
     if exists:
-        raise HTTPException(status_code=409, detail=f"Látka s tímto názvem již existuje.")
+        raise HTTPException(status_code=409, detail="Látka s tímto názvem již existuje.")
 
 
 def fetch_substances(filter_=None):
