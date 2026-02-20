@@ -3,9 +3,9 @@ from fastapi import APIRouter, Body, Query, HTTPException
 from bson.json_util import dumps
 import json
 
-from models.inventory import ResponsibleEmployee
-from models.record import Record
-from db.records import (
+from backend.models.inventory import ResponsibleEmployee
+from backend.models.record import Record
+from backend.db.records import (
     insert_record,
     fetch_records,
     fetch_record,
@@ -14,7 +14,7 @@ from db.records import (
     db_upsert_inventory_records,
     get_distinct_years,
 )
-from db.departments import db_add_responsible_employee
+from backend.db.departments import db_add_responsible_employee
 
 router = APIRouter()
 

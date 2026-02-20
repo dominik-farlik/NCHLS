@@ -2,12 +2,12 @@ from bson import ObjectId
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
-from core.config import settings
-from db.connection import db
-from models.substance import Substance
+from backend.core.config import settings
+from backend.db.connection import db
+from backend.models.substance import Substance
 
 
-def check_duplicate_name(name: str, oid: ObjectId = None):
+def check_duplicate_name(name: str, oid: ObjectId | None = None):
     """Check if a name is duplicate."""
     exists = db.substances.find_one({"name": name, "_id": {"$ne": oid}})
     if exists:

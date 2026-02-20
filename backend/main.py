@@ -3,10 +3,10 @@ from pathlib import Path
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from core.auth import get_current_subject
-from core.config import settings
-from db.connection import init_indexes
-from routers import health, dictionaries, substances, records, auth
+from backend.core.auth import get_current_subject
+from backend.core.config import settings
+from backend.db.connection import init_indexes
+from backend.routers import health, dictionaries, substances, records, auth
 
 
 @asynccontextmanager

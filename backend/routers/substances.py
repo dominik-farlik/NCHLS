@@ -8,10 +8,10 @@ from pathlib import Path
 from fastapi.responses import FileResponse
 from bson import ObjectId
 
-from constants.protocol_categories import DangerCategory, DANGER_META, Group
-from core.config import settings
-from models.substance import Substance
-from db.substances import (
+from backend.constants.protocol_categories import DangerCategory, DANGER_META, Group
+from backend.core.config import settings
+from backend.models.substance import Substance
+from backend.db.substances import (
     insert_substance,
     fetch_substances,
     fetch_substance,
@@ -19,8 +19,8 @@ from db.substances import (
     fetch_safety_sheet,
     db_delete_substance,
 )
-from utils.non_inclusion_protocol import category_code, format_meta_form, format_meta_properties
-from utils.substances import get_substance_max_tons, get_substance_departments
+from backend.utils.non_inclusion_protocol import category_code, format_meta_form, format_meta_properties
+from backend.utils.substances import get_substance_max_tons, get_substance_departments
 
 router = APIRouter()
 

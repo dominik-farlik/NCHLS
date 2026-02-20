@@ -2,8 +2,8 @@ from bson import ObjectId
 from fastapi import HTTPException
 from pymongo import InsertOne, UpdateOne
 
-from db.connection import db
-from models.record import Record
+from backend.db.connection import db
+from backend.models.record import Record
 
 
 def fetch_records(filter_=None):
