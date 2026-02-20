@@ -15,7 +15,16 @@ class Settings(BaseSettings):
     MONGO_AUTH_SOURCE: str = "admin"
     UPLOAD_DIR: str = "/app/uploads"
 
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="")
+    JWT_SECRET_KEY: str = "dev-secret-change-me"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 10
+    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 14
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="",
+        extra="ignore",
+    )
 
     @property
     def mongo_dsn(self) -> str:

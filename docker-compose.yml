@@ -35,8 +35,11 @@ services:
       - mongodb
     ports:
       - "8000:8000"
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
     volumes:
-      - ./backend:/app
+      - ./:/app
     env_file:
       - .env
 
