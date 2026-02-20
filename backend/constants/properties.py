@@ -52,7 +52,7 @@ PROPERTIES = [
     {
         "name": "STOT SE",
         "categories": ["1", "2", "3"],
-        "exposure_routes": ["","CNS"],
+        "exposure_routes": ["", "CNS"],
     },
     {
         "name": "STOT RE",
@@ -84,7 +84,7 @@ PROPERTIES = [
         "categories": ["1", "2", "3"],
         "exposure_routes": [],
     },
-{
+    {
         "name": "Ox. Sol.",
         "categories": ["1", "2", "3"],
         "exposure_routes": [],
@@ -126,7 +126,7 @@ PROPERTIES = [
     },
     {
         "name": "Press. Gas.",
-        "categories": ["","komprimovaný", "zkapalněný", "zchlazený", "rozpuštěný"],
+        "categories": ["", "komprimovaný", "zkapalněný", "zchlazený", "rozpuštěný"],
         "exposure_routes": [],
     },
     {
@@ -147,9 +147,32 @@ PROPERTIES = [
     {
         "name": "EUH",
         "categories": [
-            "001", "006", "014", "018", "019", "029", "031", "032", "044",
-            "059", "066", "070", "071", "201", "201A", "202", "203", "204",
-            "205", "206", "207", "208", "209", "209A", "210", "401"
+            "001",
+            "006",
+            "014",
+            "018",
+            "019",
+            "029",
+            "031",
+            "032",
+            "044",
+            "059",
+            "066",
+            "070",
+            "071",
+            "201",
+            "201A",
+            "202",
+            "203",
+            "204",
+            "205",
+            "206",
+            "207",
+            "208",
+            "209",
+            "209A",
+            "210",
+            "401",
         ],
         "exposure_routes": [],
     },

@@ -9,6 +9,7 @@ class PhysicalForm(StrEnum):
     AEROSOL = "aerosol"
     POWDER = "prášek"
 
+
 class FormAddition(StrEnum):
     IPLP = "IPLP"
     DISINFECTION = "dezinfekce"

@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class Settings(BaseSettings):
     ALLOW_ORIGINS: tuple[str, ...] = (
         "http://localhost:5173",
@@ -24,5 +25,6 @@ class Settings(BaseSettings):
         pwd = self.MONGO_PASSWORD or ""
         auth = f"{user}:{pwd}@" if user or pwd else ""
         return f"mongodb://{auth}{self.MONGO_HOST}:{self.MONGO_PORT}/?authSource={self.MONGO_AUTH_SOURCE}"
+
 
 settings = Settings()

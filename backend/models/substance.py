@@ -16,5 +16,5 @@ class Substance(BaseModel):
     h_phrases: list[HPhrase] | None = None
     unit: Unit | None = Unit.NONE
     safety_sheet: str | None = None
-    safety_sheet_rev_date: int | str | None = ''
+    safety_sheet_rev_date: int | str | None = ""
     danger_category: DangerCategory = DangerCategory.NONE

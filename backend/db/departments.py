@@ -24,15 +24,10 @@ def db_add_responsible_employee(employee: str, department_name: str) -> dict:
         raise HTTPException(status_code=400, detail="Název oddělení nesmí být prázdný.")
 
     res = db.departments.update_one(
-        {"name": department_name},
-        {"$set": {"responsible_employee": employee}}
+        {"name": department_name}, {"$set": {"responsible_employee": employee}}
     )
 
     if res.matched_count == 0:
         raise HTTPException(status_code=404, detail="Oddělení nenalezeno.")
 
-    return {
-        "updated": True,
-        "modified": res.modified_count == 1,
-        "responsible_employee": employee
-    }
+    return {"updated": True, "modified": res.modified_count == 1, "responsible_employee": employee}

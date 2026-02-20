@@ -5,14 +5,24 @@ import json
 
 from models.inventory import ResponsibleEmployee
 from models.record import Record
-from db.records import insert_record, fetch_records, fetch_record, db_update_record, db_delete_record, \
-    db_upsert_inventory_records, get_distinct_years
+from db.records import (
+    insert_record,
+    fetch_records,
+    fetch_record,
+    db_update_record,
+    db_delete_record,
+    db_upsert_inventory_records,
+    get_distinct_years,
+)
 from db.departments import db_add_responsible_employee
 
 router = APIRouter()
 
+
 @router.get("")
-async def list_records(department_name: str | None = Query(default=None), year: int | None = Query(default=None)):
+async def list_records(
+    department_name: str | None = Query(default=None), year: int | None = Query(default=None)
+):
     filter_ = {}
     if department_name:
         filter_["location_name"] = department_name
@@ -27,6 +37,7 @@ async def list_records(department_name: str | None = Query(default=None), year: 
         record["substance"]["id"] = str(record["substance"].pop("_id"))
 
     return records
+
 
 @router.post("")
 async def add_record(record: Record = Body(...)):
@@ -49,10 +60,8 @@ def get_years():
 
 @router.post("/inventory/responsible_employee")
 async def add_responsible_employee(data: ResponsibleEmployee):
-    return db_add_responsible_employee(
-        data.employee,
-        data.department_name
-    )
+    return db_add_responsible_employee(data.employee, data.department_name)
+
 
 @router.get("/{record_id}")
 async def get_record(record_id: str):
@@ -64,6 +73,7 @@ async def get_record(record_id: str):
     record["id"] = str(record.pop("_id"))
     record["substance_id"] = str(record["substance_id"])
     return json.loads(dumps(record))
+
 
 @router.put("")
 async def update_record(substance: Record = Body(...)):

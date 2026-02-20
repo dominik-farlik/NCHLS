@@ -11,7 +11,14 @@ from bson import ObjectId
 from constants.protocol_categories import DangerCategory, DANGER_META, Group
 from core.config import settings
 from models.substance import Substance
-from db.substances import insert_substance, fetch_substances, fetch_substance, db_update_substance, fetch_safety_sheet, db_delete_substance
+from db.substances import (
+    insert_substance,
+    fetch_substances,
+    fetch_substance,
+    db_update_substance,
+    fetch_safety_sheet,
+    db_delete_substance,
+)
 from utils.non_inclusion_protocol import category_code, format_meta_form, format_meta_properties
 from utils.substances import get_substance_max_tons, get_substance_departments
 
@@ -19,7 +26,9 @@ router = APIRouter()
 
 
 @router.get("")
-async def list_substances(department_name: str | None = Query(default=None), year: int | None = Query(default=None)):
+async def list_substances(
+    department_name: str | None = Query(default=None), year: int | None = Query(default=None)
+):
     filter_ = {}
     if department_name:
         filter_["location_name"] = department_name
@@ -53,33 +62,37 @@ async def export_substances_csv(
     output = StringIO()
     writer = csv.writer(output, delimiter=";")
 
-    writer.writerow([
-        "Název",
-        "Směs / látka",
-        "Fyzikální forma",
-        "Doplňky formy",
-        "Vlastnosti",
-        "Kategorie nebezpečnosti",
-        "Max (t)",
-        "EC50",
-        "Oddělení",
-    ])
+    writer.writerow(
+        [
+            "Název",
+            "Směs / látka",
+            "Fyzikální forma",
+            "Doplňky formy",
+            "Vlastnosti",
+            "Kategorie nebezpečnosti",
+            "Max (t)",
+            "EC50",
+            "Oddělení",
+        ]
+    )
 
     for s in substances:
-        writer.writerow([
-            s.get("name", ""),
-            s.get("substance_mixture", ""),
-            s.get("physical_form", ""),
-            ", ".join(s.get("form_addition", []) or []),
-            ", ".join(
-                f"{p.get('name', '')} {p.get('category', '')}"
-                for p in (s.get("properties") or [])
-            ),
-            s.get("danger_category", ""),
-            get_substance_max_tons(str(s["_id"])),
-            s.get("water_toxicity_EC50", ""),
-            ", ".join(get_substance_departments(str(s["_id"]))),
-        ])
+        writer.writerow(
+            [
+                s.get("name", ""),
+                s.get("substance_mixture", ""),
+                s.get("physical_form", ""),
+                ", ".join(s.get("form_addition", []) or []),
+                ", ".join(
+                    f"{p.get('name', '')} {p.get('category', '')}"
+                    for p in (s.get("properties") or [])
+                ),
+                s.get("danger_category", ""),
+                get_substance_max_tons(str(s["_id"])),
+                s.get("water_toxicity_EC50", ""),
+                ", ".join(get_substance_departments(str(s["_id"]))),
+            ]
+        )
 
     output.seek(0)
 
@@ -89,9 +102,7 @@ async def export_substances_csv(
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv; charset=utf-8",
-        headers={
-            "Content-Disposition": f'attachment; filename="{filename}"'
-        },
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 
 
@@ -128,21 +139,23 @@ async def export_non_inclusion_protocol_csv(
     output = StringIO()
     writer = csv.writer(output, delimiter=";")
 
-    writer.writerow([
-        "látka/směs",
-        "množství t",
-        "forma",
-        "klasifikace",
-        "třída",
-        "tab. I/II",
-        "limit pro A",
-        "poměr množství k limitu",
-        "H (poměr)",
-        "P (poměr)",
-        "E (poměr)",
-        "O (poměr)",
-        "II (poměr)",
-    ])
+    writer.writerow(
+        [
+            "látka/směs",
+            "množství t",
+            "forma",
+            "klasifikace",
+            "třída",
+            "tab. I/II",
+            "limit pro A",
+            "poměr množství k limitu",
+            "H (poměr)",
+            "P (poměr)",
+            "E (poměr)",
+            "O (poměr)",
+            "II (poměr)",
+        ]
+    )
 
     sum_ratio_H = 0.0
     sum_ratio_P = 0.0
@@ -155,7 +168,23 @@ async def export_non_inclusion_protocol_csv(
         total_amount = amount_by_cat[cat]
 
         if not meta:
-            writer.writerow([category_code(cat), round(total_amount, 6), "", "", "", "", "", "", "", "", "", "", "",])
+            writer.writerow(
+                [
+                    category_code(cat),
+                    round(total_amount, 6),
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                ]
+            )
             continue
 
         hazard_class = meta.group.value
@@ -190,27 +219,41 @@ async def export_non_inclusion_protocol_csv(
                     rII = ratio
                     sum_ratio_II += ratio_val
 
-        writer.writerow([
-            category_code(cat),
-            round(total_amount, 6),
-            format_meta_form(meta.form),
-            format_meta_properties(meta.properties),
-            hazard_class,
-            tab,
-            limit_A,
-            ratio,
-            rH, rP, rE, rO, rII,
-        ])
+        writer.writerow(
+            [
+                category_code(cat),
+                round(total_amount, 6),
+                format_meta_form(meta.form),
+                format_meta_properties(meta.properties),
+                hazard_class,
+                tab,
+                limit_A,
+                ratio,
+                rH,
+                rP,
+                rE,
+                rO,
+                rII,
+            ]
+        )
 
-    writer.writerow([
-        "", "", "", "", "", "", "",
-        "Součty",
-        round(sum_ratio_H, 6),
-        round(sum_ratio_P, 6),
-        round(sum_ratio_E, 6),
-        round(sum_ratio_O, 6),
-        round(sum_ratio_II, 6),
-    ])
+    writer.writerow(
+        [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Součty",
+            round(sum_ratio_H, 6),
+            round(sum_ratio_P, 6),
+            round(sum_ratio_E, 6),
+            round(sum_ratio_O, 6),
+            round(sum_ratio_II, 6),
+        ]
+    )
 
     ts = datetime.now().strftime("%Y-%m-%d_%H-%M")
     filename = f"substances_{ts}.csv"
@@ -265,13 +308,15 @@ async def download_safety_sheet(substance_id: str):
         p = Path(settings.UPLOAD_DIR) / p
 
     if not p.exists() or not p.is_file():
-        raise HTTPException(status_code=404, detail="Soubor bezpečnostního listu nebyl nalezen na serveru.")
+        raise HTTPException(
+            status_code=404, detail="Soubor bezpečnostního listu nebyl nalezen na serveru."
+        )
 
     return FileResponse(
         str(p),
         media_type="application/pdf",
         filename=p.name,
-        headers={"Content-Disposition": f'inline; filename="{p.name}"'}
+        headers={"Content-Disposition": f'inline; filename="{p.name}"'},
     )
 
 

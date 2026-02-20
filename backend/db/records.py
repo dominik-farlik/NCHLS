@@ -10,16 +10,20 @@ def fetch_records(filter_=None):
     """Fetch all records from the collection."""
     if filter_ is None:
         filter_ = {}
-    return db.records.aggregate([
-        {"$match": filter_},
-        {"$lookup": {
-            "from": "substances",
-            "localField": "substance_id",
-            "foreignField": "_id",
-            "as": "substance"
-        }},
-        {"$unwind": {"path": "$substance", "preserveNullAndEmptyArrays": True}},
-    ])
+    return db.records.aggregate(
+        [
+            {"$match": filter_},
+            {
+                "$lookup": {
+                    "from": "substances",
+                    "localField": "substance_id",
+                    "foreignField": "_id",
+                    "as": "substance",
+                }
+            },
+            {"$unwind": {"path": "$substance", "preserveNullAndEmptyArrays": True}},
+        ]
+    )
 
 
 def fetch_record(record_id: str):
@@ -55,28 +59,13 @@ def db_delete_record(record_id: str):
 
 def fetch_substance_departments(substance_id: str):
     """Fetch departments, where is substance located."""
-    return db.records.aggregate([
-        {
-            "$match": {
-                "substance_id": ObjectId(substance_id)
-            }
-        },
-        {
-            "$group": {
-                "_id": "$substance_id",
-                "departments": {
-                    "$addToSet": "$location_name"
-                }
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "substance_id": "$_id",
-                "departments": 1
-            }
-        }
-    ])
+    return db.records.aggregate(
+        [
+            {"$match": {"substance_id": ObjectId(substance_id)}},
+            {"$group": {"_id": "$substance_id", "departments": {"$addToSet": "$location_name"}}},
+            {"$project": {"_id": 0, "substance_id": "$_id", "departments": 1}},
+        ]
+    )
 
 
 def db_upsert_inventory_records(records: list[Record]) -> dict:
@@ -90,7 +79,9 @@ def db_upsert_inventory_records(records: list[Record]) -> dict:
         if not substance_id:
             raise HTTPException(status_code=400, detail=f"Záznam na indexu {i} nemá substance_id.")
         if not ObjectId.is_valid(substance_id):
-            raise HTTPException(status_code=400, detail=f"Záznam na indexu {i} má neplatné substance_id.")
+            raise HTTPException(
+                status_code=400, detail=f"Záznam na indexu {i} má neplatné substance_id."
+            )
         doc["substance_id"] = ObjectId(substance_id)
 
         rec_id = doc.pop("id", None)
@@ -101,19 +92,20 @@ def db_upsert_inventory_records(records: list[Record]) -> dict:
 
             oid = ObjectId(rec_id)
 
-            ops.append(
-                UpdateOne(
-                    {"_id": oid},
-                    {"$set": doc},
-                    upsert=True
-                )
-            )
+            ops.append(UpdateOne({"_id": oid}, {"$set": doc}, upsert=True))
         else:
             ops.append(InsertOne(doc))
             insert_count_expected += 1
 
     if not ops:
-        return {"matched": 0, "modified": 0, "upserted": 0, "inserted": 0, "upserted_ids": [], "inserted_ids": []}
+        return {
+            "matched": 0,
+            "modified": 0,
+            "upserted": 0,
+            "inserted": 0,
+            "upserted_ids": [],
+            "inserted_ids": [],
+        }
 
     res = db.records.bulk_write(ops, ordered=False)
 
@@ -137,36 +129,30 @@ def db_upsert_inventory_records(records: list[Record]) -> dict:
 
 def fetch_amount_sum_substance(substance_id: str):
     """Fetch an amount sum of substance from the collection."""
-    return db.records.aggregate([
-        {
-            "$match": {
-                "substance_id": ObjectId(substance_id)
-            }
-        },
-        {
-            "$group": {
-                "_id": "$substance_id",
-                "total_amount": {"$sum": "$amount"}
-            }
-        },
-        {
-            "$lookup": {
-                "from": "substances",
-                "localField": "_id",
-                "foreignField": "_id",
-                "as": "substance"
-            }
-        },
-        {"$unwind": "$substance"},
-        {
-            "$project": {
-                "_id": 0,
-                "substance_id": "$_id",
-                "total_amount": 1,
-                "unit": "$substance.unit"
-            }
-        }
-    ])
+    return db.records.aggregate(
+        [
+            {"$match": {"substance_id": ObjectId(substance_id)}},
+            {"$group": {"_id": "$substance_id", "total_amount": {"$sum": "$amount"}}},
+            {
+                "$lookup": {
+                    "from": "substances",
+                    "localField": "_id",
+                    "foreignField": "_id",
+                    "as": "substance",
+                }
+            },
+            {"$unwind": "$substance"},
+            {
+                "$project": {
+                    "_id": 0,
+                    "substance_id": "$_id",
+                    "total_amount": 1,
+                    "unit": "$substance.unit",
+                }
+            },
+        ]
+    )
+
 
 def get_distinct_years():
     years = db.records.distinct("year")

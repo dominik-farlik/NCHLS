@@ -19,28 +19,21 @@ def fetch_substances(filter_=None):
         return list(db.substances.find({}))
 
     pipeline = [
-        {
-            "$match": filter_
-        },
-        {
-            "$group": {
-                "_id": "$substance_id"
-            }
-        },
+        {"$match": filter_},
+        {"$group": {"_id": "$substance_id"}},
         {
             "$lookup": {
                 "from": "substances",
                 "localField": "_id",
                 "foreignField": "_id",
-                "as": "substance"
+                "as": "substance",
             }
         },
         {"$unwind": "$substance"},
-        {"$replaceRoot": {"newRoot": "$substance"}}
+        {"$replaceRoot": {"newRoot": "$substance"}},
     ]
 
     return list(db.records.aggregate(pipeline))
-
 
 
 def fetch_substance(substance_id: str):
@@ -78,6 +71,7 @@ def db_update_substance(substance_id: str, substance: Substance):
     updated = db.substances.find_one({"_id": oid})
     updated["id"] = str(updated.pop("_id"))
     return {"updated": True, "substance": updated}
+
 
 def db_delete_substance(substance_id: str):
     """Delete a substance from the collection."""

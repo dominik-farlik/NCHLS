@@ -154,7 +154,9 @@ H_COMBINATIONS: dict[FrozenSet[int], str] = {
     frozenset([300, 310]): "Při požití nebo při styku s kůží může způsobit smrt.",
     frozenset([300, 330]): "Při požití nebo při vdechování může způsobit smrt.",
     frozenset([310, 330]): "Při styku s kůží nebo při vdechování může způsobit smrt.",
-    frozenset([300, 310, 330]): "Při požití, při styku s kůží nebo při vdechování může způsobit smrt.",
+    frozenset(
+        [300, 310, 330]
+    ): "Při požití, při styku s kůží nebo při vdechování může způsobit smrt.",
     frozenset([301, 311]): "Toxický při požití nebo při styku s kůží.",
     frozenset([301, 331]): "Toxický při požití nebo při vdechování.",
     frozenset([311, 331]): "Toxický při styku s kůží a při vdechování.",

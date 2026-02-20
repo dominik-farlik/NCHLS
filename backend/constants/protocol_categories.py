@@ -107,19 +107,26 @@ class DangerMeta:
         return Table.II if self.group == Group.II else Table.I
 
 
-def meta(group: Group, threshold: float | None, props: tuple[str, ...] = (), form: PhysicalForm | None = None) -> DangerMeta:
+def meta(
+    group: Group,
+    threshold: float | None,
+    props: tuple[str, ...] = (),
+    form: PhysicalForm | None = None,
+) -> DangerMeta:
     return DangerMeta(group=group, threshold=threshold, properties=props, form=form)
 
 
 DANGER_META: dict[DangerCategory, DangerMeta] = {
-
     # H
     DangerCategory.H1: meta(Group.H, 0.1, ("Acute Tox. 1",)),
     DangerCategory.H2: meta(Group.H, 1, ("Acute Tox. 2", "Acute Tox. 3 (inhal)")),
     DangerCategory.H3: meta(Group.H, 1, ("STOT SE 1",)),
-
     # P
-    DangerCategory.P1a: meta(Group.P, 0.2, ("Unst. Expl.", "Expl. 1.1", "Expl. 1.2", "Expl. 1.3", "Expl. 1.5", "Expl. 1.6")),
+    DangerCategory.P1a: meta(
+        Group.P,
+        0.2,
+        ("Unst. Expl.", "Expl. 1.1", "Expl. 1.2", "Expl. 1.3", "Expl. 1.5", "Expl. 1.6"),
+    ),
     DangerCategory.P1b: meta(Group.P, 1, ("Expl. 1.4",)),
     DangerCategory.P2: meta(Group.P, 0.2, ("Flam. Gas 1", "Flam. Gas 2")),
     DangerCategory.P3a: meta(Group.P, 3, ("Aerosol 1", "Aerosol 2")),
@@ -128,20 +135,23 @@ DANGER_META: dict[DangerCategory, DangerMeta] = {
     DangerCategory.P5a: meta(Group.P, 0.2, ("Flam. Liq. 1", "Flam. Liq. 2", "Flam. Liq. 3")),
     DangerCategory.P5b: meta(Group.P, 1, ("Flam. Liq. 2", "Flam. Liq. 3")),
     DangerCategory.P5c: meta(Group.P, 100, ("Flam. Liq. 2", "Flam. Liq. 3")),
-    DangerCategory.P6a: meta(Group.P, 0.2, ("Self-react. A", "Self-react. B", "Org. Perox. A", "Org. Perox. B")),
+    DangerCategory.P6a: meta(
+        Group.P, 0.2, ("Self-react. A", "Self-react. B", "Org. Perox. A", "Org. Perox. B")
+    ),
     DangerCategory.P6b: meta(Group.P, 1, ("Self-react.", "Org. Perox.")),
     DangerCategory.P7: meta(Group.P, 1, ("Pyr. Liq. 1", "Pyr. Sol. 1")),
-    DangerCategory.P8: meta(Group.P, 1, ("Ox. Liq. 1", "Ox. Liq. 2", "Ox. Liq. 3", "Ox. Sol. 1", "Ox. Sol. 2", "Ox. Sol. 3")),
-
+    DangerCategory.P8: meta(
+        Group.P,
+        1,
+        ("Ox. Liq. 1", "Ox. Liq. 2", "Ox. Liq. 3", "Ox. Sol. 1", "Ox. Sol. 2", "Ox. Sol. 3"),
+    ),
     # E
     DangerCategory.E1: meta(Group.E, 2, ("Aquatic Acute 1", "Aquatic Chronic 1")),
     DangerCategory.E2: meta(Group.E, 4, ("Aquatic Chronic 2",)),
-
     # O
     DangerCategory.O1: meta(Group.O, 2),
     DangerCategory.O2: meta(Group.O, 2, ("Water-react. 1",)),
     DangerCategory.O3: meta(Group.O, 1),
-
     # II
     DangerCategory.II1: meta(Group.II, 100),
     DangerCategory.II2: meta(Group.II, 25),

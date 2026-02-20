@@ -6,9 +6,11 @@ from db.auth import create_refresh_session, rotate_refresh_token, db, authentica
 
 router = APIRouter()
 
+
 class LoginRequest(BaseModel):
     username: str
     password: str
+
 
 @router.post("/login")
 def login(body: LoginRequest, request: Request, response: Response):
@@ -35,6 +37,7 @@ def login(body: LoginRequest, request: Request, response: Response):
 
     return {"access_token": access, "token_type": "bearer"}
 
+
 @router.post("/refresh")
 def refresh(request: Request, response: Response):
     refresh_plain = request.cookies.get("refresh_token")
@@ -54,7 +57,7 @@ def refresh(request: Request, response: Response):
         secure=True,
         samesite="lax",
         path="/api/auth/refresh",
-        max_age=60*60*24*REFRESH_TOKEN_EXPIRE_DAYS,
+        max_age=60 * 60 * 24 * REFRESH_TOKEN_EXPIRE_DAYS,
     )
     return {"access_token": access, "token_type": "bearer"}
 
@@ -65,8 +68,7 @@ def logout(request: Request, response: Response):
     if refresh_plain:
         db.refresh_tokens.update_one(
             {"token_hash": hash_token(refresh_plain), "revoked_at": None},
-            {"$set": {"revoked_at": now_utc()}}
+            {"$set": {"revoked_at": now_utc()}},
         )
     response.delete_cookie("refresh_token", path="/api/auth/refresh")
     return {"ok": True}
-
