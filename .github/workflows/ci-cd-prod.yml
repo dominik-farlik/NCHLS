@@ -37,7 +37,10 @@ jobs:
           pip install -r backend/requirements-dev.txt
 
       - name: Run Ruff
-        run: ruff backend
+        run: ruff check backend
+
+      - name: Run Ruff (format check)
+        run: ruff format --check backend
 
       - name: Run MyPy
         run: mypy backend
