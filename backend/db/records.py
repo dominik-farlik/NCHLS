@@ -109,9 +109,11 @@ def db_upsert_inventory_records(records: list[Record]) -> dict:
 
     res = db.records.bulk_write(ops, ordered=False)
 
-    upserted_ids = []
-    if getattr(res, "upserted_ids", None):
-        upserted_ids = [str(oid) for _, oid in sorted(res.upserted_ids.items(), key=lambda x: x[0])]
+    upserted_ids: list[str] = []
+
+    upserted = getattr(res, "upserted_ids", None)
+    if upserted is not None:
+        upserted_ids = [str(oid) for _, oid in sorted(upserted.items())]
 
     inserted_ids = []
     if hasattr(res, "inserted_ids") and res.inserted_ids:

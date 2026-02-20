@@ -41,9 +41,10 @@ async def get_department_by_name(name: str = Query(...)):
 
 @router.get("/categories/{prop}")
 async def get_categories(prop: str):
-    if prop not in PROPERTIES:
+    p = PROPERTIES_BY_NAME.get(prop)
+    if p is None:
         raise HTTPException(status_code=404, detail=f"Property '{prop}' not found")
-    return sorted(PROPERTIES[prop].get("categories", []))
+    return sorted(p.get("categories", []))
 
 
 @router.get("/exposure_routes/{prop}")

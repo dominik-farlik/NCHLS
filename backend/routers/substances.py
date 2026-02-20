@@ -59,7 +59,7 @@ async def export_substances_csv(
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = year
+        filter_["year"] = str(year)
 
     substances = fetch_substances(filter_ if filter_ else None)
 
@@ -119,7 +119,7 @@ async def export_non_inclusion_protocol_csv(
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = year
+        filter_["year"] = str(year)
 
     substances = list(fetch_substances(filter_ if filter_ else None))
 
@@ -194,8 +194,8 @@ async def export_non_inclusion_protocol_csv(
         hazard_class = meta.group.value
         tab = meta.table.value
 
-        limit_A = ""
-        ratio = ""
+        limit_A = 0
+        ratio = 0
 
         rH = rP = rE = rO = rII = ""
 

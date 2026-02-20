@@ -73,10 +73,6 @@ def db_update_substance(substance_id: str, substance: Substance):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Látka nenalezena.")
 
-    updated = db.substances.find_one({"_id": oid})
-    updated["id"] = str(updated.pop("_id"))
-    return {"updated": True, "substance": updated}
-
 
 def db_delete_substance(substance_id: str):
     """Delete a substance from the collection."""

@@ -27,7 +27,7 @@ async def list_records(
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = year
+        filter_["year"] = str(year)
     cursor = fetch_records(filter_)
     records = list(cursor)
 
