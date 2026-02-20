@@ -19,7 +19,11 @@ from backend.db.substances import (
     fetch_safety_sheet,
     db_delete_substance,
 )
-from backend.utils.non_inclusion_protocol import category_code, format_meta_form, format_meta_properties
+from backend.utils.non_inclusion_protocol import (
+    category_code,
+    format_meta_form,
+    format_meta_properties,
+)
 from backend.utils.substances import get_substance_max_tons, get_substance_departments
 
 router = APIRouter()
