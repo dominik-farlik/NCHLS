@@ -37,7 +37,7 @@ async def list_substances(
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = year
+        filter_["year"] = str(year)
 
     cursor = fetch_substances(filter_)
     substances = list(cursor)
@@ -194,10 +194,10 @@ async def export_non_inclusion_protocol_csv(
         hazard_class = meta.group.value
         tab = meta.table.value
 
-        limit_A = 0
-        ratio = 0
+        limit_A = 0.0
+        ratio = 0.0
 
-        rH = rP = rE = rO = rII = ""
+        rH = rP = rE = rO = rII = 0.0
 
         if meta.threshold is not None:
             limit_value = float(meta.threshold) * 50
