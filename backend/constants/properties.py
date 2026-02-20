@@ -6,6 +6,7 @@ class PropertyDef(TypedDict):
     categories: list[str]
     exposure_routes: NotRequired[list[str]]
 
+
 PROPERTIES: list[PropertyDef] = [
     {
         "name": "Acute Tox.",
