@@ -33,11 +33,11 @@ router = APIRouter()
 async def list_substances(
     department_name: str | None = Query(default=None), year: int | None = Query(default=None)
 ):
-    filter_ = {}
+    filter_: dict[str, str | int] = {}
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = str(year)
+        filter_["year"] = year
 
     cursor = fetch_substances(filter_)
     substances = list(cursor)
@@ -55,11 +55,11 @@ async def export_substances_csv(
     department_name: str | None = Query(default=None),
     year: int | None = Query(default=None),
 ):
-    filter_ = {}
+    filter_: dict[str, str | int] = {}
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = str(year)
+        filter_["year"] = year
 
     substances = fetch_substances(filter_ if filter_ else None)
 
@@ -115,11 +115,11 @@ async def export_non_inclusion_protocol_csv(
     department_name: str | None = Query(default=None),
     year: int | None = Query(default=None),
 ):
-    filter_ = {}
+    filter_: dict[str, str | int] = {}
     if department_name:
         filter_["location_name"] = department_name
     if year is not None:
-        filter_["year"] = str(year)
+        filter_["year"] = year
 
     substances = list(fetch_substances(filter_ if filter_ else None))
 
