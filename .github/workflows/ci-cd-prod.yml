@@ -20,7 +20,30 @@ permissions:
   packages: write
 
 jobs:
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install -r backend/requirements-dev.txt
+
+      - name: Run Ruff
+        run: ruff backend
+
+      - name: Run MyPy
+        run: mypy backend
+
   build-backend:
+    needs: lint-backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
