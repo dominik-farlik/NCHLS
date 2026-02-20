@@ -9,9 +9,7 @@ services:
       - mongo_data:/data/db
 
   fastapi:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile.prod
+    image: ghcr.io/dominik-farlik/nchls-backend:latest
     restart: always
     depends_on:
       - mongodb
@@ -21,9 +19,7 @@ services:
       - ./backend/uploads:/app/uploads
 
   nginx:
-    build:
-      context: .
-      dockerfile: ./nginx/Dockerfile
+    image: ghcr.io/dominik-farlik/nchls-frontend:latest
     restart: always
     depends_on:
       - fastapi
@@ -31,10 +27,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./letsencrypt/etc:/etc/letsencrypt
+      - ./letsencrypt/etc:/etc/letsencrypt:ro
       - ./letsencrypt/lib:/var/lib/letsencrypt
       - ./letsencrypt/webroot:/var/www/certbot
-  
+
   certbot:
     image: certbot/certbot:latest
     volumes:
