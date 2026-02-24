@@ -13,3 +13,5 @@ backend/app/db/create_new_user.py
 cheatsheet.txt
 backend/app/utils/__pycache__
 tests/__pycache__
+*.archive
+*.dump
