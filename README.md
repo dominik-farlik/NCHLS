@@ -1,31 +1,59 @@
-# ChemTrack: Hazardous Chemical Inventory System
+# NCHLS – Hazardous Chemical Inventory System
 
-**ChemTrack** is a specialized management system designed to track and inventory hazardous substances across various institutes and departments. It bridges the gap between static safety data and active inventory management.
+**NCHLS** is a full-stack system for managing and tracking hazardous chemical inventories across departments and institutes.  
+It connects centralized chemical metadata with real-world inventory records and enforces data consistency across the organization.
 
 
 
 ---
 
-## 🚀 Key Features
+## 🚀 Features
 
-* **Global Substance Database:** Centralized storage for chemical names, properties, and Safety Data Sheets (SDS).
-* **Departmental Inventory:** Granular tracking of chemical stock assigned to specific, predefined departments and institutes.
-* **Relational Integrity:** Inventory records are directly linked to the master database to prevent data duplication and errors.
-* **Docker-First Deployment:** Entire stack can be deployed with a single command.
-* **Secure Access:** Built-in JWT-based authentication for data protection.
+- **Central Substance Registry**  
+  Unified database of hazardous substances, including properties and Safety Data Sheets (SDS).
+
+- **Department-Level Inventory Tracking**  
+  Track chemical quantities per institute, department, and year.
+
+- **Relational Integrity**  
+  Inventory records are linked to the master substance registry to prevent duplication.
+
+- **JWT-Based Authentication**  
+  Secure access control for all API endpoints.
+
+- **Docker-First Architecture**  
+  Backend, frontend, database, and reverse proxy fully containerized.
+
+- **CI/CD Pipeline**  
+  Automatic image build & deployment via GitHub Actions.
+
+---
 
 ## 🛠 Tech Stack
 
-* **Backend:** FastAPI (Python)
-* **Frontend:** React.js
-* **Reverse Proxy:** Nginx
-* **Database:** MongoDB
-* **Security:** JWT (JSON Web Tokens)
-* **Deployment:** Docker & Docker Compose
+### Backend
+- Python 3.11
+- FastAPI
+- MongoDB (PyMongo)
+- JWT Authentication
+- Pydantic
+- MyPy + Ruff (static analysis)
+
+### Frontend
+- JavaScript
+- React
+- Vite
+
+### Infrastructure
+- Docker
+- Docker Compose
+- Nginx
+- GitHub Actions (CI/CD)
+- GHCR (GitHub Container Registry)
 
 ---
 
-## 📦 Deployment
+## 💻 Local Development
 
 ### Prerequisites
 * [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
@@ -34,8 +62,8 @@
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/yourusername/chemtrack.git](https://github.com/yourusername/chemtrack.git)
-    cd chemtrack
+    git clone [https://github.com/dominik-farlik/NCHLS.git](https://github.com/dominik-farlik/NCHLS.git)
+    cd nchls
     ```
 
 2.  **Set up Environment Variables:**
@@ -71,6 +99,34 @@ JWT_SECRET_KEY=your-super-secret-key-here
 JWT_ALGORITHM=HS256
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
+
+---
+
+## 🚀 Production Deployment
+
+### Production deployment is fully automated via GitHub Actions.
+
+### On push to main:
+
+**1. Backend and frontend images are built.**
+
+**2. Images are pushed to GHCR.**
+
+**3.The server pulls new images.**
+
+**3. Containers are restarted.**
+
+---
+
+### Manual deployment:
+
+```bash
+  cd /home/ubuntu/nchls
+  docker compose -f docker-compose.prod.yml pull
+  docker compose -f docker-compose.prod.yml up -d
+ ```
+
+---
 
 ## 📸 Screenshots
 
