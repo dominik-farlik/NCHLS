@@ -1,5 +1,5 @@
-from backend.constants.unit import to_tons
-from backend.db.records import fetch_amount_sum_substance, fetch_substance_departments
+from app.constants.unit import to_tons
+from app.db.records import fetch_amount_sum_substance, fetch_substance_departments
 
 
 def get_substance_max_tons(substance_id: str) -> float:

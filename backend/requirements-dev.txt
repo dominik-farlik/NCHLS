@@ -1,5 +1,11 @@
+-r requirements.txt
+
 ruff
 mypy
 types-requests
 types-python-jose
 types-passlib
+pytest
+pytest-asyncio
+httpx
+coverage

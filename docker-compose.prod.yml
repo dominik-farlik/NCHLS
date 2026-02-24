@@ -16,7 +16,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./backend/uploads:/app/uploads
+      - ./data/uploads:/app/uploads
 
   nginx:
     image: ghcr.io/dominik-farlik/nchls-frontend:latest

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import StrEnum
 
-from backend.constants.physical_form import PhysicalForm
+from app.constants.physical_form import PhysicalForm
 
 
 class DangerCategory(StrEnum):

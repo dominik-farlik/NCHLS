@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
-from backend.constants.h_phrase import HPhrase
-from backend.constants.physical_form import PhysicalForm, FormAddition
-from backend.constants.protocol_categories import DangerCategory
-from backend.constants.substance_mixture import SubstanceMixture
-from backend.constants.unit import Unit
+from app.constants.h_phrase import HPhrase
+from app.constants.physical_form import PhysicalForm, FormAddition
+from app.constants.protocol_categories import DangerCategory
+from app.constants.substance_mixture import SubstanceMixture
+from app.constants.unit import Unit
 
 
 class Substance(BaseModel):

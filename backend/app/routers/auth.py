@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel
 
-from backend.core.auth import create_access_token, REFRESH_TOKEN_EXPIRE_DAYS, hash_token, now_utc
-from backend.db.auth import create_refresh_session, rotate_refresh_token, db, authenticate_user
+from app.core.auth import create_access_token, REFRESH_TOKEN_EXPIRE_DAYS, hash_token, now_utc
+from app.db.auth import create_refresh_session, rotate_refresh_token, db, authenticate_user
 
 router = APIRouter()
 

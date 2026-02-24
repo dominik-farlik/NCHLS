@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from backend.constants.h_phrase import HPhrase
-from backend.constants.properties import PROPERTIES, PROPERTIES_BY_NAME
-from backend.constants.protocol_categories import DangerCategory
-from backend.constants.unit import Unit
-from backend.constants.physical_form import PhysicalForm, FormAddition
-from backend.db.departments import fetch_departments, fetch_department_by_name
+from app.constants.h_phrase import HPhrase
+from app.constants.properties import PROPERTIES, PROPERTIES_BY_NAME
+from app.constants.protocol_categories import DangerCategory
+from app.constants.unit import Unit
+from app.constants.physical_form import PhysicalForm, FormAddition
+from app.db.departments import fetch_departments, fetch_department_by_name
 
 router = APIRouter()
 

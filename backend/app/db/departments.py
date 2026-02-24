@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from backend.db.connection import db
+from app.db.connection import db
 
 
 def fetch_departments():

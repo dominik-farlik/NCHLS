@@ -2,9 +2,9 @@ from bson import ObjectId
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
-from backend.core.config import settings
-from backend.db.connection import db
-from backend.models.substance import Substance
+from app.core.config import settings
+from app.db.connection import db
+from app.models.substance import Substance
 
 
 def check_duplicate_name(name: str, oid: ObjectId | None = None):

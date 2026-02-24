@@ -1,4 +1,4 @@
-from backend.constants.protocol_categories import DangerCategory
+from app.constants.protocol_categories import DangerCategory
 
 
 def category_code(cat: "DangerCategory") -> str:

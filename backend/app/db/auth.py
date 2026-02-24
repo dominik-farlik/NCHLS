@@ -2,7 +2,7 @@ import uuid
 from datetime import timedelta
 from fastapi import HTTPException
 
-from backend.core.auth import (
+from app.core.auth import (
     generate_refresh_token,
     hash_token,
     now_utc,
@@ -10,7 +10,7 @@ from backend.core.auth import (
     hash_password,
     verify_password,
 )
-from backend.db.connection import db
+from app.db.connection import db
 
 
 def create_refresh_session(user: str, ip: str | None = None, ua: str | None = None):

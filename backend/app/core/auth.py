@@ -8,7 +8,7 @@ import os
 import base64
 import hashlib
 
-from backend.core.config import settings
+from app.core.config import settings
 
 SECRET_KEY = settings.JWT_SECRET_KEY
 ALGORITHM = settings.JWT_ALGORITHM

@@ -1,6 +1,6 @@
 services:
   mongodb:
-    image: mongo:latest
+    image: mongo:7
     container_name: mongodb
     restart: always
     ports:
@@ -37,22 +37,25 @@ services:
       - "8000:8000"
     working_dir: /app
     environment:
-      - PYTHONPATH=/app
+      - PYTHONPATH=/app/backend
+      - PYTHONUNBUFFERED=1
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
     volumes:
       - ./:/app
     env_file:
       - .env
 
-  react:
+  frontend:
     build:
-      context: ./React
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: react
+    container_name: frontend
     restart: always
     ports:
       - "3000:5173"
     volumes:
-      - ./React:/app
+      - ./frontend:/app
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
