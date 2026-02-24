@@ -1,10 +1,10 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-COPY React/package*.json ./
+COPY frontend/package*.json ./
 RUN npm ci
 
-COPY React/ ./
+COPY frontend/ ./
 RUN npm run build
 
 FROM nginx:alpine

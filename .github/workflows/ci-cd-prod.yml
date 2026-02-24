@@ -1,4 +1,4 @@
-name: CI/CD - Build images and deploy (prod)
+name: CI/CD - Build images and deploy
 
 concurrency:
   group: prod-deploy
@@ -9,7 +9,7 @@ on:
     branches: ["main"]
     paths:
       - "backend/**"
-      - "React/**"
+      - "frontend/**"
       - "nginx/**"
       - "docker-compose.prod.yml"
       - ".github/workflows/ci-cd-prod.yml"
@@ -37,15 +37,15 @@ jobs:
           pip install -r backend/requirements-dev.txt
 
       - name: Run Ruff
-        run: ruff check backend
+        run: ruff check backend/app
 
       - name: Run Ruff (format check)
-        run: ruff format --check backend || true
+        run: ruff format --check backend/app || true
 
       - name: Run MyPy
         run: |
           export PYTHONPATH=backend
-          mypy backend
+          mypy backend/app
 
   build-backend:
     needs: lint-backend
@@ -62,7 +62,7 @@ jobs:
           username: dominik-farlik
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Build and push backend (prod)
+      - name: Build and push backend
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -86,7 +86,7 @@ jobs:
           username: dominik-farlik
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Build and push frontend (nginx + React)
+      - name: Build and push frontend
         uses: docker/build-push-action@v6
         with:
           context: .
