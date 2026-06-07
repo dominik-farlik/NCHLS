@@ -4,7 +4,6 @@
 It connects centralized chemical metadata with real-world inventory records and enforces data consistency across the organization.
 
 
-
 ---
 
 ## 🚀 Features
