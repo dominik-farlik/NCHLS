@@ -1,5 +1,3 @@
-import os
-from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Depends
@@ -7,36 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.auth import get_current_subject
 from app.core.config import settings
-from app.db.connection import create_client, init_indexes
 from app.routers import substances, auth, dictionaries, health, records
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    db_enabled = os.getenv("DB_ENABLED", "1") == "1"
-
-    if db_enabled:
-        client = create_client()
-        db = client.nchls
-
-        client.admin.command("ping")
-
-        init_indexes(db)
-
-        app.state.mongo_client = client
-        app.state.db = db
-    else:
-        app.state.mongo_client = None
-        app.state.db = None
-
-    yield
-
-    client = getattr(app.state, "mongo_client", None)
-    if client is not None:
-        client.close()
-
-
-app = FastAPI(title="Chem API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Chem API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

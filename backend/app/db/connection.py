@@ -28,3 +28,6 @@ def init_indexes(db: Database) -> None:
     db.refresh_tokens.create_index("user")
     db.users.create_index("username", unique=True)
     logger.info("Mongo indexes ensured.")
+
+client = create_client()
+db = client[os.getenv("MONGO_DB_NAME", "nchls")]

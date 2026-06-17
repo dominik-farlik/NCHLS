@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 14
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file="../.env",
         env_prefix="",
         extra="ignore",
     )
