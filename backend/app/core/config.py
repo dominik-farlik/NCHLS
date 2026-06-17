@@ -7,12 +7,11 @@ class Settings(BaseSettings):
         "http://localhost:3000",
     )
 
-    MONGO_URL: str | None = None
-    MONGO_USER: str | None = None
-    MONGO_PASSWORD: str | None = None
-    MONGO_HOST: str = "localhost"
-    MONGO_PORT: int = 27017
-    MONGO_AUTH_SOURCE: str = "admin"
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
     UPLOAD_DIR: str = "/app/uploads"
 
     JWT_SECRET_KEY: str = "dev-secret-change-me"
@@ -20,20 +19,7 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 10
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 14
 
-    model_config = SettingsConfigDict(
-        env_file="../.env",
-        env_prefix="",
-        extra="ignore",
-    )
-
-    @property
-    def mongo_dsn(self) -> str:
-        if self.MONGO_URL:
-            return self.MONGO_URL
-        user = self.MONGO_USER or ""
-        pwd = self.MONGO_PASSWORD or ""
-        auth = f"{user}:{pwd}@" if user or pwd else ""
-        return f"mongodb://{auth}{self.MONGO_HOST}:{self.MONGO_PORT}/?authSource={self.MONGO_AUTH_SOURCE}"
+    model_config = SettingsConfigDict(env_file=".env")
 
 
 settings = Settings()
