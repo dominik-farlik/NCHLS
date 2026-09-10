@@ -1,5 +1,6 @@
 from typing import Optional, TYPE_CHECKING
 
+from pydantic import BaseModel
 from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint, Integer, Identity, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,5 +27,16 @@ class Department(Base):
     code: Mapped[Optional[int]] = mapped_column(Integer)
 
     company: Mapped['Company'] = relationship('Company', back_populates='department')
-    department_substance: Mapped[list['DepartmentSubstance']] = relationship('DepartmentSubstance', back_populates='department')
+    substances: Mapped[list['DepartmentSubstance']] = relationship('DepartmentSubstance', back_populates='department')
     employee: Mapped[list['Employee']] = relationship('Employee', back_populates='department')
+
+
+class DepartmentBase(BaseModel):
+    name: str
+    company_id: int
+    manager: Optional[str] = None
+    code: Optional[int] = None
+
+
+class DepartmentRead(DepartmentBase):
+    id: int

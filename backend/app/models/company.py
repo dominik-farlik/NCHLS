@@ -7,7 +7,7 @@ from app.models.base import Base
 
 if TYPE_CHECKING:
     from app.models.department import Department
-    from app.models.substance import Substance
+    from app.models.substance.substance import Substance
 
 
 class Company(Base):
