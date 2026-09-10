@@ -1,81 +1,126 @@
-from pathlib import Path
+import shutil
 
-from fastapi import APIRouter, Body, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Path
+from sqlalchemy.orm import Session
 from sqlmodel import select
+from starlette.responses import FileResponse
 
-from app.core.config import settings
-from app.db.connection import SessionDep
+from app.database import get_db
 from app.models import Substance
-from app.db.substances import (
-    insert_substance,
-    db_update_substance,
-    fetch_safety_sheet,
-    db_delete_substance,
-)
+from app.models.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate
+from config import get_settings
+
 router = APIRouter()
 
-@router.get("")
+@router.get("/")
 async def read_substances(
-        session: SessionDep,
+        db: Session = Depends(get_db),
         department_name: str | None = None,
         year: int | None = None
-        ) -> list[Substance]:
-    substances = session.exec(select(Substance)).all()
+        ) -> list[SubstanceRead]:
+    stmt = select(Substance)
+    substances = list(db.scalars(stmt).all())
     return substances
 
 @router.get("/{substance_id}")
-async def read_substance(substance_id: int, session: SessionDep) -> Substance:
-    substance = session.get(Substance, substance_id)
+async def read_substance(
+        substance_id: int,
+        db: Session = Depends(get_db)
+) -> SubstanceRead:
+    stmt = select(Substance).where(Substance.id == substance_id)
+    substance = db.scalars(stmt).first()
+
     if not substance:
         raise HTTPException(status_code=404, detail="Substance not found")
     return substance
 
 
-@router.post("")
-async def add_substance(substance: Substance = Body(...)):
-    insert_substance(substance.model_dump())
-    return {"status": "ok"}
+@router.post("/{substance_id}/sds", response_model=SubstanceRead)
+async def upload_substance_sds(
+        substance_id: int,
+        file: UploadFile = File(...),
+        db: Session = Depends(get_db)
+) -> SubstanceRead:
+    db_substance = db.get(Substance, substance_id)
+    if not db_substance:
+        raise HTTPException(status_code=404, detail="Substance not found")
+
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+
+    file_path = get_settings().UPLOAD_DIR / f"{substance_id}"
+
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    db_substance.sds = str(file_path)
+    db.commit()
+    db.refresh(db_substance)
+
+    return SubstanceRead.model_validate(db_substance)
 
 
-@router.put("/{substance_id}")
-async def update_substance(substance_id: str, substance: Substance = Body(...)):
-    db_update_substance(substance_id, substance)
-    return {"status": "ok"}
+@router.get("/{substance_id}/sds")
+async def get_substance_sds(
+        substance_id: int,
+        db: Session = Depends(get_db)
+) -> FileResponse:
+    db_substance = db.get(Substance, substance_id)
+    if not db_substance or not db_substance.sds:
+        raise HTTPException(status_code=404, detail="SDS file not found")
+
+    file_path = Path(db_substance.sds)
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File on server not found")
+
+    return FileResponse(path=file_path, media_type="application/pdf", filename=file_path.name)
 
 
-@router.post("/safety_sheet")
-async def add_safety_sheet(safety_sheet: UploadFile):
-    with open(f"{settings.UPLOAD_DIR}/{safety_sheet.filename}", "wb") as file:
-        file.write(await safety_sheet.read())
+@router.post("/", status_code=201, response_model=SubstanceRead)
+async def create_substance(
+        substance_data: SubstanceCreate,
+        db: Session = Depends(get_db)
+) -> SubstanceRead:
+    db_substance = Substance(**substance_data.model_dump())
+
+    db.add(db_substance)
+    db.commit()
+    db.refresh(db_substance)
+
+    return SubstanceRead.model_validate(db_substance)
 
 
-@router.get("/safety_sheet/{substance_id}")
-async def download_safety_sheet(substance_id: str):
-    path = fetch_safety_sheet(substance_id)
+@router.patch("/{substance_id}", response_model=SubstanceRead)
+async def update_substance(
+        substance_id: int,
+        substance_data: SubstanceUpdate,
+        db: Session = Depends(get_db)
+) -> SubstanceRead:
+    db_substance = db.get(Substance, substance_id)
+    if not db_substance:
+        raise HTTPException(status_code=404, detail="Substance not found")
 
-    if not path:
-        raise HTTPException(status_code=404, detail="Bezpečnostní list není evidován.")
+    update_data = substance_data.model_dump(exclude_unset=True)
 
-    p = Path(path)
+    for key, value in update_data.items():
+        setattr(db_substance, key, value)
 
-    if not p.is_absolute():
-        p = Path(settings.UPLOAD_DIR) / p
+    db.commit()
+    db.refresh(db_substance)
 
-    if not p.exists() or not p.is_file():
-        raise HTTPException(
-            status_code=404, detail="Soubor bezpečnostního listu nebyl nalezen na serveru."
-        )
-
-    return FileResponse(
-        str(p),
-        media_type="application/pdf",
-        filename=p.name,
-        headers={"Content-Disposition": f'inline; filename="{p.name}"'},
-    )
+    return SubstanceRead.model_validate(db_substance)
 
 
-@router.delete("/{substance_id}")
-async def delete_substance(substance_id: str):
-    db_delete_substance(substance_id)
-    return {"status": "ok"}
+@router.delete("/{substance_id}", status_code=200)
+async def delete_substance(
+        substance_id: int,
+        db: Session = Depends(get_db)
+) -> dict:
+    db_substance = db.get(Substance, substance_id)
+    if not db_substance:
+        raise HTTPException(status_code=404, detail="Substance not found")
+
+    db.delete(db_substance)
+    db.commit()
+
+    return {"message": "Substance successfully deleted"}

@@ -1,85 +1,97 @@
-from bson import ObjectId
-from fastapi import APIRouter, Body, Query, HTTPException
-from bson.json_util import dumps
-import json
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import select
 
-from app.models import ResponsibleEmployee
-from app.db.records import (
-    insert_record,
-    fetch_records,
-    fetch_record,
-    db_update_record,
-    db_delete_record,
-    db_upsert_inventory_records,
-    get_distinct_years,
-)
-from app.db.departments import db_add_responsible_employee
+from app.database import get_db
+from app.models.department_substance import DepartmentSubstance, DepartmentSubstanceRead, DepartmentSubstanceCreate, \
+    DepartmentSubstanceUpdate
 
 router = APIRouter()
 
 
-@router.get("")
-async def list_records(
-    department_name: str | None = Query(default=None), year: int | None = Query(default=None)
-):
-    filter_: dict[str, str | int] = {}
-    if department_name:
-        filter_["location_name"] = department_name
+@router.get("/")
+async def read_department_substances(
+        db: Session = Depends(get_db),
+        department_id: int | None = None,
+        year: int | None = None
+) -> list[DepartmentSubstanceRead]:
+    stmt = select(DepartmentSubstance)
+    if department_id is not None:
+        stmt = stmt.where(DepartmentSubstance.department_id == department_id)
     if year is not None:
-        filter_["year"] = year
-    cursor = fetch_records(filter_)
-    records = list(cursor)
+        stmt = stmt.where(DepartmentSubstance.year == year)
 
-    for record in records:
-        record["id"] = str(record.pop("_id"))
-        record["substance_id"] = str(record["substance_id"])
-        record["substance"]["id"] = str(record["substance"].pop("_id"))
-
-    return records
+    records = list(db.scalars(stmt))
+    return [DepartmentSubstanceRead.model_validate(r) for r in records]
 
 
-@router.post("")
-async def add_record(record: Record = Body(...)):
-    inserted_id = insert_record(record.model_dump())
-    return {"inserted_id": str(inserted_id)}
+@router.get("/{department_id}/{substance_id}/{year}", response_model=DepartmentSubstanceRead)
+async def read_department_substance(
+        department_id: int,
+        substance_id: int,
+        year: int,
+        db: Session = Depends(get_db)
+) -> DepartmentSubstanceRead:
+    db_record = db.get(DepartmentSubstance, (substance_id, department_id, year))
+    if not db_record:
+        raise HTTPException(status_code=404, detail="Záznam nenalezen.")
+    return DepartmentSubstanceRead.model_validate(db_record)
 
 
-@router.post("/inventory")
-async def add_records(records: list[Record] = Body(...)):
-    if not records:
-        return {"status": "ok", "updated": 0}
+@router.post("", status_code=201, response_model=DepartmentSubstanceRead)
+async def create_department_substance(
+        record_data: DepartmentSubstanceCreate,
+        db: Session = Depends(get_db)
+) -> DepartmentSubstanceRead:
+    db_record = DepartmentSubstance(**record_data.model_dump())
 
-    return db_upsert_inventory_records(records)
+    db.add(db_record)
+    db.commit()
+    db.refresh(db_record)
+
+    return DepartmentSubstanceRead.model_validate(db_record)
+
+
+@router.patch("/{department_id}/{substance_id}/{year}", response_model=DepartmentSubstanceRead)
+async def update_department_substance(
+        department_id: int,
+        substance_id: int,
+        year: int,
+        record_data: DepartmentSubstanceUpdate,
+        db: Session = Depends(get_db)
+) -> DepartmentSubstanceRead:
+    db_record = db.get(DepartmentSubstance, (substance_id, department_id, year))
+    if not db_record:
+        raise HTTPException(status_code=404, detail="Záznam nenalezen.")
+
+    update_data = record_data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_record, key, value)
+
+    db.commit()
+    db.refresh(db_record)
+
+    return DepartmentSubstanceRead.model_validate(db_record)
 
 
 @router.get("/years")
-def get_years():
-    return get_distinct_years()
+def get_years(db: Session = Depends(get_db)):
+    stmt = select(DepartmentSubstance.year).distinct()
+    return db.scalars(stmt).all()
 
 
-@router.post("/inventory/responsible_employee")
-async def add_responsible_employee(data: ResponsibleEmployee):
-    return db_add_responsible_employee(data.employee, data.department_name)
-
-
-@router.get("/{record_id}")
-async def get_record(record_id: str):
-    if not ObjectId.is_valid(record_id):
-        raise HTTPException(status_code=400, detail="Neplatné ID záznamu.")
-    record = fetch_record(record_id)
-    if not record:
+@router.delete("/{department_id}/{substance_id}/{year}", status_code=200)
+async def delete_department_substance(
+        department_id: int,
+        substance_id: int,
+        year: int,
+        db: Session = Depends(get_db)
+) -> dict:
+    db_record = db.get(DepartmentSubstance, (substance_id, department_id, year))
+    if not db_record:
         raise HTTPException(status_code=404, detail="Záznam nenalezen.")
-    record["id"] = str(record.pop("_id"))
-    record["substance_id"] = str(record["substance_id"])
-    return json.loads(dumps(record))
 
+    db.delete(db_record)
+    db.commit()
 
-@router.put("")
-async def update_record(substance: Record = Body(...)):
-    db_update_record(substance)
-    return {"status": "ok"}
-
-
-@router.delete("/{record_id}")
-async def delete_record(record_id: str):
-    db_delete_record(record_id)
+    return {"message": "Record successfully deleted"}

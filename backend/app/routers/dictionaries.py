@@ -1,11 +1,15 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
+from sqlalchemy import Select
+from sqlalchemy.orm import Session
 
 from app.constants.h_phrase import HPhrase
 from app.constants.properties import PROPERTIES, PROPERTIES_BY_NAME
 from app.constants.protocol_categories import DangerCategory
 from app.constants.unit import Unit
 from app.constants.physical_form import PhysicalForm, FormAddition
-from app.db.departments import fetch_departments, fetch_department_by_name
+from app.database import get_db
+from app.models import Department
+from app.models.department import DepartmentRead
 
 router = APIRouter()
 
@@ -26,17 +30,20 @@ async def get_physical_forms():
 
 
 @router.get("/departments")
-async def get_departments():
-    cursor = fetch_departments()
-    departments = list(cursor)
-    for department in departments:
-        department["department_id"] = str(department.pop("_id"))
+async def get_departments(db: Session = Depends(get_db)) -> list[DepartmentRead]:
+    stmt = Select(Department).order_by(Department.name)
+    departments = list(db.scalars(stmt).all())
     return departments
 
 
 @router.get("/departments/by_name")
-async def get_department_by_name(name: str = Query(...)):
-    return fetch_department_by_name(name)
+async def get_department_by_name(
+        db: Session = Depends(get_db),
+        name: str = Query(...)
+):
+    stmt = Select(Department).where().order_by(Department.name)
+    departments = db.scalars(stmt).all()
+    return departments
 
 
 @router.get("/categories/{prop}")
