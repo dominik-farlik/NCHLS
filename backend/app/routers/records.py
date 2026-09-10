@@ -3,8 +3,7 @@ from fastapi import APIRouter, Body, Query, HTTPException
 from bson.json_util import dumps
 import json
 
-from app.models.inventory import ResponsibleEmployee
-from app.models.record import Record
+from app.models import ResponsibleEmployee
 from app.db.records import (
     insert_record,
     fetch_records,

@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: nchls_postgres
+    
+    ports:
+      - "5432:5432"
+    
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: nchls
+    
+    volumes:
+      - postgre:/var/lib/postgresql/data
+      
+    restart: unless-stopped
+
+volumes:
+  postgre:

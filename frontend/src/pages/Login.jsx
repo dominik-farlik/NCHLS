@@ -13,7 +13,7 @@ export default function Login() {
             await login(username, password);
             navigate("/");
         } catch (err) {
-            alert("Neplatné přihlašovací údaje");
+            alert(`Neplatné přihlašovací údaje, ${err.response?.data?.detail || err.message}`);
         }
     }
 

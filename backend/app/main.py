@@ -5,10 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.auth import get_current_subject
 from app.core.config import settings
-from app.routers import substances, auth, dictionaries, health, records
+from app.routers import substances, dictionaries, health, records, export_docs, auth
 
-
-app = FastAPI(title="Chem API", version="1.0.0")
+app = FastAPI(title="NCHLS API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,10 +20,11 @@ app.add_middleware(
 UPLOAD_DIR = Path(settings.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-AuthDep = Depends(get_current_subject)
+#AuthDep = Depends(get_current_subject)
 
 app.include_router(health.router, prefix="/api", tags=["health"])
-app.include_router(dictionaries.router, prefix="/api", tags=["dictionaries"], dependencies=[AuthDep])
-app.include_router(substances.router, prefix="/api/substances", tags=["substances"], dependencies=[AuthDep])
-app.include_router(records.router, prefix="/api/records", tags=["records"], dependencies=[AuthDep])
+app.include_router(dictionaries.router, prefix="/api", tags=["dictionaries"], dependencies=[])
+app.include_router(substances.router, prefix="/api/substances", tags=["substances"], dependencies=[])
+#app.include_router(records.router, prefix="/api/records", tags=["records"], dependencies=[])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+#app.include_router(export_docs.router, prefix="/api/export", tags=["export"], dependencies=[])
