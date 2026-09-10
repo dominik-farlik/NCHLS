@@ -3,13 +3,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 from app.database import get_db
-from app.models.department_substance import DepartmentSubstance, DepartmentSubstanceRead, DepartmentSubstanceCreate, \
+from app.models import DepartmentSubstance
+from app.schemas.department_substance import DepartmentSubstanceRead, DepartmentSubstanceCreate, \
     DepartmentSubstanceUpdate
 
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def read_department_substances(
         db: Session = Depends(get_db),
         department_id: int | None = None,

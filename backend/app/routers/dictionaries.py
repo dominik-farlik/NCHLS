@@ -9,7 +9,7 @@ from app.constants.unit import Unit
 from app.constants.physical_form import PhysicalForm, FormAddition
 from app.database import get_db
 from app.models import Department
-from app.models.department import DepartmentRead
+from app.schemas.department import DepartmentRead
 
 router = APIRouter()
 

@@ -7,7 +7,7 @@ from starlette.responses import FileResponse
 
 from app.database import get_db
 from app.models import Substance
-from app.models.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate
+from app.schemas.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate
 from config import get_settings
 
 router = APIRouter()
