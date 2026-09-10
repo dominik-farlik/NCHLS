@@ -1,7 +1,6 @@
 import decimal
 from typing import Optional
 
-from pydantic import BaseModel
 from sqlalchemy import PrimaryKeyConstraint, String, Text, ForeignKeyConstraint, UniqueConstraint, Integer, Identity, \
     Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -36,13 +35,3 @@ class HazardCategory(Base):
     protocol_table: Mapped[Optional['ProtocolTable']] = relationship('ProtocolTable', back_populates='hazard_category')
     property: Mapped[list['Property']] = relationship('Property', secondary='clp_classification', back_populates='hazard_category')
     substance: Mapped[list['Substance']] = relationship('Substance', secondary='substance_hazard_category', back_populates='hazard_category')
-
-
-class HazardCategoryBase(BaseModel):
-    name: str
-    section: Optional[str] = None
-    max_amount_a: Optional[decimal.Decimal] = None
-    code: Optional[str] = None
-    max_amount_b: Optional[decimal.Decimal] = None
-    protocol_table_name: Optional[str] = None
-    note: Optional[str] = None

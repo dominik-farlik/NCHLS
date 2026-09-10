@@ -1,6 +1,5 @@
 from typing import Optional
 
-from pydantic import BaseModel
 from sqlalchemy import PrimaryKeyConstraint, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -24,6 +23,3 @@ class HStatement(Base):
     property: Mapped[list['Property']] = relationship('Property', secondary='property_h_statement', back_populates='h_statement')
 
 
-class HStatementBase(BaseModel):
-    code: str
-    description: Optional[str]

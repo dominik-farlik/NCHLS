@@ -1,12 +1,9 @@
 from typing import Optional, TYPE_CHECKING
 
-from pydantic import BaseModel
 from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint, Integer, Identity, String
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from app.models import Base
-from app.models.substance.h_statement import HStatementBase
-from app.models.substance.hazard_category import HazardCategoryBase
 
 
 if TYPE_CHECKING:
@@ -39,10 +36,3 @@ class Property(Base):
     exposure_route: Mapped[Optional['ExposureRoute']] = relationship('ExposureRoute', back_populates='property')
     hazard_class: Mapped['HazardClass'] = relationship('HazardClass', back_populates='property')
     substance: Mapped[list['Substance']] = relationship('Substance', secondary='substance_property', back_populates='properties')
-
-class PropertyBase(BaseModel):
-    name: str
-    category_name: Optional[str] = None
-    exposure_route_name: Optional[str] = None
-    h_statement: Optional[list[HStatementBase]] = None
-    hazard_category: Optional[list[HazardCategoryBase]] = None

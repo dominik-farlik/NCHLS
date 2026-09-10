@@ -29,14 +29,3 @@ class Department(Base):
     company: Mapped['Company'] = relationship('Company', back_populates='department')
     substances: Mapped[list['DepartmentSubstance']] = relationship('DepartmentSubstance', back_populates='department')
     employee: Mapped[list['Employee']] = relationship('Employee', back_populates='department')
-
-
-class DepartmentBase(BaseModel):
-    name: str
-    company_id: int
-    manager: Optional[str] = None
-    code: Optional[int] = None
-
-
-class DepartmentRead(DepartmentBase):
-    id: int

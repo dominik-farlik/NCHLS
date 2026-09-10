@@ -1,14 +1,10 @@
 from typing import Optional, TYPE_CHECKING
 
-from pydantic import ConfigDict, BaseModel
 from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint, UniqueConstraint, Index, Integer, Identity, String, \
     Boolean, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
-from app.models.substance.property import PropertyBase
-from app.models.department_substance import SubstanceDepartments
-from app.models.substance.hazard_category import HazardCategoryBase
 
 if TYPE_CHECKING:
     from app.models.company import Company
@@ -53,41 +49,3 @@ class Substance(Base):
     physical_form: Mapped[Optional['PhysicalForm']] = relationship('PhysicalForm', back_populates='substance')
     unit: Mapped[Optional['Unit']] = relationship('Unit', back_populates='substance')
     departments: Mapped[list['DepartmentSubstance']] = relationship('DepartmentSubstance', back_populates='substance')
-
-
-class SubstanceBase(BaseModel):
-    name: str
-    mixture: bool = True
-    physical_form_name: Optional[str] = None
-    unit_name: Optional[str] = None
-    properties: Optional[list[PropertyBase]] = None
-    sds_revision_year: Optional[int] = None
-    note: Optional[str] = None
-    water_toxicity_ec50: Optional[str] = None
-    manufacturer: Optional[str] = None
-    code: Optional[str] = None
-    company_id: Optional[int] = None
-    sds: Optional[str] = None
-    departments: list[SubstanceDepartments] = []
-    hazard_category: list[HazardCategoryBase] = []
-
-class SubstanceCreate(SubstanceBase):
-    pass
-
-class SubstanceUpdate(BaseModel):
-    name: Optional[str] = None
-    mixture: Optional[bool] = None
-    physical_form_name: Optional[str] = None
-    unit_name: Optional[str] = None
-    sds_revision_year: Optional[int] = None
-    note: Optional[str] = None
-    water_toxicity_ec50: Optional[str] = None
-    manufacturer: Optional[str] = None
-    code: Optional[str] = None
-    company_id: Optional[int] = None
-    sds: Optional[str] = None
-
-class SubstanceRead(SubstanceBase):
-    id: int
-
-    model_config = ConfigDict(from_attributes=True)

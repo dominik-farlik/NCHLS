@@ -1,12 +1,10 @@
 import decimal
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, ConfigDict
 from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint, Index, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
-from app.models.department import DepartmentRead
 
 
 if TYPE_CHECKING:
@@ -30,24 +28,3 @@ class DepartmentSubstance(Base):
 
     department: Mapped['Department'] = relationship('Department', back_populates='substances')
     substance: Mapped['Substance'] = relationship('Substance', back_populates='departments')
-
-
-class DepartmentSubstanceBase(BaseModel):
-    department_id: int
-    substance_id: int
-    year: int
-    amount: decimal.Decimal
-
-class DepartmentSubstanceCreate(DepartmentSubstanceBase):
-    pass
-
-class DepartmentSubstanceUpdate(BaseModel):
-    amount: Optional[decimal.Decimal] = None
-
-class DepartmentSubstanceRead(DepartmentSubstanceBase):
-    model_config = ConfigDict(from_attributes=True)
-
-class SubstanceDepartments(BaseModel):
-    department: DepartmentRead
-    year: int
-    amount: decimal.Decimal
