@@ -1,26 +1,56 @@
 import shutil
 
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Path
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlmodel import select
 from starlette.responses import FileResponse
 
 from app.database import get_db
-from app.models import Substance
-from app.schemas.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate
+from app.models import Substance, DepartmentSubstance, Department
+from app.schemas.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate, SubstancePaginationRead
 from config import get_settings
 
 router = APIRouter()
 
-@router.get("/")
+
+@router.get("/", response_model=SubstancePaginationRead)
 async def read_substances(
         db: Session = Depends(get_db),
+        limit: int = 100,
+        offset: int = 0,
+        order_by: str = "name",
+        desc: bool = False,
         department_name: str | None = None,
         year: int | None = None
-        ) -> list[SubstanceRead]:
+):
+    order_column = getattr(Substance, order_by, Substance.name)
+    order_clause = order_column.desc() if desc else order_column.asc()
+
     stmt = select(Substance)
+
+    if department_name or year:
+        stmt = stmt.join(Substance.departments)
+
+    if department_name:
+        stmt = stmt.join(DepartmentSubstance.department)
+        stmt = stmt.where(Department.name == department_name)
+
+    if year:
+        stmt = stmt.where(DepartmentSubstance.year == year)
+
+    count_stmt = select(func.count(Substance.id)).select_from(stmt.subquery())
+    total = db.scalar(count_stmt) or 0
+
+    stmt = stmt.distinct().limit(limit).offset(offset).order_by(order_clause)
+
     substances = list(db.scalars(stmt).all())
-    return substances
+    return {
+        "items": substances,
+        "total": total,
+        "limit": limit,
+        "offset": offset
+    }
 
 @router.get("/{substance_id}")
 async def read_substance(

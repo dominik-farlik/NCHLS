@@ -46,6 +46,13 @@ class SubstanceRead(SubstanceBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class SubstancePaginationRead(BaseModel):
+    items: list[SubstanceRead]
+    total: int
+    limit: int
+    offset: int
+
+
 class SubstanceDepartments(BaseModel):
     department: DepartmentRead
     year: int
