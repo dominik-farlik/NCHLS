@@ -39,7 +39,7 @@ async def read_substances(
     if year:
         stmt = stmt.where(DepartmentSubstance.year == year)
 
-    count_stmt = select(func.count(Substance.id)).select_from(stmt.subquery())
+    count_stmt = select(func.count(Substance.id.distinct())).select_from(stmt.subquery())
     total = db.scalar(count_stmt) or 0
 
     stmt = stmt.distinct().limit(limit).offset(offset).order_by(order_clause)
