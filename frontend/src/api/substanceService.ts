@@ -3,7 +3,7 @@ import type {SubstancePaginationRead} from "../schemas/Substance.ts";
 
 
 export const substanceService = {
-    async getSubstances(offset?: number, order_by?: string, desc?: boolean, department_name?: string, year?: number): Promise<SubstancePaginationRead> {
+    async getSubstances(offset?: number, order_by?: string, desc?: boolean, department_name?: string, year?: number, search?: string): Promise<SubstancePaginationRead> {
         const response = await api.get("/substances", {
             params: {
                 offset,
@@ -11,6 +11,7 @@ export const substanceService = {
                 desc,
                 department_name,
                 year,
+                search,
             }
         });
         return response.data;

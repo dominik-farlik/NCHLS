@@ -22,29 +22,39 @@ async def read_substances(
         order_by: str = "name",
         desc: bool = False,
         department_name: str | None = None,
-        year: int | None = None
+        year: int | None = None,
+        search: str | None = None,
 ):
     order_column = getattr(Substance, order_by, Substance.name)
     order_clause = order_column.desc() if desc else order_column.asc()
 
     stmt = select(Substance)
+    count_stmt = select(func.count(Substance.id.distinct()))
 
-    if department_name or year:
-        stmt = stmt.join(Substance.departments)
+    def apply_filters(query):
+        if department_name or year:
+            query = query.join(Substance.departments)
 
-    if department_name:
-        stmt = stmt.join(DepartmentSubstance.department)
-        stmt = stmt.where(Department.name == department_name)
+        if department_name:
+            query = query.join(DepartmentSubstance.department)
+            query = query.where(Department.name == department_name)
 
-    if year:
-        stmt = stmt.where(DepartmentSubstance.year == year)
+        if year:
+            query = query.where(DepartmentSubstance.year == year)
 
-    count_stmt = select(func.count(Substance.id.distinct())).select_from(stmt.subquery())
+        if search:
+            query = query.where(Substance.name.ilike(f"%{search}%"))
+
+        return query
+
+    stmt = apply_filters(stmt)
+    count_stmt = apply_filters(count_stmt)
+
     total = db.scalar(count_stmt) or 0
 
     stmt = stmt.distinct().limit(limit).offset(offset).order_by(order_clause)
-
     substances = list(db.scalars(stmt).all())
+
     return {
         "items": substances,
         "total": total,
