@@ -1,10 +1,9 @@
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import AddRecord from "./pages/AddRecord.jsx";
-import AddSubstance from "./pages/AddSubstance.jsx";
-import Home from "./pages/Home.jsx";
+import AddSubstance from "./pages/AddSubstance.tsx";
 import Substances from "./pages/Substances.tsx";
 import Records from "./pages/Records.jsx";
-import EditSubstance from "./pages/EditSubstance.jsx";
+import EditSubstance from "./pages/EditSubstance.tsx";
 import Departments from "./pages/Departments.jsx";
 import Inventory from "./pages/Inventory.jsx";
 import EditRecord from "./pages/EditRecord.jsx";
@@ -14,7 +13,7 @@ import Login from "./pages/Login.jsx";
 
 const router = createBrowserRouter(
     [
-        {path: "/", element: <Home/>},
+        {path: "/", element: <Substances/>},
         {path: "/login", element: <Login/>},
         {element: <RequireAuth/>, children: [
                 {path: "/substances", element: <Substances/>},
