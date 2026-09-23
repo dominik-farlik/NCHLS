@@ -7,10 +7,11 @@ from app.schemas.substance.hazard_category import HazardCategoryBase
 
 
 class PropertyBase(BaseModel):
+    id: int
     name: str
     category_name: Optional[str] = None
     exposure_route_name: Optional[str] = None
-    h_statement: Optional[list[HStatementBase]] = None
+    h_statements: Optional[list[HStatementBase]] = None
     hazard_category: Optional[list[HazardCategoryBase]] = None
 
     model_config = ConfigDict(from_attributes=True)

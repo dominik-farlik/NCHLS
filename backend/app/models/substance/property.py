@@ -30,7 +30,7 @@ class Property(Base):
     category_name: Mapped[Optional[str]] = mapped_column("category", String(10), comment='Kategorie vlastnosti (1, 2, 1A, ...)')
     exposure_route_name: Mapped[Optional[str]] = mapped_column("exposure_route", String(20), comment='Cesta expozice (oral, inhal, dermal)')
 
-    h_statement: Mapped[list['HStatement']] = relationship('HStatement', secondary='property_h_statement', back_populates='property')
+    h_statements: Mapped[list['HStatement']] = relationship('HStatement', secondary='property_h_statement', back_populates='property')
     hazard_category: Mapped[list['HazardCategory']] = relationship('HazardCategory', secondary='clp_classification', back_populates='property')
     category: Mapped[Optional['Category']] = relationship('Category', back_populates='property')
     exposure_route: Mapped[Optional['ExposureRoute']] = relationship('ExposureRoute', back_populates='property')

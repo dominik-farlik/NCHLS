@@ -20,6 +20,6 @@ class HStatement(Base):
     code: Mapped[str] = mapped_column(String(20), primary_key=True)
     description: Mapped[Optional[str]] = mapped_column(Text)
 
-    property: Mapped[list['Property']] = relationship('Property', secondary='property_h_statement', back_populates='h_statement')
+    property: Mapped[list['Property']] = relationship('Property', secondary='property_h_statement', back_populates='h_statements')
 
 
