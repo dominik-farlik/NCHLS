@@ -1,13 +1,15 @@
 import shutil
+from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Path
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlmodel import select
+from starlette import status
 from starlette.responses import FileResponse
 
 from app.database import get_db
-from app.models import Substance, DepartmentSubstance, Department
+from app.models import Substance, DepartmentSubstance, Department, Property
 from app.schemas.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate, SubstancePaginationRead
 from config import get_settings
 
@@ -62,7 +64,8 @@ async def read_substances(
         "offset": offset
     }
 
-@router.get("/{substance_id}")
+
+@router.get("/{substance_id}", response_model=SubstanceRead)
 async def read_substance(
         substance_id: int,
         db: Session = Depends(get_db)
@@ -88,7 +91,7 @@ async def upload_substance_sds(
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
 
-    file_path = get_settings().UPLOAD_DIR / f"{substance_id}"
+    file_path = get_settings().UPLOAD_DIR / f"{substance_id}.pdf"
 
     with file_path.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
@@ -121,7 +124,20 @@ async def create_substance(
         substance_data: SubstanceCreate,
         db: Session = Depends(get_db)
 ) -> SubstanceRead:
-    db_substance = Substance(**substance_data.model_dump())
+    existing_substance = db.scalars(select(Substance).where(Substance.name == substance_data.name)).first()
+    if existing_substance:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Látka s tímto názvem již existuje.",
+        )
+    data = substance_data.model_dump(exclude={"property_ids", "properties"})
+    db_substance = Substance(**data)
+
+    if substance_data.property_ids:
+        properties = db.execute(
+            select(Property).where(Property.id.in_(substance_data.property_ids))
+        ).scalars().all()
+        db_substance.properties = list(properties)
 
     db.add(db_substance)
     db.commit()
@@ -142,9 +158,18 @@ async def update_substance(
 
     update_data = substance_data.model_dump(exclude_unset=True)
 
+    if "property_ids" in update_data:
+        property_ids = update_data.pop("property_ids")
+        if property_ids is not None:
+            properties = db.execute(
+                select(Property).where(Property.id.in_(property_ids))
+            ).scalars().all()
+            db_substance.properties = list(properties)
+
     for key, value in update_data.items():
         setattr(db_substance, key, value)
 
+    db.add(db_substance)
     db.commit()
     db.refresh(db_substance)
 
