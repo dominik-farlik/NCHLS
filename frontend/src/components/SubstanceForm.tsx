@@ -125,62 +125,67 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
                     <span
                         className="text-xs font-medium text-slate-500 bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-full">Dynamický seznam</span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-2 md:grid px-2">
-                    <div className="md:col-span-4">
-                        {substance.property_ids && substance.property_ids.map((propertyId, index) => {
-                            return (
-                                <div key={index} className="flex items-center gap-2 mb-2">
-                                    <select
-                                        className={`${inputClass} w-64 shrink-0`}
-                                        onChange={(e) => {
-                                            const updatedProperties = [...substance.property_ids];
-                                            updatedProperties[index] = Number(e.target.value);
-                                            setSubstance({ ...substance, property_ids: updatedProperties });
-                                        }}
-                                        value={propertyId}
-                                    >
-                                        <option value="">-- Vyberte vlastnost --</option>
-                                        {propertyList.map((property) => (
-                                            <option key={property.id} value={property.id}>
-                                                {property.name} {property.category_name} {property.exposure_route_name && `(${property.exposure_route_name})`}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    <div className="md:col-span-6 flex flex-col gap-2">
+                    <div className="space-y-3">
                         {substance.property_ids && substance.property_ids.map((propertyId, index) => {
                             const selectedProperty = propertyList.find(p => p.id === propertyId);
 
-                            if (!selectedProperty || !selectedProperty.h_statements || selectedProperty.h_statements.length === 0) {
-                                return null;
-                            }
-
                             return (
-                                <div key={index} className="flex flex-wrap items-center gap-2 min-h-[38px]">
-                                    {selectedProperty.h_statements.map(statement => (
-                                        <div
-                                            key={statement.code}
-                                            className="bg-indigo-50 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded text-indigo-700 dark:text-indigo-300 border dark:border-indigo-300/30 text-sm"
+                                <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-transparent">
+
+                                    <div className="md:col-span-4">
+                                        <select
+                                            className={`${inputClass} w-full`}
+                                            onChange={(e) => {
+                                                const updatedProperties = [...substance.property_ids];
+                                                updatedProperties[index] = Number(e.target.value);
+                                                setSubstance({ ...substance, property_ids: updatedProperties });
+                                            }}
+                                            value={propertyId}
                                         >
-                                            {statement.code}
-                                        </div>
-                                    ))}
+                                            <option value="">-- Vyberte vlastnost --</option>
+                                            {propertyList.map((property) => (
+                                                <option key={property.id} value={property.id}>
+                                                    {property.name} {property.category_name} {property.exposure_route_name && `(${property.exposure_route_name})`}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="md:col-span-5 flex flex-wrap items-center gap-1.5 min-h-[38px]">
+                                        {selectedProperty?.h_statements?.map(statement => (
+                                            <div
+                                                key={statement.code}
+                                                className="bg-indigo-50 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded text-indigo-700 dark:text-indigo-300 border dark:border-indigo-300/30 text-sm"
+                                            >
+                                                {statement.code}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="md:col-span-3 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const updated = substance.property_ids.filter((_, i) => i !== index);
+                                                setSubstance({ ...substance, property_ids: updated });
+                                            }}
+                                            className="w-full sm:w-auto px-4 py-2 text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors shadow-sm"
+                                        >
+                                            Odstranit vlastnost
+                                        </button>
+                                    </div>
+
                                 </div>
                             );
                         })}
-                    </div>
                     <div className="md:col-span-4">
                         <button
-                            className={inputClass}
+                            className={`${inputClass} hover:bg-indigo-50 dark:hover:bg-indigo-900/40 dark:hover:border-indigo-500`}
                             type="button"
                             onClick={() => {
                                 setSubstance({
                                     ...substance,
-                                    property_ids: [...(substance.property_ids || []), null]
+                                    property_ids: [...(substance.property_ids || []), undefined]
                                 })
                             }}
                         >

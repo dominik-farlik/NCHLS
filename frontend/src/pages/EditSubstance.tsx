@@ -22,9 +22,20 @@ function EditSubstance() {
 
     const handleSubmit = async (e, substance, sds) => {
         e.preventDefault();
-        console.log(substance);
+
+        const cleanedPropertyIds = substance.property_ids
+            ? substance.property_ids
+                .filter(id => id !== "" && id !== null && id !== undefined)
+                .map(id => Number(id))
+            : [];
+
+        const payload = {
+            ...substance,
+            property_ids: cleanedPropertyIds,
+        };
+
         try {
-            await api.patch(`/substances/${substanceId}`, substance);
+            await api.patch(`/substances/${substanceId}`, payload);
 
             if (sds) {
                 const formData = new FormData();

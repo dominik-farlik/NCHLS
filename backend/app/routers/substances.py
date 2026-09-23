@@ -133,11 +133,18 @@ async def create_substance(
     data = substance_data.model_dump(exclude={"property_ids", "properties"})
     db_substance = Substance(**data)
 
-    if substance_data.property_ids:
-        properties = db.execute(
-            select(Property).where(Property.id.in_(substance_data.property_ids))
-        ).scalars().all()
-        db_substance.properties = list(properties)
+    if "property_ids" in substance_data:
+        property_ids = substance_data.pop("property_ids")
+        if property_ids is not None:
+            valid_property_ids = [pid for pid in property_ids if pid not in (None, "")]
+
+            if valid_property_ids:
+                properties = db.execute(
+                    select(Property).where(Property.id.in_(valid_property_ids))
+                ).scalars().all()
+                db_substance.properties = list(properties)
+            else:
+                db_substance.properties = []
 
     db.add(db_substance)
     db.commit()
@@ -161,10 +168,15 @@ async def update_substance(
     if "property_ids" in update_data:
         property_ids = update_data.pop("property_ids")
         if property_ids is not None:
-            properties = db.execute(
-                select(Property).where(Property.id.in_(property_ids))
-            ).scalars().all()
-            db_substance.properties = list(properties)
+            valid_property_ids = [pid for pid in property_ids if pid not in (None, "")]
+
+            if valid_property_ids:
+                properties = db.execute(
+                    select(Property).where(Property.id.in_(valid_property_ids))
+                ).scalars().all()
+                db_substance.properties = list(properties)
+            else:
+                db_substance.properties = []
 
     for key, value in update_data.items():
         setattr(db_substance, key, value)
