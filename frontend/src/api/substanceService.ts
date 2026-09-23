@@ -1,5 +1,5 @@
 import api from "./axios.ts";
-import type {SubstancePaginationRead} from "../schemas/Substance.ts";
+import type {SubstancePaginationRead, SubstanceRead} from "../schemas/Substance.ts";
 
 
 export const substanceService = {
@@ -16,4 +16,9 @@ export const substanceService = {
         });
         return response.data;
     },
+
+    async getSubstance(substance_id: number): Promise<SubstanceRead> {
+        const response = await api.get(`/substances/${substance_id}`);
+        return response.data;
+    }
 }
