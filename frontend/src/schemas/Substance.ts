@@ -20,6 +20,22 @@ export interface SubstanceRead {
     hazard_category: HazardCategory[];
 }
 
+export interface SubstanceCreate {
+    name: string;
+    mixture: boolean;
+    physical_form_name?: string;
+    unit_name?: string;
+    property_ids?: number[];
+    sds_revision_year?: number;
+    note?: string;
+    water_toxicity_ec50?: string;
+    manufacturer?: string;
+    code?: string;
+    company_id?: number;
+    sds?: string;
+    hazard_category: HazardCategory[];
+}
+
 export interface SubstancePaginationRead {
     items: SubstanceRead[];
     total: number;
