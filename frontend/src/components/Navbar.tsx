@@ -82,7 +82,7 @@ function Navbar() {
                         <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
                             <NavLink to="/substances" className={navLinkClass}>Látky</NavLink>
                             <NavLink to="/records" className={navLinkClass}>Záznamy</NavLink>
-                            <NavLink to="/departments" className={navLinkClass}>Inventura</NavLink>
+                            <NavLink to="/departments" className={navLinkClass}>Oddělení</NavLink>
                         </div>
                     </div>
 
@@ -175,7 +175,7 @@ function Navbar() {
                     <div className="pt-2 pb-3 space-y-1">
                         <NavLink to="/substances" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavLinkClass}>Látky</NavLink>
                         <NavLink to="/records" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavLinkClass}>Záznamy</NavLink>
-                        <NavLink to="/departments" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavLinkClass}>Inventura</NavLink>
+                        <NavLink to="/departments" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavLinkClass}>Oddělení</NavLink>
                     </div>
                     <div className="pt-4 pb-3 border-t border-slate-200 dark:border-slate-800">
                         {username ? (

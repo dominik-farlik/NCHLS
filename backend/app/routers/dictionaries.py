@@ -27,13 +27,6 @@ async def get_physical_forms(db: Session = Depends(get_db)):
     return db.scalars(Select(PhysicalForm)).all()
 
 
-@router.get("/departments")
-async def get_departments(db: Session = Depends(get_db)) -> list[DepartmentRead]:
-    stmt = Select(Department).order_by(Department.name)
-    departments = list(db.scalars(stmt).all())
-    return departments
-
-
 @router.get("/departments/by_name")
 async def get_department_by_name(
         db: Session = Depends(get_db),

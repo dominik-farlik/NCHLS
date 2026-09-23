@@ -4,7 +4,7 @@ import AddSubstance from "./pages/AddSubstance.tsx";
 import Substances from "./pages/Substances.tsx";
 import Records from "./pages/Records.jsx";
 import EditSubstance from "./pages/EditSubstance.tsx";
-import Departments from "./pages/Departments.jsx";
+import Departments from "./pages/Departments.tsx";
 import Inventory from "./pages/Inventory.jsx";
 import EditRecord from "./pages/EditRecord.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
