@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import Select
 from sqlmodel import Session
+from starlette import status
 
 from app.database import get_db
 from app.models import Department
-from app.schemas.department import DepartmentRead
+from app.schemas.department import DepartmentRead, DepartmentUpdate
 
 router = APIRouter()
 
@@ -14,3 +15,37 @@ async def get_departments(db: Session = Depends(get_db)) -> list[DepartmentRead]
     stmt = Select(Department).order_by(Department.code)
     departments = list(db.scalars(stmt).all())
     return departments
+
+
+@router.get("/{department_id}")
+async def get_department(
+        department_id: int,
+        db: Session = Depends(get_db)
+):
+    stmt = Select(Department).where(Department.id == department_id)
+    departments = db.scalars(stmt).first()
+    return departments
+
+
+@router.patch("/{department_id}", status_code=200)
+async def update_departments(
+        department_id: int,
+        department_data: DepartmentUpdate,
+        db: Session = Depends(get_db)
+):
+    department = db.get(Department, department_id)
+    if not department:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Oddělení nebylo nalezeno."
+        )
+
+    update_data = department_data.model_dump(exclude_unset=True)
+
+    for key, value in update_data.items():
+        setattr(department, key, value)
+
+    db.commit()
+    db.refresh(department)
+
+    return {"message": "Oddělení bylo upraveno.", "department": department}
