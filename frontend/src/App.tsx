@@ -5,10 +5,11 @@ import Substances from "./pages/Substances.tsx";
 import Records from "./pages/Records.jsx";
 import EditSubstance from "./pages/EditSubstance.tsx";
 import Departments from "./pages/Departments.tsx";
-import Inventory from "./pages/Inventory.jsx";
+import Department from "./pages/Department.tsx";
 import EditRecord from "./pages/EditRecord.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import Login from "./pages/Login.jsx";
+import {Toaster} from "react-hot-toast";
 
 
 const router = createBrowserRouter(
@@ -22,7 +23,7 @@ const router = createBrowserRouter(
                 {path: "/records", element: <Records/>},
                 {path: "/records/:departmentName", element: <Records/>},
                 {path: "/departments", element: <Departments/>},
-                {path: "/inventory/:departmentName", element: <Inventory/>},
+                {path: "/department/:departmentId", element: <Department/>},
                 {path: "/add-record", element: <AddRecord/>},
                 {path: "/edit-record/:recordId", element: <EditRecord/>},
 
@@ -34,6 +35,7 @@ function App() {
     return (
         <>
             <RouterProvider router={router}/>
+            <Toaster position="top-center"/>
         </>
     );
 }

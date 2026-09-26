@@ -1,7 +1,7 @@
-import type {Department} from "./Department.js";
+import type {DepartmentRead} from "./Department.js";
 
 export interface SubstanceDepartment {
-    department: Department;
+    department: DepartmentRead;
     year: number;
     amount: number;
 }

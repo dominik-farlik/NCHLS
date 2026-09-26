@@ -54,7 +54,7 @@ function Departments() {
                                     departments.map((department) => (
                                         <Link
                                             key={department.id}
-                                            to={`/inventory/${department.name}`}
+                                            to={`/department/${department.id}`}
                                             className="flex items-center hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors text-sm text-slate-700 dark:text-slate-300 group"
                                         >
                                             {/* Kód */}
