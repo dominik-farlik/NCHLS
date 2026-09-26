@@ -13,11 +13,6 @@ class DepartmentSubstanceBase(BaseModel):
     year: int
     amount: decimal.Decimal
 
-class DepartmentSubstanceCreate(DepartmentSubstanceBase):
-    pass
-
-class DepartmentSubstanceUpdate(BaseModel):
-    amount: Optional[decimal.Decimal] = None
 
 class DepartmentSubstanceRead(BaseModel):
     department: DepartmentRead
@@ -26,3 +21,16 @@ class DepartmentSubstanceRead(BaseModel):
     amount: decimal.Decimal
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class DepartmentSubstanceCreate(DepartmentSubstanceBase):
+    pass
+
+class DepartmentSubstanceUpdate(BaseModel):
+    amount: Optional[decimal.Decimal] = None
+
+
+class DepartmentSubstanceDelete(BaseModel):
+    substance_id: int
+    department_id: int
+    year: int

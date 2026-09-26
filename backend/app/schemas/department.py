@@ -14,3 +14,12 @@ class DepartmentRead(DepartmentBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class DepartmentUpdate(BaseModel):
+    name: Optional[str] = None
+    company_id: Optional[int] = None
+    manager: Optional[str] = None
+    code: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
