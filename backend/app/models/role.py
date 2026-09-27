@@ -7,7 +7,7 @@ from app.models.base import Base
 
 
 if TYPE_CHECKING:
-    from app.models.employee import Employee
+    from app.models.user import User
 
 
 class Role(Base):
@@ -21,4 +21,4 @@ class Role(Base):
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text)
 
-    employee: Mapped[list['Employee']] = relationship('Employee', secondary='employee_role', back_populates='role')
+    user: Mapped[list['User']] = relationship('User', secondary='user_role', back_populates='role')

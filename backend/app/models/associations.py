@@ -44,12 +44,12 @@ t_substance_property = Table(
 )
 
 
-t_employee_role = Table(
-    'employee_role', Base.metadata,
-    Column('employee_id', Integer, primary_key=True),
+t_user_role = Table(
+    'user_role', Base.metadata,
+    Column('user_id', Integer, primary_key=True),
     Column('role_id', Integer, primary_key=True),
-    ForeignKeyConstraint(['employee_id'], ['employee.id'], ondelete='CASCADE', name='employee_role_employee_id_fk'),
-    ForeignKeyConstraint(['role_id'], ['role.id'], ondelete='CASCADE', name='employee_role_role_id_fk'),
-    PrimaryKeyConstraint('employee_id', 'role_id', name='employee_role_pk'),
-    Index('idx_employee_role_role_id', 'role_id')
+    ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE', name='user_role_user_id_fk'),
+    ForeignKeyConstraint(['role_id'], ['role.id'], ondelete='CASCADE', name='user_role_role_id_fk'),
+    PrimaryKeyConstraint('user_id', 'role_id', name='user_role_pk'),
+    Index('idx_user_role_role_id', 'role_id')
 )

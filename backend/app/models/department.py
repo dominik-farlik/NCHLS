@@ -10,7 +10,7 @@ from app.models.base import Base
 if TYPE_CHECKING:
     from app.models.company import Company
     from app.models.department_substance import DepartmentSubstance
-    from app.models.employee import Employee
+    from app.models.user import User
 
 
 class Department(Base):
@@ -28,4 +28,4 @@ class Department(Base):
 
     company: Mapped['Company'] = relationship('Company', back_populates='department')
     substances: Mapped[list['DepartmentSubstance']] = relationship('DepartmentSubstance', back_populates='department')
-    employee: Mapped[list['Employee']] = relationship('Employee', back_populates='department')
+    user: Mapped[list['User']] = relationship('User', back_populates='department')
