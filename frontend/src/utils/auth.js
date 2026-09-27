@@ -1,4 +1,4 @@
-import api from "../api/axios";
+import api from "../api/axios.ts";
 
 function emitAuthChange() {
     window.dispatchEvent(new Event("auth-token-changed"));
