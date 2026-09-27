@@ -16,5 +16,15 @@ export const departmentSubstanceService = {
     async createDepartmentSubstance(createData: DepartmentSubstanceCreate): Promise<SubstanceRead> {
         const response = await api.post("/records", createData);
         return response.data;
+    },
+
+    async updateDepartmentSubstance(updateData: DepartmentSubstanceCreate): Promise<SubstanceRead> {
+        const response = await api.patch("/records", updateData);
+        return response.data;
+    },
+
+    async deleteDepartmentSubstance(substanceId: number, departmentId: number, year: number): Promise<void> {
+        const payload = { substance_id: substanceId, department_id: departmentId, year: year };
+        await api.delete("/records", {data: payload})
     }
 }

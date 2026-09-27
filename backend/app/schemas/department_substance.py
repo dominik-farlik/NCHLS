@@ -27,6 +27,9 @@ class DepartmentSubstanceCreate(DepartmentSubstanceBase):
     pass
 
 class DepartmentSubstanceUpdate(BaseModel):
+    substance_id: int
+    department_id: int
+    year: int
     amount: Optional[decimal.Decimal] = None
 
 

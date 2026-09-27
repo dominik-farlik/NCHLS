@@ -46,9 +46,21 @@ export default function Department() {
     }, [departmentId, year]);
 
     const handleAmountChange = (index: number, val: number) => {
-        const copy = [...records];
-        copy[index].amount = val;
-        setRecords(copy);
+        const payload: DepartmentSubstanceCreate = {
+            department_id: department.id,
+            substance_id: records[index].substance.id,
+            year: year,
+            amount: val
+        }
+
+        departmentSubstanceService.updateDepartmentSubstance(payload)
+            .then(() => {
+                toast.success("Množství změneno");
+                const copy = [...records];
+                copy[index].amount = val;
+                setRecords(copy);
+            })
+            .catch((err) => toast.error(err));
     };
 
     const handleAddRecord = () => {
@@ -81,12 +93,12 @@ export default function Department() {
     };
 
     const handleDelete = (substanceId: number) => {
-        const payload = { substance_id: substanceId, department_id: department.id, year: year };
-        api.delete("/records/", { data: payload })
-            .then(()=> toast.success("Látka byla úspěšně smazána"))
+        departmentSubstanceService.deleteDepartmentSubstance(substanceId, department.id, year)
+            .then(()=> {
+                setRecords(records.filter((r) => r.substance.id !== substanceId));
+                toast.success("Látka byla úspěšně smazána")
+            })
             .catch((err)=> toast.error(err))
-
-        setRecords(records.filter((r) => r.substance.id !== substanceId));
     };
 
     const handleSubmit = async () => {

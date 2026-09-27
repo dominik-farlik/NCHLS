@@ -113,7 +113,7 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
                         <label className={labelClass}>Datum revize listu</label>
                         <input type="number" name="sds_revision_year" value={substance.sds_revision_year}
                                onChange={handleChange} className={`${inputClass} py-4`}
-                               placeholder="Rok (např. 2024)" disabled={!substance.sds}/>
+                               placeholder="Rok (např. 2024)"/>
                     </div>
                 </div>
             </div>

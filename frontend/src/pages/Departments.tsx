@@ -24,7 +24,6 @@ function Departments() {
             <Navbar />
             <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6 min-w-0">
 
-                {/* Hlavička / Filtr (volitelně pro budoucí rozšíření, styl sjednocen se Substances) */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex items-center justify-between w-full">
                     <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100 px-2">
                         Seznam oddělení
@@ -40,8 +39,7 @@ function Departments() {
                             <div className="sticky top-0 z-30 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider flex items-center shadow-sm">
                                 <div className="px-6 py-4 w-[140px]">Kód</div>
                                 <div className="px-6 py-4 flex-1 min-w-[200px]">Název</div>
-                                <div className="px-6 py-4 flex-1 min-w-[200px]">Zodpovědná osoba</div>
-                                <div className="px-6 py-4 w-[140px] text-right">Počet látek</div>
+                                <div className="px-6 py-4 flex-1 min-w-[200px] text-right">Zodpovědná osoba</div>
                             </div>
 
                             {/* Tělo tabulky */}
@@ -68,15 +66,8 @@ function Departments() {
                                             </div>
 
                                             {/* Zodpovědná osoba */}
-                                            <div className="px-6 py-4 flex-1 min-w-[200px] text-slate-600 dark:text-slate-300 truncate">
+                                            <div className="px-6 py-4 flex-1 min-w-[200px] text-slate-600 dark:text-slate-300 truncate text-right">
                                                 {department.manager || "-"}
-                                            </div>
-
-                                            {/* Počet látek (zarovnaný vpravo s monospace fontem jako množství) */}
-                                            <div className="px-6 py-4 w-[140px] text-right font-mono">
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                                    0
-                                                </span>
                                             </div>
                                         </Link>
                                     ))
