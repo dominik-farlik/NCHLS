@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { openSafetySheet } from "../utils/fileUtils.jsx";
-import Spinner from "../components/Spinner.jsx";
+import { openSafetySheet } from "../utils/fileUtils.ts";
 import AddButton from "../components/AddButton.jsx";
 import api from "../api/axios.js";
 import { substanceService } from "../api/substanceService.ts";
@@ -54,16 +53,9 @@ function Substances() {
     return (
         <Page>
             <Navbar />
-            {/* PŘIDÁNO: w-full a min-w-0 pro zabránění přetečení flex kontejneru */}
             <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6 min-w-0">
-
-                {/* Horní panel */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4 w-full">
-
-                    {/* Skupina pro vyhledávání a filtry */}
                     <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4 w-full xl:w-auto">
-
-                        {/* Vyhledávání */}
                         <div className="w-full sm:w-64 md:w-72">
                             <input
                                 type="text"
@@ -77,7 +69,6 @@ function Substances() {
                             />
                         </div>
 
-                        {/* Filtr oddělení */}
                         <div className="w-full sm:w-64 md:w-72">
                             <select
                                 id="department"
@@ -98,7 +89,6 @@ function Substances() {
                             </select>
                         </div>
 
-                        {/* Filtr roku */}
                         <div className="w-full sm:w-40">
                             <select
                                 id="year"
@@ -120,13 +110,11 @@ function Substances() {
                         </div>
                     </div>
 
-                    {/* Tlačítko pro přidání */}
                     <div className="shrink-0 w-full sm:w-auto flex justify-end">
                         <AddButton endpoint='/add-substance' />
                     </div>
                 </div>
 
-                {/* Stránkování (beze změny) */}
                 {pages > 1 && (
                     <div className="flex flex-row flex-wrap gap-2 items-center">
                         {Array.from({ length: pages }).map((_, index) => (
@@ -145,16 +133,13 @@ function Substances() {
                     </div>
                 )}
 
-                {/* Hlavní kontejner tabulky - PŘIDÁNO: min-w-0 a w-full pro správný vnitřní scroll */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm flex flex-col w-full min-w-0 overflow-hidden">
-                    {/* Vnitřní scrollovací wrapper - w-full zajistí, že nebude větší než rodič */}
                     <div className="overflow-x-auto overflow-y-auto max-h-[70vh] relative custom-scrollbar w-full">
-                        <div className="min-w-[1300px] flex flex-col">
+                        <div className="min-w-[1500px] flex flex-col">
 
-                            {/* Hlavička tabulky */}
                             <div className="sticky top-0 z-30 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider flex items-center shadow-sm">
                                 <div
-                                    className="sticky left-0 z-40 bg-slate-50 dark:bg-slate-950 px-5 py-4 w-[260px] flex justify-between items-center cursor-pointer select-none border-r border-slate-200 dark:border-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                                    className="sticky left-0 z-40 bg-slate-50 dark:bg-slate-950 px-5 py-4 w-[280px] flex justify-between items-center cursor-pointer select-none border-r border-slate-200 dark:border-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
                                     onClick={() => {
                                         setOrderBy("name");
                                         setSortDesc(!sortDesc);
@@ -166,30 +151,25 @@ function Substances() {
                                 <div className="px-5 py-4 w-[110px]">Látka/Směs</div>
                                 <div className="px-5 py-4 w-[140px]">Fyzikální forma</div>
                                 <div className="px-5 py-4 w-[160px]">Doplňující forma</div>
-                                <div className="px-5 py-4 flex-1 min-w-[200px]">Vlastnosti</div>
+                                <div className="px-5 py-4 flex-1 min-w-[150px]">Vlastnosti</div>
                                 <div className="px-5 py-4 w-[70px] text-center" title="Bezpečnostní list">BL</div>
                                 <div className="px-5 py-4 w-[120px] text-right" title="Maximální skladované množství v tunách">Max. sklad.</div>
                                 <div className="px-5 py-4 w-[120px]">Kat. nebezp.</div>
-                                <div className="px-5 py-4 w-[100px]">EC50</div>
-                                <div className="px-5 py-4 w-[90px]">Jednotka</div>
+                                <div className="px-5 py-4 w-[100px]">Jednotka</div>
                                 <div className="px-5 py-4 w-[160px]">Oddělení</div>
                             </div>
 
-                            {/* Tělo tabulky */}
                             <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
                                 {loading ? (
-                                    <div className="py-20 flex justify-center items-center">
-                                        <Spinner />
-                                    </div>
+                                    <div className="py-20 flex justify-center items-center">loading...</div>
                                 ) : substances && substances.length > 0 ? (
                                     substances.map((substance) => (
                                         <div
                                             key={substance.id}
                                             className="flex items-center hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors text-sm text-slate-700 dark:text-slate-300 group"
                                         >
-                                            {/* Fixní levý sloupec */}
                                             <div
-                                                className="sticky left-0 z-20 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/40 px-5 py-3.5 w-[260px] font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 cursor-pointer truncate border-r border-slate-100 dark:border-slate-800/60 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.3)]"
+                                                className="sticky left-0 z-20 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/40 px-5 py-3.5 w-[280px] font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 cursor-pointer truncate border-r border-slate-100 dark:border-slate-800/60 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.3)]"
                                                 onClick={() => navigate(`/edit-substance/${substance.id}`)}
                                                 title={substance.name}
                                             >
@@ -212,14 +192,14 @@ function Substances() {
                                                 {substance.note || "-"}
                                             </div>
 
-                                            <div className="px-5 py-3.5 flex-1 min-w-[200px] flex flex-col gap-1.5">
-                                                {substance.properties && substance.properties.map((property, index) => (
-                                                    <div key={index} className="flex justify-between items-center text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 px-2.5 py-1.5 rounded-md">
+                                            <div className="px-5 py-3.5 flex-1 min-w-[150px] flex flex-col gap-1.5">
+                                                {substance.properties && substance.properties.map((property) => (
+                                                    <div key={property.id} className="flex justify-between items-center text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 px-2.5 py-1.5 rounded-md">
                                                         <span className="text-slate-600 dark:text-slate-300 font-medium">
                                                             {`${property.name} ${property.category_name || ""} ${property.exposure_route_name ? `(${property.exposure_route_name})` : ""}`}
                                                         </span>
                                                         <div className="flex gap-1.5 font-mono text-[11px] text-indigo-600 dark:text-indigo-400">
-                                                            {property.h_statement.map((statement, idx) => (
+                                                            {property.h_statements && property.h_statements.map((statement, idx) => (
                                                                 <span key={idx} className="bg-indigo-50 dark:bg-indigo-900/40 px-1 rounded">{statement.code}</span>
                                                             ))}
                                                         </div>
@@ -249,15 +229,11 @@ function Substances() {
                                                 ) : "-"}
                                             </div>
 
-                                            <div className="px-5 py-3.5 w-[100px] font-mono truncate" title={substance.water_toxicity_ec50 ?? ""}>
-                                                {substance.water_toxicity_ec50 ?? "-"}
-                                            </div>
-
-                                            <div className="px-5 py-3.5 w-[90px] text-slate-500 truncate" title={substance.unit_name ?? ""}>
+                                            <div className="px-5 py-3.5 w-[100px] text-slate-500 truncate" title={substance.unit_name ?? ""}>
                                                 {substance.unit_name ?? "-"}
                                             </div>
 
-                                            <div className="px-5 py-3.5 w-[160px] shrink-0 flex flex-col items-start gap-1.5 text-[11px]">
+                                            <div className="px-5 py-3.5 w-[160px] flex flex-col items-start gap-1.5 text-[11px]">
                                                 {substance.departments?.map((d, index) => (
                                                     <span
                                                         key={index}
