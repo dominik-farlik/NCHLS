@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import api from "../api/axios.ts";
 import Page from "../components/Page.tsx";
 import Navbar from "../components/Navbar.tsx";
-import Spinner from "../components/Spinner";
 
 function Departments() {
     const [departments, setDepartments] = useState([]);
@@ -45,9 +44,7 @@ function Departments() {
                             {/* Tělo tabulky */}
                             <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
                                 {loading ? (
-                                    <div className="py-20 flex justify-center items-center">
-                                        <Spinner />
-                                    </div>
+                                    <div className="py-20 flex justify-center items-center">loading...</div>
                                 ) : departments && departments.length > 0 ? (
                                     departments.map((department) => (
                                         <Link

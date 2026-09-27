@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import Alert from "../components/Alert.jsx";
 import SubstanceForm from "../components/SubstanceForm.tsx";
 import Navbar from "../components/Navbar.tsx";
 import Page from "../components/Page.tsx";
@@ -7,7 +5,6 @@ import api from "../api/axios.js";
 import type {SubstanceCreate} from "../schemas/Substance.ts";
 
 function AddSubstance() {
-    const [alert, setAlert] = useState({ message: "", type: "" });
 
     const handleSubmit = async (e, substance, sds) => {
         e.preventDefault();
@@ -28,8 +25,6 @@ function AddSubstance() {
             const response = await api.post("/substances", payload);
             const createdSubstance = response.data;
 
-            setAlert({ message: "Látka byla přidána", type: "success" });
-
             if (sds) {
                 const formData = new FormData();
                 formData.append("file", sds);
@@ -41,8 +36,7 @@ function AddSubstance() {
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
-            const errorMsg = error.response?.data?.detail || "Neznámá chyba při ukládání";
-            setAlert({ message: errorMsg, type: "danger" });
+            console.log(error.response?.data?.detail || "Neznámá chyba při ukládání");
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -66,9 +60,6 @@ function AddSubstance() {
         <Page>
             <Navbar />
             <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
-                {alert.message && (
-                    <Alert message={alert.message} type={alert.type} onClose={() => setAlert({ message: "", type: "" })} />
-                )}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 w-full max-w-5xl mx-auto">
                     <div className="flex justify-between items-center mb-8">
                         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Přidat látku</h2>

@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios.ts";
 import Page from "../components/Page.tsx";
 import Navbar from "../components/Navbar.tsx";
-import Spinner from "../components/Spinner.jsx";
 import type {DepartmentSubstanceRead, DepartmentSubstanceCreate, DepartmentRead} from "../schemas/Department.ts";
 import type { SubstanceRead } from "../schemas/Substance.ts";
 import {substanceService} from "../api/substanceService.ts";
@@ -159,7 +158,7 @@ export default function Department() {
 
                             <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
                                 {loading ? (
-                                    <div className="py-20 flex justify-center"><Spinner /></div>
+                                    <div className="py-20 flex justify-center">loading...</div>
                                 ) : (
                                     <>
                                         {records.map((r, i) => (

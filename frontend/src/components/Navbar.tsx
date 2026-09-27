@@ -81,7 +81,6 @@ function Navbar() {
                         </div>
                         <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
                             <NavLink to="/substances" className={navLinkClass}>Látky</NavLink>
-                            <NavLink to="/records" className={navLinkClass}>Záznamy</NavLink>
                             <NavLink to="/departments" className={navLinkClass}>Oddělení</NavLink>
                         </div>
                     </div>
