@@ -7,6 +7,7 @@ import { substanceService } from "../api/substanceService.ts";
 import type { SubstanceRead } from "../schemas/Substance.ts";
 import Navbar from "../components/Navbar.tsx";
 import Page from "../components/Page.tsx";
+import TableCell from "../components/table/TableCell.tsx";
 
 function Substances() {
     const [substances, setSubstances] = useState<SubstanceRead[]>();
@@ -164,88 +165,88 @@ function Substances() {
                                     <div className="py-20 flex justify-center items-center">loading...</div>
                                 ) : substances && substances.length > 0 ? (
                                     substances.map((substance) => (
-                                        <div
-                                            key={substance.id}
-                                            className="flex items-center hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors text-sm text-slate-700 dark:text-slate-300 group"
-                                        >
                                             <div
-                                                className="sticky left-0 z-20 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/40 px-5 py-3.5 w-[280px] font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 cursor-pointer truncate border-r border-slate-100 dark:border-slate-800/60 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.3)]"
-                                                onClick={() => navigate(`/edit-substance/${substance.id}`)}
-                                                title={substance.name}
+                                                key={substance.id}
+                                                className="flex items-stretch hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors text-sm text-slate-700 dark:text-slate-300 group"
                                             >
-                                                {substance.name}
-                                            </div>
+                                                <TableCell
+                                                    className="sticky left-0 z-10 w-[280px] bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/40 font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 cursor-pointer border-r border-slate-100 dark:border-slate-800/60 transition-colors shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] dark:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.3)]"
+                                                    onClick={() => navigate(`/edit-substance/${substance.id}`)}
+                                                    title={substance.name}
+                                                >
+                                                    <span className="truncate w-full">{substance.name}</span>
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 w-[110px]">
-                                                {substance.mixture ? (
-                                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Směs</span>
-                                                ) : (
-                                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Látka</span>
-                                                )}
-                                            </div>
+                                                <TableCell className="w-[110px]">
+                                                    {substance.mixture ? (
+                                                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Směs</span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Látka</span>
+                                                    )}
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 w-[140px] truncate">
-                                                {substance.physical_form_name ?? "-"}
-                                            </div>
+                                                <TableCell className="w-[140px]">
+                                                    <span className="truncate w-full">{substance.physical_form_name ?? "-"}</span>
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 w-[160px] truncate text-slate-500" title={substance.note ?? ""}>
-                                                {substance.note || "-"}
-                                            </div>
+                                                <TableCell className="w-[160px] text-slate-500" title={substance.note ?? ""}>
+                                                    <span className="truncate w-full">{substance.note || "-"}</span>
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 flex-1 min-w-[150px] flex flex-col gap-1.5">
-                                                {substance.properties && substance.properties.map((property) => (
-                                                    <div key={property.id} className="flex justify-between items-center text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 px-2.5 py-1.5 rounded-md">
-                                                        <span className="text-slate-600 dark:text-slate-300 font-medium">
-                                                            {`${property.name} ${property.category_name || ""} ${property.exposure_route_name ? `(${property.exposure_route_name})` : ""}`}
-                                                        </span>
-                                                        <div className="flex gap-1.5 font-mono text-[11px] text-indigo-600 dark:text-indigo-400">
-                                                            {property.h_statements && property.h_statements.map((statement, idx) => (
-                                                                <span key={idx} className="bg-indigo-50 dark:bg-indigo-900/40 px-1 rounded">{statement.code}</span>
-                                                            ))}
+                                                <TableCell className="flex-1 min-w-[150px] flex-col justify-center gap-1.5">
+                                                    {substance.properties && substance.properties.map((property) => (
+                                                        <div key={property.id} className="flex justify-between items-center text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 px-2.5 py-1.5 rounded-md">
+                                                            <span className="text-slate-600 dark:text-slate-300 font-medium">
+                                                                {`${property.name} ${property.category_name || ""} ${property.exposure_route_name ? `(${property.exposure_route_name})` : ""}`}
+                                                            </span>
+                                                            <div className="flex gap-1.5 font-mono text-[11px] text-indigo-600 dark:text-indigo-400">
+                                                                {property.h_statements && property.h_statements.map((statement, idx) => (
+                                                                    <span key={idx} className="bg-indigo-50 dark:bg-indigo-900/40 px-1 rounded">{statement.code}</span>
+                                                                ))}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                                    ))}
+                                                </TableCell>
 
-                                            <div
-                                                onClick={() => substance.sds && openSafetySheet(substance.id)}
-                                                className={`px-5 py-3.5 w-[70px] text-center flex justify-center ${substance.sds ? "cursor-pointer hover:scale-110 transition-transform" : "opacity-30"}`}
-                                                title={substance.sds ? "Zobrazit bezpečnostní list" : "Bezpečnostní list chybí"}
-                                            >
-                                                {substance.sds ? "📄" : "-"}
-                                            </div>
+                                                <TableCell
+                                                    onClick={() => substance.sds && openSafetySheet(substance.id)}
+                                                    className={`w-[70px] justify-center ${substance.sds ? "cursor-pointer hover:scale-110 transition-transform" : "opacity-30"}`}
+                                                    title={substance.sds ? "Zobrazit bezpečnostní list" : "Bezpečnostní list chybí"}
+                                                >
+                                                    {substance.sds ? "📄" : "-"}
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 w-[120px] text-right font-mono text-slate-600 dark:text-slate-400">
-                                                {substance.hazard_category.length > 0 && substance.hazard_category[0].max_amount_b !== undefined
-                                                    ? <span className="font-medium text-slate-900 dark:text-slate-100">{substance.hazard_category[0].max_amount_b} t</span>
-                                                    : "-"}
-                                            </div>
+                                                <TableCell className="w-[120px] justify-end font-mono text-slate-600 dark:text-slate-400">
+                                                    {substance.hazard_category.length > 0 && substance.hazard_category[0].max_amount_b !== undefined
+                                                        ? <span className="font-medium text-slate-900 dark:text-slate-100">{substance.hazard_category[0].max_amount_b} t</span>
+                                                        : "-"}
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 w-[120px] font-mono text-xs truncate">
-                                                {substance.hazard_category.length > 0 ? (
-                                                    <span className="bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 px-2 py-1 rounded-md border border-rose-100 dark:border-rose-800/50">
-                                                        {substance.hazard_category[0].code}
-                                                    </span>
-                                                ) : "-"}
-                                            </div>
+                                                <TableCell className="w-[120px] font-mono text-xs">
+                                                    {substance.hazard_category.length > 0 ? (
+                                                        <span className="bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 px-2 py-1 rounded-md border border-rose-100 dark:border-rose-800/50 truncate max-w-full">
+                                                            {substance.hazard_category[0].code}
+                                                        </span>
+                                                    ) : "-"}
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 w-[100px] text-slate-500 truncate" title={substance.unit_name ?? ""}>
-                                                {substance.unit_name ?? "-"}
-                                            </div>
+                                                <TableCell className="w-[100px] text-slate-500">
+                                                    <span className="truncate w-full">{substance.unit_name ?? "-"}</span>
+                                                </TableCell>
 
-                                            <div className="px-5 py-3.5 w-[160px] flex flex-col items-start gap-1.5 text-[11px]">
-                                                {substance.departments?.map((d, index) => (
-                                                    <span
-                                                        key={index}
-                                                        className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full truncate max-w-full inline-block"
-                                                        title={d.department?.name}
-                                                    >
-                                                        {d.department?.name}
-                                                    </span>
-                                                ))}
+                                                <TableCell className="w-[160px] flex-col justify-center items-start gap-1.5 text-[11px]">
+                                                    {substance.departments?.map((d, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full truncate max-w-full inline-block"
+                                                            title={d.department?.name}
+                                                        >
+                                                            {d.department?.name}
+                                                        </span>
+                                                    ))}
+                                                </TableCell>
                                             </div>
-                                        </div>
-                                    ))
+                                        ))
                                 ) : (
                                     <div className="py-20 text-center text-slate-500 dark:text-slate-400 flex flex-col items-center gap-2">
                                         <span className="text-3xl mb-2">🔍</span>
