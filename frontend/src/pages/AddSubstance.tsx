@@ -40,7 +40,7 @@ function AddSubstance() {
     const defaultInitialSubstance: SubstanceCreate = {
         name: '',
         code: undefined,
-        hazard_category: [],
+        hazard_category_ids: [],
         manufacturer: undefined,
         mixture: true,
         note: undefined,

@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class HazardCategoryBase(BaseModel):
+    id: int
     name: str
     section: Optional[str] = None
     max_amount_a: Optional[decimal.Decimal] = None

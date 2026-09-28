@@ -33,7 +33,7 @@ export interface SubstanceCreate {
     code?: string;
     company_id?: number;
     sds?: string;
-    hazard_category: HazardCategory[];
+    hazard_category_ids: Number[];
 }
 
 export interface SubstancePaginationRead {

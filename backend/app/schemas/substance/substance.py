@@ -20,18 +20,20 @@ class SubstanceBase(BaseModel):
     code: Optional[str] = None
     company_id: Optional[int] = None
     sds: Optional[str] = None
-    hazard_category: list[HazardCategoryBase] = []
 
 class SubstanceCreate(SubstanceBase):
     property_ids: list[int] = []
+    hazard_category_ids: list[int] = []
 
 class SubstanceUpdate(SubstanceBase):
     property_ids: list[int] = []
+    hazard_category_ids: list[int] = []
 
 class SubstanceRead(SubstanceBase):
     id: int
     properties: Optional[list[PropertyBase]] = None
     departments: list[SubstanceDepartments] = []
+    hazard_category: list[HazardCategoryBase] = []
 
     model_config = ConfigDict(from_attributes=True)
 

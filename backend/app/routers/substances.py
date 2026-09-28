@@ -9,7 +9,7 @@ from starlette import status
 from starlette.responses import FileResponse
 
 from app.database import get_db
-from app.models import Substance, DepartmentSubstance, Department, Property
+from app.models import Substance, DepartmentSubstance, Department, Property, HazardCategory
 from app.schemas.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate, SubstancePaginationRead
 from config import get_settings
 
@@ -177,6 +177,18 @@ async def update_substance(
                 db_substance.properties = list(properties)
             else:
                 db_substance.properties = []
+
+    if "hazard_category_ids" in update_data:
+        hc_ids = update_data.pop("hazard_category_ids")
+        if hc_ids is not None:
+            valid_hc_ids = [hid for hid in hc_ids if hid not in (None, "")]
+            if valid_hc_ids:
+                hcs = db.execute(
+                    select(HazardCategory).where(HazardCategory.id.in_(valid_hc_ids))
+                ).scalars().all()
+                db_substance.hazard_category = list(hcs)
+            else:
+                db_substance.hazard_category = []
 
     for key, value in update_data.items():
         setattr(db_substance, key, value)

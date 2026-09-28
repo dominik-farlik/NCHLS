@@ -4,7 +4,6 @@ import api from "../api/axios.js";
 import type {SubstanceCreate} from "../schemas/Substance.ts";
 import type {Property} from "../schemas/Property.ts";
 import SubmitButton from "./buttons/SubmitButton.tsx";
-import WarningButton from "./buttons/WarningButton.tsx";
 
 function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
     const [substance, setSubstance] = useState<SubstanceCreate>(initialData);
@@ -120,80 +119,85 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
             </div>
 
             <div className={sectionClass}>
-                <div
-                    className="flex justify-between items-center mb-5 pb-3 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex justify-between items-center mb-5 pb-3 border-b border-slate-200 dark:border-slate-700">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">Nebezpečné vlastnosti</h3>
-                    <span
-                        className="text-xs font-medium text-slate-500 bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-full">Dynamický seznam</span>
+                    <span className="text-xs font-medium text-slate-500 bg-slate-200 dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                        {substance.property_ids?.length || 0} vybráno
+                    </span>
                 </div>
-                    <div className="space-y-3">
-                        {substance.property_ids && substance.property_ids.map((propertyId, index) => {
-                            const selectedProperty = propertyList.find(p => p.id === propertyId);
 
-                            return (
-                                <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-transparent">
+                <div className="space-y-4">
+                    {substance.property_ids && substance.property_ids.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                            {substance.property_ids.map((propertyId) => {
+                                const property = propertyList.find(p => p.id === propertyId);
+                                if (!property) return null;
 
-                                    <div className="md:col-span-4">
-                                        <select
-                                            className={`${inputClass} w-full`}
-                                            onChange={(e) => {
-                                                const updatedProperties = [...substance.property_ids];
-                                                updatedProperties[index] = Number(e.target.value);
-                                                setSubstance({ ...substance, property_ids: updatedProperties });
-                                            }}
-                                            value={propertyId}
-                                        >
-                                            <option value="">-- Vyberte vlastnost --</option>
-                                            {propertyList.map((property) => (
-                                                <option key={property.id} value={property.id}>
-                                                    {property.name} {property.category_name} {property.exposure_route_name && `(${property.exposure_route_name})`}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="md:col-span-5 flex flex-wrap items-center gap-1.5 min-h-[38px]">
-                                        {selectedProperty?.h_statements?.map(statement => (
-                                            <div
-                                                key={statement.code}
-                                                className="bg-indigo-50 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded text-indigo-700 dark:text-indigo-300 border dark:border-indigo-300/30 text-sm"
-                                            >
-                                                {statement.code}
+                                return (
+                                    <div key={propertyId} className="flex justify-between items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-lg shadow-sm">
+                                        <div>
+                                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                                    {property.name} {property.category_name}
+                                </span>
+                                            {property.exposure_route_name && (
+                                                <span className="ml-2 text-sm text-slate-500">({property.exposure_route_name})</span>
+                                            )}
+                                            {/* Zobrazení H-vět */}
+                                            <div className="flex gap-1.5 mt-1.5">
+                                                {property.h_statements?.map(statement => (
+                                                    <span key={statement.code} className="bg-indigo-50 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded text-indigo-700 dark:text-indigo-300 border dark:border-indigo-300/30 text-xs font-mono">
+                                            {statement.code}
+                                        </span>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="md:col-span-3 flex justify-end">
-                                        <WarningButton
-                                            title="Odstranit vlastnost"
+                                        </div>
+                                        <button
+                                            type="button"
                                             onClick={() => {
-                                            const updated = substance.property_ids.filter((_, i) => i !== index);
-                                            setSubstance({ ...substance, property_ids: updated });
-                                        }}
-                                        />
+                                                setSubstance({
+                                                    ...substance,
+                                                    property_ids: substance.property_ids.filter(id => id !== propertyId)
+                                                });
+                                            }}
+                                            className="text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/30 p-2 rounded-lg transition-colors"
+                                            title="Odebrat vlastnost"
+                                        >
+                                            ✕
+                                        </button>
                                     </div>
+                                );
+                            })}
+                        </div>
+                    )}
 
-                                </div>
-                            );
-                        })}
-                    <div className="md:col-span-4">
-                        <button
-                            className={`${inputClass} hover:bg-indigo-50 dark:hover:bg-indigo-900/40 dark:hover:border-indigo-500`}
-                            type="button"
-                            onClick={() => {
+                    {/* 2. PŘIDÁVACÍ SELECT (Filtruje už vybrané) */}
+                    <div className="mt-4">
+                        <select
+                            className={inputClass}
+                            value="" // Vždy prázdné po výběru
+                            onChange={(e) => {
+                                const selectedId = Number(e.target.value);
+                                if (!selectedId) return;
+
                                 setSubstance({
                                     ...substance,
-                                    property_ids: [...(substance.property_ids || []), undefined]
-                                })
+                                    property_ids: [...(substance.property_ids || []), selectedId]
+                                });
                             }}
                         >
-                            Přidat vlastnost
-                        </button>
+                            <option value="" disabled>+ Přidat nebezpečnou vlastnost...</option>
+                            {propertyList
+                                .filter(property => !(substance.property_ids || []).includes(property.id)) // Skryje ty, co už jsou v seznamu
+                                .map((property) => (
+                                    <option key={property.id} value={property.id}>
+                                        {property.name} {property.category_name} {property.exposure_route_name && `(${property.exposure_route_name})`}
+                                    </option>
+                                ))}
+                        </select>
                     </div>
                 </div>
-                <div className="flex flex-col gap-3">
-                </div>
             </div>
+
             <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                 <SubmitButton title="Uložit změny"/>
             </div>

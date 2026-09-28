@@ -1,4 +1,5 @@
 export interface HazardCategory {
+    id: number;
     name: string;
     section?: string;
     max_amount_a?: number;

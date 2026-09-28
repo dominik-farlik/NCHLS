@@ -10,6 +10,7 @@ import WarningButton from "../components/buttons/WarningButton.tsx";
 
 interface SubstanceFormState extends SubstanceRead {
     property_ids?: number[];
+    hazard_category_ids?: number[];
 }
 
 function EditSubstance() {
@@ -59,7 +60,8 @@ function EditSubstance() {
             .then((data) => {
                 setSubstance({
                     ...data,
-                    property_ids: data.properties ? data.properties.map(p => p.id) : []
+                    property_ids: data.properties ? data.properties.map(p => p.id) : [],
+                    hazard_category_ids: data.hazard_category ? data.hazard_category.map(c => c.id) : []
                 });
                 setLoading(false);
             });
