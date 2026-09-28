@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { openSafetySheet } from "../utils/fileUtils.ts";
-import AddButton from "../components/AddButton.jsx";
+import AddButton from "../components/buttons/AddButton.tsx";
 import api from "../api/axios.js";
 import { substanceService } from "../api/substanceService.ts";
 import type { SubstanceRead } from "../schemas/Substance.ts";

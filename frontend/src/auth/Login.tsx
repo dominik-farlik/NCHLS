@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import AuthPage from "./AuthPage.tsx";
 import { authService } from "../api/authService.ts";
@@ -6,9 +6,10 @@ import { useAuth } from "../context/useAuth.ts";
 import type { AxiosError } from "axios";
 import api from "../api/axios.ts";
 import type {UserLogin} from "../schemas/User.ts";
+import SubmitButton from "../components/buttons/SubmitButton.tsx";
 
 export default function Login() {
-    const { login } = useAuth();
+    const { login, isAuthenticated } = useAuth();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -33,6 +34,12 @@ export default function Login() {
         username: "",
         password: "",
     });
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -91,7 +98,7 @@ export default function Login() {
                         required
                         value={user.username}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium"
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium"
                         placeholder="vas@email.cz"
                     />
                 </div>
@@ -105,7 +112,7 @@ export default function Login() {
                             required
                             value={user.password}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium pr-12"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium pr-12"
                             placeholder="••••••••"
                         />
                         <button
@@ -114,6 +121,11 @@ export default function Login() {
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 focus:outline-none p-1 transition-colors"
                             title={showPassword ? "Skrýt heslo" : "Zobrazit heslo"}
                         >
+                            {showPassword ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            )}
                         </button>
                     </div>
                 </div>
@@ -122,13 +134,7 @@ export default function Login() {
                         Obnovit zapomenuté heslo
                     </div>
                 </Link>
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full mt-2 bg-[#4ade80] hover:bg-[#22c55e] text-slate-900 font-black text-lg py-3.5 px-4 rounded-xl transition-colors disabled:opacity-70 disabled:cursor-not-allowed uppercase tracking-wide shadow-sm"
-                >
-                    {loading ? 'Zpracovávám...' : 'Přihlásit se'}
-                </button>
+                <SubmitButton title={loading ? 'Zpracovávám...' : 'Přihlásit se'} disabled={loading} />
             </form>
 
             <div className="text-center pt-2 border-t border-slate-100">

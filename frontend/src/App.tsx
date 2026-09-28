@@ -26,11 +26,16 @@ const router = createBrowserRouter([
     {
         element: <RootLayout/>,
         children: [
-            {path: "/", element: <Home/>},
             {path: "/login", element: <Login/>},
             {path: "/register", element: <Register/>},
             {path: "/request-password-reset", element: <ResetPasswordRequest/>},
             {path: "/obnovit-heslo", element: <ResetPassword/>},
+            {
+                element: <ProtectedRoute/>,
+                children: [
+                    {path: "/", element: <Home/>}
+                ]
+            },
             {
                 element: <ProtectedRoute allowedRoles={[Role.Editor, Role.Manager]}/>,
                 children: [

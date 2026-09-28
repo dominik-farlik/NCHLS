@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthPage from "./AuthPage.tsx";
 import type { AxiosError } from "axios";
 import type {UserCreate} from "../schemas/User.ts";
 import {authService} from "../api/authService.ts";
+import {useAuth} from "../context/useAuth.ts";
+import SubmitButton from "../components/buttons/SubmitButton.tsx";
 
 export default function Register() {
+    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -18,6 +21,12 @@ export default function Register() {
         email: "",
         password: "",
     });
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -77,7 +86,7 @@ export default function Register() {
                             required
                             value={user.first_name}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium pr-12"
                             placeholder="Jan"
                         />
                     </div>
@@ -89,7 +98,7 @@ export default function Register() {
                             required
                             value={user.last_name}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium pr-12"
                             placeholder="Novák"
                         />
                     </div>
@@ -103,7 +112,7 @@ export default function Register() {
                         required
                         value={user.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium"
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium pr-12"
                         placeholder="vas@email.cz"
                     />
                 </div>
@@ -117,7 +126,7 @@ export default function Register() {
                             required
                             value={user.password}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium pr-12"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium pr-12"
                             placeholder="••••••••"
                         />
                         <button
@@ -134,14 +143,7 @@ export default function Register() {
                         </button>
                     </div>
                 </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full mt-2 bg-[#4ade80] hover:bg-[#22c55e] text-slate-900 font-black text-lg py-3.5 px-4 rounded-xl transition-colors disabled:opacity-70 disabled:cursor-not-allowed uppercase tracking-wide shadow-sm"
-                >
-                    {loading ? 'Zpracovávám...' : 'Zaregistrovat se'}
-                </button>
+                <SubmitButton title={loading ? 'Zpracovávám...' : 'Zaregistrovat se'} disabled={loading} />
             </form>
 
             <div className="text-center pt-2 border-t border-slate-100">

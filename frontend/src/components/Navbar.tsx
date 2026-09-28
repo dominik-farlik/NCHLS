@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { logout, getStoredUsername } from "../utils/auth";
+import {useAuth} from "../context/useAuth.ts";
 
 function Navbar() {
     const [darkMode, setDarkMode] = useState(() => {
         return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
     });
 
-    const [username, setUsername] = useState(getStoredUsername());
+    const { isAuthenticated, user, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -24,16 +24,6 @@ function Navbar() {
             localStorage.theme = 'light';
         }
     }, [darkMode]);
-
-    useEffect(() => {
-        const onAuthChange = () => setUsername(getStoredUsername());
-        window.addEventListener("auth-token-changed", onAuthChange);
-        window.addEventListener("storage", onAuthChange);
-        return () => {
-            window.removeEventListener("auth-token-changed", onAuthChange);
-            window.removeEventListener("storage", onAuthChange);
-        };
-    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -86,32 +76,16 @@ function Navbar() {
                     </div>
 
                     <div className="hidden sm:flex sm:items-center sm:gap-4">
-                        <button
-                            onClick={() => setDarkMode(!darkMode)}
-                            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
-                            aria-label="Přepnout motiv"
-                        >
-                            {darkMode ? (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                            ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                </svg>
-                            )}
-                        </button>
-
-                        {username ? (
+                        {isAuthenticated ? (
                             <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none transition-colors p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900"
                                 >
                                     <div className="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                                        {username.charAt(0).toUpperCase()}
+                                        {user.first_name.charAt(0).toUpperCase()}
                                     </div>
-                                    <span>{username}</span>
+                                    <span>{user.first_name}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
@@ -141,6 +115,22 @@ function Navbar() {
                                 Přihlásit
                             </Link>
                         )}
+                        
+                        <button
+                            onClick={() => setDarkMode(!darkMode)}
+                            className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                            aria-label="Přepnout motiv"
+                        >
+                            {darkMode ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                </svg>
+                            )}
+                        </button>
                     </div>
 
                     <div className="flex items-center sm:hidden gap-2">
@@ -177,14 +167,14 @@ function Navbar() {
                         <NavLink to="/departments" onClick={() => setIsMobileMenuOpen(false)} className={mobileNavLinkClass}>Oddělení</NavLink>
                     </div>
                     <div className="pt-4 pb-3 border-t border-slate-200 dark:border-slate-800">
-                        {username ? (
+                        {isAuthenticated ? (
                             <>
                                 <div className="flex items-center px-4 mb-3">
                                     <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg">
-                                        {username.charAt(0).toUpperCase()}
+                                        {user.first_name.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="ml-3">
-                                        <div className="text-base font-medium text-slate-800 dark:text-slate-200">{username}</div>
+                                        <div className="text-base font-medium text-slate-800 dark:text-slate-200">{user.first_name}</div>
                                     </div>
                                 </div>
                                 <div className="space-y-1">

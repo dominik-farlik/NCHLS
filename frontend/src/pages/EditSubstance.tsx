@@ -6,6 +6,7 @@ import Page from "../components/Page.tsx";
 import api from "../api/axios.js";
 import {substanceService} from "../api/substanceService.ts";
 import type {SubstanceRead} from "../schemas/Substance.ts";
+import WarningButton from "../components/buttons/WarningButton.tsx";
 
 interface SubstanceFormState extends SubstanceRead {
     property_ids?: number[];
@@ -88,10 +89,7 @@ function EditSubstance() {
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 w-full max-w-5xl mx-auto">
                     <div className="flex justify-between items-center mb-8">
                         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Upravit látku</h2>
-                        <button type="button" onClick={() => setIsDeleteModalOpen(true)}
-                                className="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors shadow-sm">
-                            Odstranit látku
-                        </button>
+                        <WarningButton title="Odstranit látku" onClick={() => setIsDeleteModalOpen(true)}/>
                     </div>
                     <SubstanceForm
                         initialData={substance}

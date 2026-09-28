@@ -3,6 +3,8 @@ import { openSafetySheet } from "../utils/fileUtils.ts";
 import api from "../api/axios.js";
 import type {SubstanceCreate} from "../schemas/Substance.ts";
 import type {Property} from "../schemas/Property.ts";
+import SubmitButton from "./buttons/SubmitButton.tsx";
+import WarningButton from "./buttons/WarningButton.tsx";
 
 function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
     const [substance, setSubstance] = useState<SubstanceCreate>(initialData);
@@ -29,7 +31,6 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
 
     return (
         <form onSubmit={(e) => handleSubmit(e, substance, sds)}>
-            {/* --- SEKCE 1: Základní údaje --- */}
             <div className={sectionClass}>
                 <h3 className={sectionHeaderClass}>Základní údaje</h3>
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -163,16 +164,13 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
                                     </div>
 
                                     <div className="md:col-span-3 flex justify-end">
-                                        <button
-                                            type="button"
+                                        <WarningButton
+                                            title="Odstranit vlastnost"
                                             onClick={() => {
-                                                const updated = substance.property_ids.filter((_, i) => i !== index);
-                                                setSubstance({ ...substance, property_ids: updated });
-                                            }}
-                                            className="w-full sm:w-auto px-4 py-2 text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors shadow-sm"
-                                        >
-                                            Odstranit vlastnost
-                                        </button>
+                                            const updated = substance.property_ids.filter((_, i) => i !== index);
+                                            setSubstance({ ...substance, property_ids: updated });
+                                        }}
+                                        />
                                     </div>
 
                                 </div>
@@ -197,10 +195,7 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
                 </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-                <button type="submit"
-                        className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-8 rounded-lg shadow-sm hover:shadow transition-all focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-900">
-                    Uložit změny
-                </button>
+                <SubmitButton title="Uložit změny"/>
             </div>
         </form>
     );

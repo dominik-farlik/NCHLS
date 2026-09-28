@@ -3,6 +3,8 @@ import Navbar from "../components/Navbar.tsx";
 import Page from "../components/Page.tsx";
 import api from "../api/axios.js";
 import type {SubstanceCreate} from "../schemas/Substance.ts";
+import {substanceService} from "../api/substanceService.ts";
+import toast from "react-hot-toast";
 
 function AddSubstance() {
 
@@ -20,25 +22,19 @@ function AddSubstance() {
             property_ids: cleanedPropertyIds,
         };
 
+        substanceService.createSubstance(payload)
+            .then((createdSubstance)=> {
+                if (sds) {
+                    const formData = new FormData();
+                    formData.append("file", sds);
 
-        try {
-            const response = await api.post("/substances", payload);
-            const createdSubstance = response.data;
-
-            if (sds) {
-                const formData = new FormData();
-                formData.append("file", sds);
-
-                await api.post(`/substances/${createdSubstance.id}/sds`, formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                });
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch (error) {
-            console.log(error.response?.data?.detail || "Neznámá chyba při ukládání");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+                    api.post(`/substances/${createdSubstance.id}/sds`, formData, {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    });
+                }
+            })
+            .catch((error)=> toast.error(error.response.data.detail))
+            .finally(()=> window.scrollTo({ top: 0, behavior: 'smooth' }));
     };
 
     const defaultInitialSubstance: SubstanceCreate = {

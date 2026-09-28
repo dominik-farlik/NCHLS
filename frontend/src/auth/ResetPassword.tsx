@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import type {AxiosError} from "axios";
 import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {authService} from "../api/authService.ts";
+import SubmitButton from "../components/buttons/SubmitButton.tsx";
 
 export default function ResetPassword() {
     const [searchParams] = useSearchParams();
@@ -56,7 +57,7 @@ export default function ResetPassword() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium pr-12"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium"
                             placeholder="••••••••"
                         />
                         <button
@@ -78,7 +79,7 @@ export default function ResetPassword() {
                             required
                             value={passwordCheck}
                             onChange={(e) => setPasswordCheck(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-[#4ade80]/20 transition-all text-slate-900 font-medium pr-12"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-900 font-medium"
                             placeholder="••••••••"
                         />
                         <button
@@ -96,14 +97,7 @@ export default function ResetPassword() {
                         Vrátit se zpět na přihlášení
                     </div>
                 </Link>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full mt-2 bg-[#4ade80] hover:bg-[#22c55e] text-slate-900 font-black text-lg py-3.5 px-4 rounded-xl transition-colors disabled:opacity-70 disabled:cursor-not-allowed uppercase tracking-wide shadow-sm"
-                >
-                    {loading ? 'Zpracovávám...' : 'Obnovit heslo'}
-                </button>
+                <SubmitButton title={loading ? 'Zpracovávám...' : 'Obnovit heslo'} disabled={loading} />
             </form>
         </AuthPage>
     )
