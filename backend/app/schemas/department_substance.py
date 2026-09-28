@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import decimal
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
+
 from app.schemas.department import DepartmentRead
 from app.schemas.substance.substance import SubstanceRead
 
@@ -26,11 +27,12 @@ class DepartmentSubstanceRead(BaseModel):
 class DepartmentSubstanceCreate(DepartmentSubstanceBase):
     pass
 
+
 class DepartmentSubstanceUpdate(BaseModel):
     substance_id: int
     department_id: int
     year: int
-    amount: Optional[decimal.Decimal] = None
+    amount: decimal.Decimal | None = None
 
 
 class DepartmentSubstanceDelete(BaseModel):

@@ -1,11 +1,11 @@
 import logging
 import time
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import sessionmaker
 
 from config import get_settings
-
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,7 @@ while engine is None:
         time.sleep(2)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 def get_db():
     db = SessionLocal()

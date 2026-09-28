@@ -1,16 +1,21 @@
 import shutil
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from sqlalchemy import func
-from sqlalchemy.orm import Session
 from sqlmodel import select
 from starlette import status
 from starlette.responses import FileResponse
 
-from app.database import get_db
-from app.models import Substance, DepartmentSubstance, Department, Property, HazardCategory
-from app.schemas.substance.substance import SubstanceRead, SubstanceCreate, SubstanceUpdate, SubstancePaginationRead
+from app.dependencies import SessionDep
+from app.models import Department, DepartmentSubstance, HazardCategory, Property, Substance
+from app.schemas.substance.substance import (
+    SubstanceCreate,
+    SubstancePaginationRead,
+    SubstanceRead,
+    SubstanceUpdate,
+)
 from config import get_settings
 
 router = APIRouter()
@@ -18,14 +23,14 @@ router = APIRouter()
 
 @router.get("/", response_model=SubstancePaginationRead)
 async def read_substances(
-        db: Session = Depends(get_db),
-        limit: int = 100,
-        offset: int = 0,
-        order_by: str = "name",
-        desc: bool = False,
-        department_name: str | None = None,
-        year: int | None = None,
-        search: str | None = None,
+    db: SessionDep,
+    limit: int = 100,
+    offset: int = 0,
+    order_by: str = "name",
+    desc: bool = False,
+    department_name: str | None = None,
+    year: int | None = None,
+    search: str | None = None,
 ):
     order_column = getattr(Substance, order_by, Substance.name)
     order_clause = order_column.desc() if desc else order_column.asc()
@@ -57,19 +62,11 @@ async def read_substances(
     stmt = stmt.distinct().limit(limit).offset(offset).order_by(order_clause)
     substances = list(db.scalars(stmt).all())
 
-    return {
-        "items": substances,
-        "total": total,
-        "limit": limit,
-        "offset": offset
-    }
+    return {"items": substances, "total": total, "limit": limit, "offset": offset}
 
 
 @router.get("/{substance_id}", response_model=SubstanceRead)
-async def read_substance(
-        substance_id: int,
-        db: Session = Depends(get_db)
-) -> SubstanceRead:
+async def read_substance(substance_id: int, db: SessionDep) -> SubstanceRead:
     stmt = select(Substance).where(Substance.id == substance_id)
     substance = db.scalars(stmt).first()
 
@@ -80,9 +77,7 @@ async def read_substance(
 
 @router.post("/{substance_id}/sds", response_model=SubstanceRead)
 async def upload_substance_sds(
-        substance_id: int,
-        file: UploadFile = File(...),
-        db: Session = Depends(get_db)
+    db: SessionDep, substance_id: int, file: Annotated[UploadFile, File(...)]
 ) -> SubstanceRead:
     db_substance = db.get(Substance, substance_id)
     if not db_substance:
@@ -104,10 +99,7 @@ async def upload_substance_sds(
 
 
 @router.get("/{substance_id}/sds")
-async def get_substance_sds(
-        substance_id: int,
-        db: Session = Depends(get_db)
-) -> FileResponse:
+async def get_substance_sds(substance_id: int, db: SessionDep) -> FileResponse:
     db_substance = db.get(Substance, substance_id)
     if not db_substance or not db_substance.sds:
         raise HTTPException(status_code=404, detail="SDS file not found")
@@ -120,11 +112,10 @@ async def get_substance_sds(
 
 
 @router.post("/", status_code=201, response_model=SubstanceRead)
-async def create_substance(
-        substance_data: SubstanceCreate,
-        db: Session = Depends(get_db)
-) -> SubstanceRead:
-    existing_substance = db.scalars(select(Substance).where(Substance.name == substance_data.name)).first()
+async def create_substance(substance_data: SubstanceCreate, db: SessionDep) -> SubstanceRead:
+    existing_substance = db.scalars(
+        select(Substance).where(Substance.name == substance_data.name)
+    ).first()
     if existing_substance:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -139,9 +130,11 @@ async def create_substance(
             valid_property_ids = [pid for pid in property_ids if pid not in (None, "")]
 
             if valid_property_ids:
-                properties = db.execute(
-                    select(Property).where(Property.id.in_(valid_property_ids))
-                ).scalars().all()
+                properties = (
+                    db.execute(select(Property).where(Property.id.in_(valid_property_ids)))
+                    .scalars()
+                    .all()
+                )
                 db_substance.properties = list(properties)
             else:
                 db_substance.properties = []
@@ -155,9 +148,7 @@ async def create_substance(
 
 @router.patch("/{substance_id}", response_model=SubstanceRead)
 async def update_substance(
-        substance_id: int,
-        substance_data: SubstanceUpdate,
-        db: Session = Depends(get_db)
+    substance_id: int, substance_data: SubstanceUpdate, db: SessionDep
 ) -> SubstanceRead:
     db_substance = db.get(Substance, substance_id)
     if not db_substance:
@@ -171,9 +162,11 @@ async def update_substance(
             valid_property_ids = [pid for pid in property_ids if pid not in (None, "")]
 
             if valid_property_ids:
-                properties = db.execute(
-                    select(Property).where(Property.id.in_(valid_property_ids))
-                ).scalars().all()
+                properties = (
+                    db.execute(select(Property).where(Property.id.in_(valid_property_ids)))
+                    .scalars()
+                    .all()
+                )
                 db_substance.properties = list(properties)
             else:
                 db_substance.properties = []
@@ -183,9 +176,11 @@ async def update_substance(
         if hc_ids is not None:
             valid_hc_ids = [hid for hid in hc_ids if hid not in (None, "")]
             if valid_hc_ids:
-                hcs = db.execute(
-                    select(HazardCategory).where(HazardCategory.id.in_(valid_hc_ids))
-                ).scalars().all()
+                hcs = (
+                    db.execute(select(HazardCategory).where(HazardCategory.id.in_(valid_hc_ids)))
+                    .scalars()
+                    .all()
+                )
                 db_substance.hazard_category = list(hcs)
             else:
                 db_substance.hazard_category = []
@@ -201,10 +196,7 @@ async def update_substance(
 
 
 @router.delete("/{substance_id}", status_code=200)
-async def delete_substance(
-        substance_id: int,
-        db: Session = Depends(get_db)
-) -> dict:
+async def delete_substance(substance_id: int, db: SessionDep) -> dict:
     db_substance = db.get(Substance, substance_id)
     if not db_substance:
         raise HTTPException(status_code=404, detail="Substance not found")

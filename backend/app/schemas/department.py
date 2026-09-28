@@ -1,13 +1,11 @@
-from typing import Optional
-
 from pydantic import BaseModel, ConfigDict
 
 
 class DepartmentBase(BaseModel):
     name: str
     company_id: int
-    manager: Optional[str] = None
-    code: Optional[int] = None
+    manager: str | None = None
+    code: int | None = None
 
 
 class DepartmentRead(DepartmentBase):
@@ -17,9 +15,9 @@ class DepartmentRead(DepartmentBase):
 
 
 class DepartmentUpdate(BaseModel):
-    name: Optional[str] = None
-    company_id: Optional[int] = None
-    manager: Optional[str] = None
-    code: Optional[int] = None
+    name: str | None = None
+    company_id: int | None = None
+    manager: str | None = None
+    code: int | None = None
 
     model_config = ConfigDict(from_attributes=True)

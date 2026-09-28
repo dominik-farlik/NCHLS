@@ -1,11 +1,9 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel
-from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint, Integer, Identity, String
+from sqlalchemy import ForeignKeyConstraint, Identity, Integer, PrimaryKeyConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
-
 
 if TYPE_CHECKING:
     from app.models.company import Company
@@ -14,18 +12,25 @@ if TYPE_CHECKING:
 
 
 class Department(Base):
-    __tablename__ = 'department'
+    __tablename__ = "department"
     __table_args__ = (
-        ForeignKeyConstraint(['company_id'], ['company.id'], name='department_company_id_fk'),
-        PrimaryKeyConstraint('id', name='department_pk')
+        ForeignKeyConstraint(["company_id"], ["company.id"], name="department_company_id_fk"),
+        PrimaryKeyConstraint("id", name="department_pk"),
     )
 
-    id: Mapped[int] = mapped_column(Integer, Identity(start=1, increment=1, minvalue=1, maxvalue=2147483647, cycle=False, cache=1), primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(
+        Integer,
+        Identity(start=1, increment=1, minvalue=1, maxvalue=2147483647, cycle=False, cache=1),
+        primary_key=True,
+        autoincrement=True,
+    )
     name: Mapped[str] = mapped_column(String, nullable=False)
     company_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    manager: Mapped[Optional[str]] = mapped_column(String(255))
-    code: Mapped[Optional[int]] = mapped_column(Integer)
+    manager: Mapped[str | None] = mapped_column(String(255))
+    code: Mapped[int | None] = mapped_column(Integer)
 
-    company: Mapped['Company'] = relationship('Company', back_populates='department')
-    substances: Mapped[list['DepartmentSubstance']] = relationship('DepartmentSubstance', back_populates='department')
-    user: Mapped[list['User']] = relationship('User', back_populates='department')
+    company: Mapped["Company"] = relationship("Company", back_populates="department")
+    substances: Mapped[list["DepartmentSubstance"]] = relationship(
+        "DepartmentSubstance", back_populates="department"
+    )
+    user: Mapped[list["User"]] = relationship("User", back_populates="department")

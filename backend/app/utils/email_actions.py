@@ -1,28 +1,27 @@
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 
 import jwt
-from fastapi_mail import MessageSchema, MessageType, FastMail, ConnectionConfig
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 
 import config
-
 
 settings = config.get_settings()
 
 connection_config = ConnectionConfig(
-        MAIL_USERNAME=settings.MAIL_USERNAME,
-        MAIL_PASSWORD=settings.MAIL_PASSWORD,
-        MAIL_FROM=settings.MAIL_FROM,
-        MAIL_PORT=settings.MAIL_PORT,
-        MAIL_SERVER=settings.MAIL_SERVER,
-        MAIL_STARTTLS=settings.MAIL_STARTTLS,
-        MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
-        USE_CREDENTIALS=True,
-        VALIDATE_CERTS=True
-    )
+    MAIL_USERNAME=settings.MAIL_USERNAME,
+    MAIL_PASSWORD=settings.MAIL_PASSWORD,
+    MAIL_FROM=settings.MAIL_FROM,
+    MAIL_PORT=settings.MAIL_PORT,
+    MAIL_SERVER=settings.MAIL_SERVER,
+    MAIL_STARTTLS=settings.MAIL_STARTTLS,
+    MAIL_SSL_TLS=settings.MAIL_SSL_TLS,
+    USE_CREDENTIALS=True,
+    VALIDATE_CERTS=True,
+)
 
 
 def create_verification_token(email: str, settings: config.Settings):
-    expire = datetime.now(timezone.utc) + timedelta(hours=24)
+    expire = datetime.now(UTC) + timedelta(hours=24)
     to_encode = {"sub": email, "type": "email_verification", "exp": expire}
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.PASSWORD_ALGORITHM)
 
@@ -38,10 +37,7 @@ async def send_verification_email(email: str, verification_link: str):
     """
 
     message = MessageSchema(
-        subject="Ověření e-mailové adresy",
-        recipients=[email],
-        body=body,
-        subtype=MessageType.plain
+        subject="Ověření e-mailové adresy", recipients=[email], body=body, subtype=MessageType.plain
     )
 
     fm = FastMail(connection_config)
@@ -55,7 +51,7 @@ async def send_password_reset_email(email: str, password_reset_link: str):
         subject="Obnovení zapomenutého hesla",
         recipients=[email],
         body=body,
-        subtype=MessageType.plain
+        subtype=MessageType.plain,
     )
 
     fm = FastMail(connection_config)

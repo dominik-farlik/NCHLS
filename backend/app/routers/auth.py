@@ -1,24 +1,26 @@
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response, Cookie, BackgroundTasks
-
+import jwt
+from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, HTTPException, Response
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jwt.exceptions import InvalidTokenError
+from pwdlib import PasswordHash
 from pydantic import BaseModel
 from sqlalchemy import select
-from starlette import status
-import jwt
-from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
-from pwdlib import PasswordHash
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from starlette import status
 from starlette.responses import RedirectResponse
 
 import config
-from app.database import get_db
-from config import get_settings
+from app.dependencies import SessionDep, SettingsDep
 from app.models import User
-from app.schemas.user import UserResponse, UserCreate, PasswordResetRequest, PasswordResetConfirm
-from app.utils.email_actions import create_verification_token, send_verification_email, send_password_reset_email
+from app.schemas.user import PasswordResetConfirm, PasswordResetRequest, UserCreate, UserResponse
+from app.utils.email_actions import (
+    create_verification_token,
+    send_password_reset_email,
+    send_verification_email,
+)
 
 router = APIRouter()
 
@@ -55,24 +57,22 @@ def authenticate_user(db: Session, email: str, password: str) -> User | None:
 
 
 def create_access_token(
-        data: dict,
-        settings: config.Settings,
-        expires_delta: timedelta | None = None
+    data: dict, settings: config.Settings, expires_delta: timedelta | None = None
 ):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expire = datetime.now(UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.PASSWORD_ALGORITHM)
     return encoded_jwt
 
 
 async def get_current_user(
-        access_token: Annotated[str | None, Cookie()] = None,
-        db: Session = Depends(get_db),
-        settings: config.Settings = Depends(get_settings)
+    db: SessionDep,
+    settings: SettingsDep,
+    access_token: Annotated[str | None, Cookie()] = None,
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -83,7 +83,9 @@ async def get_current_user(
         raise credentials_exception
 
     try:
-        payload = jwt.decode(access_token, settings.SECRET_KEY, algorithms=[settings.PASSWORD_ALGORITHM])
+        payload = jwt.decode(
+            access_token, settings.SECRET_KEY, algorithms=[settings.PASSWORD_ALGORITHM]
+        )
         email = payload.get("sub")
         if email is None:
             raise credentials_exception
@@ -99,10 +101,10 @@ async def get_current_user(
 
 @router.post("/login")
 async def login(
-        response: Response,
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        db: Session = Depends(get_db),
-        settings: config.Settings = Depends(get_settings),
+    response: Response,
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: SessionDep,
+    settings: SettingsDep,
 ):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -111,7 +113,7 @@ async def login(
             detail="Nesprávný email nebo heslo.",
         )
 
-    if not getattr(user, 'is_verified', True):
+    if not getattr(user, "is_verified", True):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Před přihlášením si prosím ověřte svůj e-mail.",
@@ -119,9 +121,7 @@ async def login(
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email},
-        expires_delta=access_token_expires,
-        settings=settings
+        data={"sub": user.email}, expires_delta=access_token_expires, settings=settings
     )
 
     response.set_cookie(
@@ -130,7 +130,7 @@ async def login(
         httponly=True,
         secure=False,
         samesite="lax",
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
     return {"message": "Přihlášení bylo úspěšné."}
@@ -138,10 +138,10 @@ async def login(
 
 @router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def register(
-        user_data: UserCreate,
-        background_tasks: BackgroundTasks,
-        db: Session = Depends(get_db),
-        settings: config.Settings = Depends(get_settings)
+    user_data: UserCreate,
+    background_tasks: BackgroundTasks,
+    db: SessionDep,
+    settings: SettingsDep,
 ):
     existing_user = get_user(db, user_data.email)
     if existing_user:
@@ -158,7 +158,7 @@ async def register(
         first_name=user_data.first_name,
         last_name=user_data.last_name,
         username=user_data.username,
-        is_verified=False
+        is_verified=False,
     )
 
     db.add(new_user)
@@ -174,11 +174,7 @@ async def register(
 
 
 @router.get("/verify-email")
-async def verify_email(
-        token: str,
-        db: Session = Depends(get_db),
-        settings: config.Settings = Depends(get_settings)
-):
+async def verify_email(token: str, db: SessionDep, settings: SettingsDep):
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.PASSWORD_ALGORITHM])
 
@@ -188,8 +184,7 @@ async def verify_email(
         email = payload.get("sub")
     except InvalidTokenError:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Neplatný nebo expirovaný odkaz."
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Neplatný nebo expirovaný odkaz."
         )
 
     user = get_user(db, email)
@@ -218,20 +213,21 @@ async def logout(response: Response):
 
 @router.post("/request-password-reset")
 async def request_password_reset(
-        request: PasswordResetRequest,
-        background_tasks: BackgroundTasks,
-        db: Session = Depends(get_db),
-        settings: config.Settings = Depends(get_settings)
+    request: PasswordResetRequest,
+    background_tasks: BackgroundTasks,
+    db: SessionDep,
+    settings: SettingsDep,
 ):
     user = get_user(db, request.email)
 
     success_message = {
-        "message": "Pokud účet s tímto e-mailem existuje, odeslali jsme na něj instrukce k obnově hesla."}
+        "message": "Pokud účet s tímto e-mailem existuje, odeslali jsme na něj instrukce k obnově hesla."
+    }
 
     if not user:
         return success_message
 
-    expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+    expire = datetime.now(UTC) + timedelta(minutes=30)
     to_encode = {"sub": user.email, "type": "password_reset", "exp": expire}
     token = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.PASSWORD_ALGORITHM)
 
@@ -244,12 +240,14 @@ async def request_password_reset(
 
 @router.post("/reset-password")
 async def reset_password(
-        request: PasswordResetConfirm,
-        db: Session = Depends(get_db),
-        settings: config.Settings = Depends(get_settings)
+    request: PasswordResetConfirm,
+    db: SessionDep,
+    settings: SettingsDep,
 ):
     try:
-        payload = jwt.decode(request.token, settings.SECRET_KEY, algorithms=[settings.PASSWORD_ALGORITHM])
+        payload = jwt.decode(
+            request.token, settings.SECRET_KEY, algorithms=[settings.PASSWORD_ALGORITHM]
+        )
 
         if payload.get("type") != "password_reset":
             raise InvalidTokenError()
@@ -258,7 +256,7 @@ async def reset_password(
     except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Neplatný nebo expirovaný odkaz pro obnovu hesla."
+            detail="Neplatný nebo expirovaný odkaz pro obnovu hesla.",
         )
 
     user = get_user(db, email)

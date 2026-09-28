@@ -1,5 +1,4 @@
 from enum import IntEnum
-from typing import FrozenSet
 
 
 class HPhrase(IntEnum):
@@ -150,7 +149,7 @@ class HPhrase(IntEnum):
         }[self.value]
 
 
-H_COMBINATIONS: dict[FrozenSet[int], str] = {
+H_COMBINATIONS: dict[frozenset[int], str] = {
     frozenset([300, 310]): "Při požití nebo při styku s kůží může způsobit smrt.",
     frozenset([300, 330]): "Při požití nebo při vdechování může způsobit smrt.",
     frozenset([310, 330]): "Při styku s kůží nebo při vdechování může způsobit smrt.",

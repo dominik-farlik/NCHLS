@@ -1,5 +1,4 @@
 import decimal
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -7,11 +6,11 @@ from pydantic import BaseModel, ConfigDict
 class HazardCategoryBase(BaseModel):
     id: int
     name: str
-    section: Optional[str] = None
-    max_amount_a: Optional[decimal.Decimal] = None
-    code: Optional[str] = None
-    max_amount_b: Optional[decimal.Decimal] = None
-    protocol_table_name: Optional[str] = None
-    note: Optional[str] = None
+    section: str | None = None
+    max_amount_a: decimal.Decimal | None = None
+    code: str | None = None
+    max_amount_b: decimal.Decimal | None = None
+    protocol_table_name: str | None = None
+    note: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

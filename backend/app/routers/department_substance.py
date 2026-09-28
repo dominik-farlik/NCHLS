@@ -1,20 +1,21 @@
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 
-from app.database import get_db
+from app.dependencies import SessionDep
 from app.models import DepartmentSubstance
-from app.schemas.department_substance import DepartmentSubstanceRead, DepartmentSubstanceCreate, \
-    DepartmentSubstanceUpdate, DepartmentSubstanceDelete
+from app.schemas.department_substance import (
+    DepartmentSubstanceCreate,
+    DepartmentSubstanceDelete,
+    DepartmentSubstanceRead,
+    DepartmentSubstanceUpdate,
+)
 
 router = APIRouter()
 
 
 @router.get("", response_model=list[DepartmentSubstanceRead])
 async def read_department_substances(
-        db: Session = Depends(get_db),
-        department_id: int | None = None,
-        year: int | None = None
+    db: SessionDep, department_id: int | None = None, year: int | None = None
 ):
     stmt = select(DepartmentSubstance)
     if department_id is not None:
@@ -28,8 +29,7 @@ async def read_department_substances(
 
 @router.post("", status_code=201, response_model=DepartmentSubstanceRead)
 async def create_department_substance(
-        record_data: DepartmentSubstanceCreate,
-        db: Session = Depends(get_db)
+    record_data: DepartmentSubstanceCreate, db: SessionDep
 ) -> DepartmentSubstanceRead:
     db_record = DepartmentSubstance(**record_data.model_dump())
 
@@ -42,10 +42,11 @@ async def create_department_substance(
 
 @router.patch("", response_model=DepartmentSubstanceRead)
 async def update_department_substance(
-        update_data: DepartmentSubstanceUpdate,
-        db: Session = Depends(get_db)
+    update_data: DepartmentSubstanceUpdate, db: SessionDep
 ) -> DepartmentSubstanceRead:
-    db_record = db.get(DepartmentSubstance, (update_data.substance_id, update_data.department_id, update_data.year))
+    db_record = db.get(
+        DepartmentSubstance, (update_data.substance_id, update_data.department_id, update_data.year)
+    )
     if not db_record:
         raise HTTPException(status_code=404, detail="Záznam nenalezen.")
 
@@ -61,10 +62,11 @@ async def update_department_substance(
 
 @router.delete("", status_code=200)
 async def delete_department_substance(
-        delete_data: DepartmentSubstanceDelete,
-        db: Session = Depends(get_db)
+    delete_data: DepartmentSubstanceDelete, db: SessionDep
 ) -> dict:
-    db_record = db.get(DepartmentSubstance, (delete_data.substance_id, delete_data.department_id, delete_data.year))
+    db_record = db.get(
+        DepartmentSubstance, (delete_data.substance_id, delete_data.department_id, delete_data.year)
+    )
     if not db_record:
         raise HTTPException(status_code=404, detail="Záznam nenalezen.")
 
@@ -76,10 +78,7 @@ async def delete_department_substance(
 
 @router.get("/{department_id}/{substance_id}/{year}", response_model=DepartmentSubstanceRead)
 async def read_department_substance(
-        department_id: int,
-        substance_id: int,
-        year: int,
-        db: Session = Depends(get_db)
+    department_id: int, substance_id: int, year: int, db: SessionDep
 ) -> DepartmentSubstanceRead:
     db_record = db.get(DepartmentSubstance, (substance_id, department_id, year))
     if not db_record:
@@ -88,22 +87,21 @@ async def read_department_substance(
 
 
 @router.get("/years")
-def get_years(db: Session = Depends(get_db)):
+def get_years(db: SessionDep):
     stmt = select(DepartmentSubstance.year).distinct()
     return db.scalars(stmt).all()
 
 
 @router.post("/bulk", status_code=200)
 async def bulk_update_department_substances(
-        department_id: int,
-        year: int,
-        records: list[DepartmentSubstanceCreate],
-        db: Session = Depends(get_db)
+    department_id: int,
+    year: int,
+    records: list[DepartmentSubstanceCreate],
+    db: SessionDep,
 ):
     # 1. Smazat stávající záznamy pro daný rok a oddělení
     stmt = select(DepartmentSubstance).where(
-        DepartmentSubstance.department_id == department_id,
-        DepartmentSubstance.year == year
+        DepartmentSubstance.department_id == department_id, DepartmentSubstance.year == year
     )
     existing_records = db.scalars(stmt).all()
     for record in existing_records:

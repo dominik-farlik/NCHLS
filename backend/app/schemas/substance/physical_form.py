@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
+
 class PhysicalFormBase(BaseModel):
     name: str
 
