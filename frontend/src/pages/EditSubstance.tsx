@@ -7,6 +7,7 @@ import api from "../api/axios.js";
 import {substanceService} from "../api/substanceService.ts";
 import type {SubstanceRead} from "../schemas/Substance.ts";
 import WarningButton from "../components/buttons/WarningButton.tsx";
+import toast from "react-hot-toast";
 
 interface SubstanceFormState extends SubstanceRead {
     property_ids?: number[];
@@ -34,23 +35,20 @@ function EditSubstance() {
             property_ids: cleanedPropertyIds,
         };
 
-        try {
-            await api.patch(`/substances/${substanceId}`, payload);
+        substanceService.updateSubstance(Number(substanceId), payload)
+            .then(()=> {
+                if (sds) {
+                    const formData = new FormData();
+                    formData.append("file", sds);
 
-            if (sds) {
-                const formData = new FormData();
-                formData.append("file", sds);
-
-                await api.post(`/substances/${substanceId}/sds`, formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                });
-            }
-
-            navigate("/substances");
-        } catch (error) {
-            console.log(error.response?.data?.detail || "Chyba při aktualizaci látky");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+                    api.post(`/substances/${substanceId}/sds`, formData, {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    });
+                }
+                toast.success("Látka byla úspěšně upravena!")
+                navigate("/substances");
+            })
+            .catch((error)=> toast.error(error.response.data.detail))
     };
 
     useEffect(() => {

@@ -33,10 +33,15 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
             <div className={sectionClass}>
                 <h3 className={sectionHeaderClass}>Základní údaje</h3>
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-                    <div className="md:col-span-8">
+                    <div className="md:col-span-5">
                         <label className={labelClass}>Název látky <span className="text-rose-500">*</span></label>
                         <input type="text" name="name" value={substance.name} onChange={handleChange}
                                className={inputClass} placeholder="Např. Kyselina sírová" required/>
+                    </div>
+                    <div className="md:col-span-3">
+                        <label className={labelClass}>Výrobce</label>
+                        <input type="text" name="manufacturer" value={substance.manufacturer} onChange={handleChange}
+                               className={inputClass} placeholder="Např. Roche s.r.o."/>
                     </div>
                     <div className="md:col-span-4">
                         <label className={labelClass}>Typ</label>
@@ -170,11 +175,10 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
                         </div>
                     )}
 
-                    {/* 2. PŘIDÁVACÍ SELECT (Filtruje už vybrané) */}
                     <div className="mt-4">
                         <select
                             className={inputClass}
-                            value="" // Vždy prázdné po výběru
+                            value=""
                             onChange={(e) => {
                                 const selectedId = Number(e.target.value);
                                 if (!selectedId) return;

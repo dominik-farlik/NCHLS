@@ -26,4 +26,9 @@ export const substanceService = {
         const response = await api.post("/substances", substanceData);
         return response.data;
     },
+
+    async updateSubstance(substanceId: number, substanceData: SubstanceCreate): Promise<SubstanceRead> {
+        const response = await api.patch(`/substances/${substanceId}`, substanceData);
+        return response.data;
+    },
 }
