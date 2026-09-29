@@ -9,3 +9,4 @@ sqlalchemy
 starlette
 pyjwt
 pwdlib
+fastapi-mail
