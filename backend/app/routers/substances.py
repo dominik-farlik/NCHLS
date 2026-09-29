@@ -72,7 +72,7 @@ async def read_substance(substance_id: int, db: SessionDep) -> SubstanceRead:
 
     if not substance:
         raise HTTPException(status_code=404, detail="Substance not found")
-    return substance
+    return SubstanceRead.model_validate(substance)
 
 
 @router.post("/{substance_id}/sds", response_model=SubstanceRead)
@@ -124,20 +124,20 @@ async def create_substance(substance_data: SubstanceCreate, db: SessionDep) -> S
     data = substance_data.model_dump(exclude={"property_ids", "properties"})
     db_substance = Substance(**data)
 
-    if "property_ids" in substance_data:
-        property_ids = substance_data.pop("property_ids")
-        if property_ids is not None:
-            valid_property_ids = [pid for pid in property_ids if pid not in (None, "")]
-
-            if valid_property_ids:
-                properties = (
-                    db.execute(select(Property).where(Property.id.in_(valid_property_ids)))
-                    .scalars()
-                    .all()
-                )
-                db_substance.properties = list(properties)
-            else:
-                db_substance.properties = []
+    property_ids = getattr(substance_data, "property_ids", None)
+    if property_ids:
+        valid_property_ids = [pid for pid in property_ids if pid not in (None, "")]
+        if valid_property_ids:
+            properties = (
+                db.execute(select(Property).where(Property.id.in_(valid_property_ids)))
+                .scalars()
+                .all()
+            )
+            db_substance.properties = list(properties)
+        else:
+            db_substance.properties = []
+    else:
+        db_substance.properties = []
 
     db.add(db_substance)
     db.commit()

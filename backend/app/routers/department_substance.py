@@ -50,10 +50,9 @@ async def update_department_substance(
     if not db_record:
         raise HTTPException(status_code=404, detail="Záznam nenalezen.")
 
-    update_data = update_data.model_dump(exclude_unset=True)
-    print(update_data)
+    update_dict = update_data.model_dump(exclude_unset=True)
 
-    db_record.amount = update_data["amount"]
+    db_record.amount = getattr(update_dict, "amount")
     db.commit()
     db.refresh(db_record)
 

@@ -11,14 +11,13 @@ router = APIRouter()
 
 @router.get("")
 async def get_departments(db: SessionDep) -> list[DepartmentRead]:
-    stmt = Select(Department).order_by(Department.code)
+    stmt: Select[tuple[Department]] = Select(Department).order_by(Department.code)
     departments = list(db.scalars(stmt).all())
-    return departments
-
+    return [DepartmentRead.model_validate(dept) for dept in departments]
 
 @router.get("/{department_id}")
 async def get_department(department_id: int, db: SessionDep):
-    stmt = Select(Department).where(Department.id == department_id)
+    stmt: Select[tuple[Department]] = Select(Department).where(Department.id == department_id)
     departments = db.scalars(stmt).first()
     return departments
 

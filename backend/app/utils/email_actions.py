@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 
 import jwt
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
+from pydantic import NameEmail
 
 import config
 
@@ -37,7 +38,7 @@ async def send_verification_email(email: str, verification_link: str):
     """
 
     message = MessageSchema(
-        subject="Ověření e-mailové adresy", recipients=[email], body=body, subtype=MessageType.plain
+        subject="Ověření e-mailové adresy", recipients=[NameEmail(email=email, name="")], body=body, subtype=MessageType.plain
     )
 
     fm = FastMail(connection_config)
@@ -49,7 +50,7 @@ async def send_password_reset_email(email: str, password_reset_link: str):
 
     message = MessageSchema(
         subject="Obnovení zapomenutého hesla",
-        recipients=[email],
+        recipients=[NameEmail(email=email, name="")],
         body=body,
         subtype=MessageType.plain,
     )
