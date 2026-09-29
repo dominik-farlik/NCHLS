@@ -52,7 +52,8 @@ async def update_department_substance(
 
     update_dict = update_data.model_dump(exclude_unset=True)
 
-    db_record.amount = update_dict.amount
+    for key, value in update_dict.items():
+        setattr(db_record, key, value)
     db.commit()
     db.refresh(db_record)
 
