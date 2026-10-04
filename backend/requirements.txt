@@ -13,3 +13,4 @@ uvicorn
 psycopg2-binary
 alembic
 pwdlib[argon2]
+python-multipart
