@@ -1,18 +1,19 @@
 services:
-  mongodb:
-    image: mongo:latest
+  postgres:
+    image: postgres:16
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - mongo_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
 
   fastapi:
     image: ghcr.io/dominik-farlik/nchls-backend:latest
     restart: always
     depends_on:
-      - mongodb
+      - postgres
     env_file:
       - .env
     volumes:
@@ -26,19 +27,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./letsencrypt/etc:/etc/letsencrypt:ro
-      - ./letsencrypt/lib:/var/lib/letsencrypt
-      - ./letsencrypt/webroot:/var/www/certbot
-
-  certbot:
-    image: certbot/certbot:latest
-    volumes:
-      - ./letsencrypt/etc:/etc/letsencrypt
-      - ./letsencrypt/lib:/var/lib/letsencrypt
-      - ./letsencrypt/webroot:/var/www/certbot
 
 volumes:
-  mongo_data:
-    external: true
-    name: nchls_mongo_data
+  postgres_data:
