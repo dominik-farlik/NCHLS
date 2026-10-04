@@ -145,13 +145,16 @@ jobs:
           chmod 600 ~/.ssh/config
 
       - name: Deploy application
-        run: |
-          ssh ${{ secrets.DEPLOY_HOST }} << 'EOF'
-            set -euo pipefail
-            cd /home/dominikfarlik/nchls
-          
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d
-            docker image prune -f
-            docker compose -f docker-compose.prod.yml ps
-          EOF
+          run: |
+            ssh ${{ secrets.DEPLOY_HOST }} << 'EOF'
+              set -euo pipefail
+              cd /home/dominikfarlik/nchls
+            
+              # Přihlášení k GHCR pomocí GitHub Tokenu
+              echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+              docker compose -f docker-compose.prod.yml pull
+              docker compose -f docker-compose.prod.yml up -d
+              docker image prune -f
+              docker compose -f docker-compose.prod.yml ps
+            EOF
