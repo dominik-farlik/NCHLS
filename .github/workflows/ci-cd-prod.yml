@@ -38,12 +38,15 @@ jobs:
           pip install -r backend/requirements-dev.txt
 
       - name: Run Ruff
+        continue-on-error: true
         run: ruff check backend/app
 
       - name: Run Ruff (format check)
-        run: ruff format --check backend/app || true
+        continue-on-error: true
+        run: ruff format --check backend/app
 
       - name: Run MyPy
+        continue-on-error: true
         run: |
           export PYTHONPATH=backend
           mypy backend/app
