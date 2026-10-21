@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 from starlette import status
 from starlette.responses import FileResponse
@@ -156,6 +157,20 @@ async def update_substance(
 
     update_data = substance_data.model_dump(exclude_unset=True)
 
+    new_name = update_data.get("name")
+    if new_name is not None and new_name != db_substance.name:
+        name_taken = db.scalars(
+            select(Substance).where(
+                Substance.name == new_name,
+                Substance.id != substance_id,
+            )
+        ).first()
+        if name_taken:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Látka s tímto názvem již existuje.",
+            )
+
     if "property_ids" in update_data:
         property_ids = update_data.pop("property_ids")
         if property_ids is not None:
@@ -189,7 +204,17 @@ async def update_substance(
         setattr(db_substance, key, value)
 
     db.add(db_substance)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        constraint = getattr(getattr(e.orig, "diag", None), "constraint_name", None)
+        if constraint == "substance_name_u":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Látka s tímto názvem již existuje.",
+            )
+        raise
     db.refresh(db_substance)
 
     return SubstanceRead.model_validate(db_substance)
