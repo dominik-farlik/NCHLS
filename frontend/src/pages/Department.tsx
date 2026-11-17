@@ -30,9 +30,10 @@ export default function Department() {
                 setResponsibleEmployee(res.data.manager || "");
             })
 
-        substanceService.getSubstances()
-            .then((data) => setSubstanceList(data.items));
-    }, []);
+        substanceService.getAllSubstances()
+            .then((items) => setSubstanceList(items))
+            .catch(() => toast.error("Nepodařilo se načíst seznam látek"));
+    }, [departmentId]);
 
     useEffect(() => {
         if (!departmentId) return;

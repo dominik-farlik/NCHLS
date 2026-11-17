@@ -17,6 +17,19 @@ export const substanceService = {
         return response.data;
     },
 
+    // Backend stránkuje (výchozí limit 100), proto načteme všechny stránky postupně.
+    async getAllSubstances(): Promise<SubstanceRead[]> {
+        const all: SubstanceRead[] = [];
+        let offset = 0;
+        while (true) {
+            const page = await this.getSubstances(offset);
+            all.push(...page.items);
+            offset += page.items.length;
+            if (page.items.length === 0 || offset >= page.total) break;
+        }
+        return all;
+    },
+
     async getSubstance(substance_id: number): Promise<SubstanceRead> {
         const response = await api.get(`/substances/${substance_id}`);
         return response.data;
