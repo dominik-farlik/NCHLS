@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Identity, Integer, PrimaryKeyConstraint, String
+from sqlalchemy import Identity, Integer, PrimaryKeyConstraint, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -21,6 +21,9 @@ class Company(Base):
         autoincrement=True,
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
+    inventory_contact: Mapped[str | None] = mapped_column(
+        Text, comment="Kontaktní údaje na konci dokumentu inventarizace"
+    )
 
     department: Mapped[list["Department"]] = relationship("Department", back_populates="company")
     substance: Mapped[list["Substance"]] = relationship("Substance", back_populates="company")

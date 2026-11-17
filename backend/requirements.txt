@@ -15,3 +15,6 @@ alembic
 pwdlib[argon2]
 python-multipart
 psycopg[binary]
+jinja2
+weasyprint
+python-docx

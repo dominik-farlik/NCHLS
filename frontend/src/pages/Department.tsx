@@ -8,6 +8,7 @@ import type { SubstanceRead } from "../schemas/Substance.ts";
 import {substanceService} from "../api/substanceService.ts";
 import toast from "react-hot-toast";
 import {departmentSubstanceService} from "../api/departmentSubstanceService.ts";
+import InventoryExportDialog from "../components/InventoryExportDialog.tsx";
 
 export default function Department() {
     const { departmentId } = useParams<{ departmentId: string }>();
@@ -22,6 +23,7 @@ export default function Department() {
     const [loading, setLoading] = useState(true);
 
     const [newRecord, setNewRecord] = useState({ name: "", amount: 0 });
+    const [isExportOpen, setIsExportOpen] = useState(false);
 
     useEffect(() => {
         api.get(`/departments/${departmentId}`)
@@ -251,12 +253,23 @@ export default function Department() {
                     </div>
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-3">
+                    <button onClick={() => setIsExportOpen(true)} className="px-6 py-2.5 text-sm font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-xl shadow-sm transition-all">
+                        Exportovat inventarizaci
+                    </button>
                     <button onClick={handleSubmit} className="px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md transition-all">
                         Uložit stav oddělení
                     </button>
                 </div>
             </div>
+            {isExportOpen && departmentId && (
+                <InventoryExportDialog
+                    departmentId={Number(departmentId)}
+                    year={year}
+                    responsibleEmployee={responsibleEmployee}
+                    onClose={() => setIsExportOpen(false)}
+                />
+            )}
         </Page>
     );
 }
