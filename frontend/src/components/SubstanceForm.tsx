@@ -3,6 +3,7 @@ import { openSafetySheet } from "../utils/fileUtils.ts";
 import api from "../api/axios.js";
 import type {SubstanceCreate} from "../schemas/Substance.ts";
 import type {Property} from "../schemas/Property.ts";
+import type {HazardCategory} from "../schemas/HazardCategory.ts";
 import SubmitButton from "./buttons/SubmitButton.tsx";
 
 function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
@@ -11,11 +12,13 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
     const [propertyList, setPropertyList] = useState<Property[]>([]);
     const [unitList, setUnitList] = useState([]);
     const [physicalFormList, setPhysicalFormList] = useState([]);
+    const [hazardCategoryList, setHazardCategoryList] = useState<HazardCategory[]>([]);
 
     useEffect(() => {
         api.get("/properties").then(res => setPropertyList(res.data));
         api.get("/units").then(res => setUnitList(res.data));
         api.get("/physical_forms").then(res => setPhysicalFormList(res.data));
+        api.get("/hazard_categories").then(res => setHazardCategoryList(res.data));
     }, []);
 
     const handleChange = (e) => {
@@ -93,6 +96,25 @@ function SubstanceForm({ initialData, handleSubmit, substanceId=null }) {
                                 className={inputClass}>
                             <option value="">Neurčeno</option>
                             {unitList.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                    </div>
+                    <div className="md:col-span-4">
+                        <label className={labelClass}>Kategorie nebezpečnosti</label>
+                        <select
+                            name="hazard_category_ids"
+                            value={substance.hazard_category_ids?.[0] ?? ""}
+                            onChange={(e) => {
+                                const id = Number(e.target.value);
+                                setSubstance({...substance, hazard_category_ids: id ? [id] : []});
+                            }}
+                            className={inputClass}
+                        >
+                            <option value="">Neurčeno</option>
+                            {hazardCategoryList.map(hc => (
+                                <option key={hc.id} value={hc.id}>
+                                    {hc.code ? `${hc.code} – ${hc.name}` : hc.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>

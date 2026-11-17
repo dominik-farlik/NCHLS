@@ -122,8 +122,14 @@ async def create_substance(substance_data: SubstanceCreate, db: SessionDep) -> S
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Látka s tímto názvem již existuje.",
         )
-    data = substance_data.model_dump(exclude={"property_ids", "properties"})
+    data = substance_data.model_dump(exclude={"property_ids", "properties", "hazard_category_ids"})
     db_substance = Substance(**data)
+
+    hc_ids = [hid for hid in substance_data.hazard_category_ids if hid not in (None, "")]
+    if hc_ids:
+        db_substance.hazard_category = list(
+            db.execute(select(HazardCategory).where(HazardCategory.id.in_(hc_ids))).scalars().all()
+        )
 
     property_ids = getattr(substance_data, "property_ids", None)
     if property_ids:
